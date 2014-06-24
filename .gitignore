@@ -17,3 +17,6 @@ tmp
 
 .DS_Store
 .idea
+
+# Project-specific
+packages/cache/*.deb
