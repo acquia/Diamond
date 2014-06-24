@@ -1,0 +1,9 @@
+#!/bin/bash -e
+JAVA_DIR=/usr/local/jvm
+
+for FILE in ${JAVA_DIR}/bin/*
+do
+  JAVA_FILE=$(basename $FILE)
+  update-alternatives --install "/usr/local/bin/${JAVA_FILE}" $JAVA_FILE $FILE 1
+  update-alternatives --set $JAVA_FILE $FILE
+done
