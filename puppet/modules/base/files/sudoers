@@ -19,5 +19,7 @@ root    ALL=(ALL) ALL
 # (Note that later entries override this, so you might need to move
 # it further down)
 %sudo ALL=NOPASSWD: ALL
+# Let members of sudo group do anything they want
+%sudo ALL=(ALL:ALL) ALL
 
 #includedir /etc/sudoers.d
