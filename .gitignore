@@ -21,3 +21,4 @@ tmp
 # Project-specific
 packages/cache/*.deb
 packages/repo/*
+Gemfile.lock
