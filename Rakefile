@@ -29,7 +29,7 @@ task :build_repo do
       path = cache + "#{obj.key}"
       unless File.exists?(path)
         Nemesis::Log.info("Downloading #{obj.key}")
-        File.open(obj.key, 'wb') do |f|
+        File.open(cache + obj.key, 'wb') do |f|
           obj.read do |chunk|
             f.write(chunk)
           end
