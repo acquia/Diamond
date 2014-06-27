@@ -30,10 +30,10 @@ class cassandra::cassandra {
     require => Package['cassandra'],
   }
 
-  file {'ah-config-cassandra':
-    path   => '/usr/local/sbin/ah-config-cassandra',
-    source => 'puppet:///modules/cassandra/ah-config-cassandra.rb',
-    mode   => '0755',
-  }
+  #file {'ah-config-cassandra':
+  #  path   => '/usr/local/sbin/ah-config-cassandra',
+  #  source => 'puppet:///modules/cassandra/ah-config-cassandra.rb',
+  #  mode   => '0755',
+  #}
 
 }

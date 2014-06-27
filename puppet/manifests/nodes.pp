@@ -1,3 +1,1 @@
-node default {
-  include base::base
-}
+hiera_include('classes')

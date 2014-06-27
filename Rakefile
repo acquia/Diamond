@@ -2,14 +2,25 @@ require 'fileutils'
 require 'multi_json'
 require 'oj'
 require 'tmpdir'
+require 'rake'
+require 'zlib'
 
 require 'nemesis'
 
-DEV_BUCKET = 'acquia-dev-nemesis-packages'
+# Bucket names
+DEV_PACKAGES = 'acquia-dev-nemesis-packages'
 DEV_REPO = 'acquia-dev-nemesis-repo'
+DEV_PUPPET = 'acquia-dev-nemesis-puppet'
+
+# File patterns to always exclude from S3 syncs
+EXCLUDE_PATTERNS = [
+  /\.s[a-w][a-z]$/
+]
+
 $base_path = Pathname.new(File.dirname(File.absolute_path(__FILE__)))
 
 # todo add prod argument and bucket name
+desc "Sync and redeploy the apt repository"
 task :build_repo do
   result = `which aptly`
   if result.empty?
@@ -18,7 +29,7 @@ task :build_repo do
   end
 
   s3 = Nemesis::Aws::Sdk::S3.new
-  bucket = s3.buckets[DEV_BUCKET]
+  bucket = s3.buckets[DEV_PACKAGES]
   cache = $base_path + 'packages/cache'
   repo = $base_path + 'packages/repo'
 
@@ -48,28 +59,40 @@ task :build_repo do
     else
       aptly 'publish update --gpg-key=23406CA7 trusty'
     end
-    s3_upload_repo(DEV_REPO)
+    s3_upload(DEV_REPO, $base_path + 'packages/repo/public', :public_read)
   end
 end
 
 
-def s3_upload_repo(bucket)
+def s3_upload(bucket, path, acl = :private)
   s3 = Nemesis::Aws::Sdk::S3.new
   repo = s3.buckets[bucket]
   unless repo.exists?
-    repo = s3.buckets.create(bucket, :acl => :public_read)
-    repo.configure_website
+    repo = s3.buckets.create(bucket, :acl => acl)
   end
-  path = $base_path + 'packages/repo/public'
-  Dir.glob(path.to_s + '/**/*').each do |file|
-    next if File.directory? file
-    file_path = Pathname.new(file)
-    key = file_path.relative_path_from(path)
-    object = repo.objects[key]
-    if needs_upload?(file_path, object)
-      Nemesis::Log.info("Uploading #{file_path.relative_path_from(path)}")
-      object.write(file_path, :acl => :public_read)
+  if path.directory?
+    Dir.glob(path.to_s + '/**/*').each do |file|
+      next if File.directory? file
+      EXCLUDE_PATTERNS.each do |pattern|
+        next if file =~ pattern
+      end
+      file_path = Pathname.new(file)
+      key = file_path.relative_path_from(path)
+      object = repo.objects[key]
+      Nemesis::Log.info("Uploading #{file.relative_path_from(path)}")
+      s3_upload_file(file_path, object, acl)
     end
+  else
+    key = path.basename
+    object = repo.objects[key]
+    Nemesis::Log.info("Uploading #{path.basename}")
+    s3_upload_file(path, object, acl)
+  end
+end
+
+def s3_upload_file(file, object, acl)
+  if needs_upload?(file, object)
+    object.write(file, :acl => acl)
   end
 end
 
@@ -92,9 +115,10 @@ def aptly(cmd)
 end
 
 # todo add prod argument and bucket name
+desc "Upload a single package to the packages S3 bucket"
 task :upload_package, [:package] do |task, args|
   s3 = Nemesis::Aws::Sdk::S3.new
-  repo = s3.buckets[DEV_BUCKET]
+  repo = s3.buckets[DEV_PACKAGES]
   path = Pathname.new(File.absolute_path(args[:package]))
   unless File.exists? path
     Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
@@ -110,5 +134,13 @@ task :upload_package, [:package] do |task, args|
     Nemesis::Log.info("Successfully uploaded #{key}")
   else
     Nemesis::Log.info("#{key} has already been uploaded!")
+  end
+end
+
+namespace :puppet do
+  desc "Update Puppet repo S3 mirror"
+  task :upload do
+    `tar --exclude=*.swp -cvzf puppet.tgz puppet/`
+    s3_upload(DEV_PUPPET, $base_path + 'puppet.tgz')
   end
 end

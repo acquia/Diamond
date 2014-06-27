@@ -2,6 +2,7 @@
 :backends:
   - yaml
 :yaml:
-  :datadir: "/etc/puppet/hieradata/%{::role}"
+  :datadir: "/etc/puppet/hiera/"
 :hierarchy:
+  - "%{::server_type}"
   - common
