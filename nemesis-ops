@@ -6,20 +6,22 @@ require 'oj'
 require 'pathname'
 require 'tmpdir'
 require 'zlib'
-require 'thor'
 
 require 'nemesis'
 
 $base_path = Pathname.new(File.dirname(File.absolute_path(__FILE__)))
+# File patterns to always exclude from S3 syncs
+EXCLUDE_PATTERNS = [
+ /\.s[a-w][a-z]$/
+]
 
-class Package < Thor
+class Package < Nemesis::Thor
   desc "upload STACK PACKAGE", "Upload a package to the stack's package listing"
   def upload(stack_name, package)
     s3 = Nemesis::Aws::Sdk::S3.new
-    cf = Nemesis::Aws::Sdk::CloudFormation.new
-    packages = cf.stacks[stack_name].resources['packages'].physical_resource_id
+    packages = get_bucket_from_stack(stack_name, 'packages')
     repo = s3.buckets[packages]
-    path = Pathname.new(File.absolute_path(args[:package]))
+    path = Pathname.new(File.absolute_path(package))
     unless File.exists? path
       Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
       exit 1
@@ -37,6 +39,18 @@ class Package < Thor
     end
   end
 
+  desc "sync-cache-packages STACK", "Sync cache packages with the package bucket"
+  def sync_cache_packages(stack)
+    s3 = Nemesis::Aws::Sdk::S3.new
+    packages = get_bucket_from_stack(stack, 'packages')
+    package_repo = s3.buckets[packages]
+    Dir.glob($base_path + 'packages/cache' + '**/*.deb') do |deb|
+      path = Pathname.new(deb)
+      object = package_repo.objects[path.basename]
+      s3_upload(object, path)
+    end
+  end
+
   desc "build-repo STACK", "Build the Apt repo for the given stack"
   def build_repo(stack_name)
     result = `which aptly`
@@ -45,10 +59,8 @@ class Package < Thor
       exit 1
     end
 
-    s3 = Nemesis::Aws::Sdk::S3.new
-    cf = Nemesis::Aws::Sdk::CloudFormation.new
-    packages = cf.stacks[stack_name].resources['packages'].physical_resource_id
-    repo = cf.stacks[stack_name].resources['repo'].physical_resource_id
+    packages = get_bucket_from_stack(stack_name, 'packages')
+    package_repo = get_bucket_from_stack(stack_name, 'repo')
     bucket = s3.buckets[packages]
     cache = $base_path + 'packages/cache'
     repo = $base_path + 'packages/repo'
@@ -79,12 +91,12 @@ class Package < Thor
       else
         aptly 'publish update --gpg-key=23406CA7 trusty'
       end
-      s3_upload(repo, $base_path + 'packages/repo/public', :public_read)
+      s3_upload(package_repo, $base_path + 'packages/repo/public', :public_read)
     end
   end
 end
 
-class Puppet < Thor
+class Puppet < Nemesis::Thor
   desc "upload", "Update Puppet repo S3 mirror"
   def upload(stack_name)
     cf = Nemesis::Aws::Sdk::CloudFormation.new
@@ -97,9 +109,6 @@ end
 def s3_upload(bucket, path, acl = :private)
   s3 = Nemesis::Aws::Sdk::S3.new
   repo = s3.buckets[bucket]
-  unless repo.exists?
-    repo = s3.buckets.create(bucket, :acl => acl)
-  end
   if path.directory?
     Dir.glob(path.to_s + '/**/*').each do |file|
       next if File.directory? file
@@ -109,7 +118,7 @@ def s3_upload(bucket, path, acl = :private)
       file_path = Pathname.new(file)
       key = file_path.relative_path_from(path)
       object = repo.objects[key]
-      Nemesis::Log.info("Uploading #{file.relative_path_from(path)}")
+      Nemesis::Log.info("Uploading #{file_path.relative_path_from(path)}")
       s3_upload_file(file_path, object, acl)
     end
   else
@@ -137,6 +146,13 @@ def needs_upload?(file, object)
   !object.exists? || mtime != object.last_modified || size != object.content_length
 end
 
+def get_bucket_from_stack(stack, logical_name)
+  cf = Nemesis::Aws::Sdk::CloudFormation.new
+  cf.stacks[stack].resources[logical_name].physical_resource_id
+end
+
+
+
 def aptly(cmd)
   base = "aptly --config=#{$base_path}/packages/aptly.conf"
   command = base + ' ' + cmd
@@ -144,11 +160,7 @@ def aptly(cmd)
   puts `#{command}`
 end
 
-class NemesisOps < Thor
-  def self.exit_on_failure?
-    true
-  end
-
+class NemesisOps < Nemesis::Thor
   desc "package SUBCOMMANDS ...ARGS", "manage all things related to packages"
   subcommand 'package', Package
 
