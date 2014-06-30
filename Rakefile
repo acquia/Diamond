@@ -7,11 +7,6 @@ require 'zlib'
 
 require 'nemesis'
 
-# Bucket names
-DEV_PACKAGES = 'acquia-dev-nemesis-packages'
-DEV_REPO = 'acquia-dev-nemesis-repo'
-DEV_PUPPET = 'acquia-dev-nemesis-puppet'
-
 # File patterns to always exclude from S3 syncs
 EXCLUDE_PATTERNS = [
   /\.s[a-w][a-z]$/
@@ -29,7 +24,10 @@ task :build_repo do
   end
 
   s3 = Nemesis::Aws::Sdk::S3.new
-  bucket = s3.buckets[DEV_PACKAGES]
+  cf = Nemesis::Aws::Sdk::CloudFormation.new
+  packages = cf.buckets['nemesis'].resources['packages'].physical_resource_id
+  repo = cf.buckets['nemesis'].resources['repo'].physical_resource_id
+  bucket = s3.buckets[packages]
   cache = $base_path + 'packages/cache'
   repo = $base_path + 'packages/repo'
 
@@ -59,7 +57,7 @@ task :build_repo do
     else
       aptly 'publish update --gpg-key=23406CA7 trusty'
     end
-    s3_upload(DEV_REPO, $base_path + 'packages/repo/public', :public_read)
+    s3_upload(repo, $base_path + 'packages/repo/public', :public_read)
   end
 end
 
@@ -140,7 +138,8 @@ end
 namespace :puppet do
   desc "Update Puppet repo S3 mirror"
   task :upload do
+    puppet = cf.buckets['nemesis'].resources['puppet'].physical_resource_id
     `tar --exclude=*.swp -cvzf puppet.tgz puppet/`
-    s3_upload(DEV_PUPPET, $base_path + 'puppet.tgz')
+    s3_upload(puppet, $base_path + 'puppet.tgz')
   end
 end
