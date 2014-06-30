@@ -4,5 +4,6 @@ class base::base {
   require 'base::repos'
   require 'base::sudo'
   require 'base::utils'
+  require 'puppet::puppet'
   require 'ruby::ruby'
 }
