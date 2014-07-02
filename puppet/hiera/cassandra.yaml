@@ -1,4 +1,4 @@
 ---
 classes:
-  - base::base
-  - cassandra::cassandra
+  - base
+  - cassandra

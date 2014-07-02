@@ -1,4 +1,4 @@
-class ruby::ruby {
+class ruby {
 
   class {'rvm': }
 

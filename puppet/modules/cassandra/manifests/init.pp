@@ -1,6 +1,6 @@
-class cassandra::cassandra {
-  require base::base
-  require java::java
+class cassandra {
+  require base
+  require java
 
   $cassandra_version = '2.0.8'
 

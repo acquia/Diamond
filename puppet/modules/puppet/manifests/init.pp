@@ -1,4 +1,4 @@
-class puppet::puppet {
+class puppet {
   include apt
 
   apt::source { 'puppetlabs':
