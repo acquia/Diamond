@@ -1,23 +1,22 @@
 class diamond {
   include apt
-  include python
   require diamond::packages
 
   group { 'diamond':
     ensure => present,
   }
 
-  user { 'diamond',
-  ensure  => present,
-  require => Group['diamond'],
-  home    => '/etc/diamond',
-  shell   => '/bin/false',
-  comment => 'Diamond user',
+  user { 'diamond':
+    ensure  => present,
+    require => Group['diamond'],
+    home    => '/etc/diamond',
+    shell   => '/bin/false',
+    comment => 'Diamond user',
   }
 
-  python::pip { 'boto':
+  python::pip { 'diamond':
     ensure  => present,
-    pkgname => 'boto',
+    pkgname => 'diamond',
   }
 
   service { 'diamond':

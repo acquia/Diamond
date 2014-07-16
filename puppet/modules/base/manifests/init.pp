@@ -4,6 +4,7 @@ class base {
   require base::repos
   require base::sudo
   require base::utils
+  require diamond
   require puppet
   require ruby
 }

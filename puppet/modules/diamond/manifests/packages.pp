@@ -1,9 +1,12 @@
 class diamond::packages {
-  include python
-
   class { 'python':
     version    => 'system',
     dev        => true,
     virtualenv => true,
+  }
+
+  python::pip { 'boto':
+    ensure  => present,
+    pkgname => 'boto',
   }
 }

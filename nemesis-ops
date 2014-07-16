@@ -61,6 +61,7 @@ class Package < Nemesis::Thor
 
     packages = get_bucket_from_stack(stack_name, 'packages')
     package_repo = get_bucket_from_stack(stack_name, 'repo')
+    s3 = Nemesis::Aws::Sdk::S3.new
     bucket = s3.buckets[packages]
     cache = $base_path + 'packages/cache'
     repo = $base_path + 'packages/repo'

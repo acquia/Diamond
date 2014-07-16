@@ -27,14 +27,12 @@ cairocffi
 pycassa
 Django
 Twisted<12.0
-tagging'
+tagging
 django-tagging
 pytz
 pyparsing
-python-simplejson
-python-sqlite2
-python-hashlib
-wisper
+simplejson
+whisper
 EOF
 )
 
@@ -48,7 +46,7 @@ function gh-pip() {
 }
 
 # Install the build deps needed to create the packages
-apt-get install -y git-core python-virtualenv python-pip python-cairo python-dev libffi-dev
+apt-get install -y git-core python-virtualenv python-pip python-cairo python-dev libffi-dev ruby ruby-dev
 
 # Setup the virtual env
 mkdir -p $BASEDIR
@@ -147,6 +145,8 @@ EOF
 
 # Disable the virtual env
 deactivate
+
+gem install --no-ri --no-rdoc fpm
 
 # Create the deb
 fpm -t deb -s dir \
