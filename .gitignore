@@ -21,5 +21,6 @@ tmp
 # Project-specific
 packages/cache/*.deb
 packages/repo/*
+packages/db/*
 *.tgz
 Gemfile.lock

@@ -19,7 +19,9 @@ class diamond {
     pkgname => 'diamond',
   }
 
-  service { 'diamond':
-    ensure => running,
-  }
+  # TODO Make this work
+  #service { 'diamond':
+  #  ensure   => running,
+  #  provider => 'upstart',
+  #}
 }
