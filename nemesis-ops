@@ -15,7 +15,7 @@ EXCLUDE_PATTERNS = [
  /\.s[a-w][a-z]$/
 ]
 
-class Package < Nemesis::Thor
+class Package < Nemesis::Cli::Base
   desc "upload STACK PACKAGE", "Upload a package to the stack's package listing"
   def upload(stack_name, package)
     s3 = Nemesis::Aws::Sdk::S3.new
@@ -97,7 +97,7 @@ class Package < Nemesis::Thor
   end
 end
 
-class Puppet < Nemesis::Thor
+class Puppet < Thor
   desc "upload", "Update Puppet repo S3 mirror"
   def upload(stack_name)
     cf = Nemesis::Aws::Sdk::CloudFormation.new
@@ -161,7 +161,7 @@ def aptly(cmd)
   puts `#{command}`
 end
 
-class NemesisOps < Nemesis::Thor
+class NemesisOps < Thor
   desc "package SUBCOMMANDS ...ARGS", "manage all things related to packages"
   subcommand 'package', Package
 
