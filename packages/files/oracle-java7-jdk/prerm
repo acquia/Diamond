@@ -1,9 +1,0 @@
-#!/bin/bash -e
-JAVA_DIR=/usr/local/jvm
-
-if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
-  for FILE in $JAVA_DIR/bin/*
-  do
-    update-alternatives --remove $(basename $FILE) $FILE
-  done
-fi

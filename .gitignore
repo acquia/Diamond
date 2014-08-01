@@ -23,4 +23,5 @@ packages/cache/*.deb
 packages/repo/*
 packages/db/*
 *.tgz
+*.tar.gz
 Gemfile.lock
