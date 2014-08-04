@@ -10,9 +10,10 @@ require 'zlib'
 require 'nemesis'
 
 $base_path = Pathname.new(File.dirname(File.absolute_path(__FILE__)))
-# File patterns to always exclude from S3 syncs
+
+# List of file patterns to always exclude from S3 syncs
 EXCLUDE_PATTERNS = [
- /\.s[a-w][a-z]$/
+  /\.s[a-w][a-z]$/, # vim swap files
 ]
 
 class Package < Nemesis::Cli::Base
@@ -97,7 +98,7 @@ class Package < Nemesis::Cli::Base
   end
 end
 
-class Puppet < Thor
+class Puppet < Nemesis::Cli::Base
   desc "upload", "Update Puppet repo S3 mirror"
   def upload(stack_name)
     cf = Nemesis::Aws::Sdk::CloudFormation.new
@@ -152,11 +153,12 @@ def get_bucket_from_stack(stack, logical_name)
   cf.stacks[stack].resources[logical_name].physical_resource_id
 end
 
-
-
 def aptly(cmd)
-  base = "aptly --config=#{$base_path}/packages/aptly.conf"
-  command = base + ' ' + cmd
+  pkg_dir = File.join($base_path, "packages")
+  FileUtils.mkdir_p File.join(pkg_dir, "cache")
+  FileUtils.mkdir_p File.join(pkg_dir, "repo")
+
+  command = "aptly --config=#{pkg_dir}/aptly.conf #{cmd}"
   Nemesis::Log.info(command)
   puts `#{command}`
 end

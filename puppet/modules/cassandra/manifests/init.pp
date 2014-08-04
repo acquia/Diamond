@@ -3,6 +3,7 @@ class cassandra {
   require java
 
   $cassandra_version = '2.0.8'
+  $tablesnap_version = '0.6.2'
 
   group {'cassandra':
     gid => 535,
@@ -24,16 +25,42 @@ class cassandra {
     require => User['cassandra'],
   }
 
+  service {'cassandra':
+    ensure  => "running",
+    enable  => "true",
+    hasstatus => "true",
+    hasrestart => true,
+    require => Package["cassandra"],
+  }
+
   file {'/usr/share/cassandra/lib/jna.jar':
     ensure  => link,
     target  => '/usr/share/java/jna.jar',
     require => Package['cassandra'],
   }
 
-  #file {'ah-config-cassandra':
-  #  path   => '/usr/local/sbin/ah-config-cassandra',
-  #  source => 'puppet:///modules/cassandra/ah-config-cassandra.rb',
-  #  mode   => '0755',
-  #}
+  package {'tablesnap':
+    ensure  => $tablesnap_version,
+    name    => 'tablesnap',
+    require => [ Service['cassandra'], File['tablesnap_conf'] ],
+  }
+
+  file {'tablesnap_conf':
+    path    => "/etc/default/tablesnap",
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0644',
+    require => [ Package['tablesnap'], ],
+    content => template('cassandra/tablesnap.erb'),
+    notify  => Service['tablesnap']
+  }
+
+  service {'tablesnap':
+    ensure  => "running",
+    enable  => "true",
+    hasstatus => "true",
+    hasrestart => true,
+    require => Package["tablesnap"],
+  }
 
 }

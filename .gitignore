@@ -17,10 +17,12 @@ tmp
 
 .DS_Store
 .idea
+.vagrant
 
 # Project-specific
 packages/cache/*.deb
 packages/repo/*
 packages/db/*
 *.tgz
+*.tar.gz
 Gemfile.lock
