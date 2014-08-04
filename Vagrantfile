@@ -1,22 +1,34 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
+$bootstrap_script = <<__BOOTSTRAP__
+echo "Provisioning defaults"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+sudo apt-get install build-essential git ruby-dev ruby
+sudo gem install aws-sdk --no-ri --no-rdoc
+
+echo "Finished provisioning defaults"
+__BOOTSTRAP__
+
+Vagrant.configure("2") do |config|
   config.vm.box = "trusty64"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   config.ssh.forward_agent = true
 
-  config.vm.provider 'virtualbox' do |vb|
-    vb.customize ['modifyvm', :id, '--memory', '2048']
-    vb.customize['modifyvm', :id, '--cpus', '2']
+  config.vm.provider :virtualbox do |vbox|
+    vbox.customize ["modifyvm", :id, "--memory", "1024"]
+    vbox.customize ["modifyvm", :id, "--cpus", "2"]
   end
 
-  config.vm.provision "puppet" do |puppet|
-    puppet.manifests_path = "puppet/manifests"
-    puppet.module_path = "puppet/modules"
-    puppet.manifest_file  = "nodes.pp"
+  config.vm.provision "shell" do |shell|
+    shell.inline = $bootstrap_script
   end
+
+  # @todo - fix to work with Hiera. see datadir: in hiera.yaml
+  #config.vm.provision "puppet" do |puppet|
+  #  puppet.manifests_path = "puppet/manifests"
+  #  puppet.module_path = "puppet/modules"
+  #  puppet.manifest_file  = "nodes.pp"
+  #end
 
 end

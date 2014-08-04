@@ -17,6 +17,7 @@ tmp
 
 .DS_Store
 .idea
+.vagrant
 
 # Project-specific
 packages/cache/*.deb
