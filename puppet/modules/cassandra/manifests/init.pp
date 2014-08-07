@@ -52,7 +52,7 @@ class cassandra {
   package {'tablesnap':
     ensure  => $tablesnap_version,
     name    => 'tablesnap',
-    require => [ Service['cassandra'], File['tablesnap_conf'] ],
+    require => Service['cassandra'],
   }
 
   file {'tablesnap_conf':
@@ -60,7 +60,7 @@ class cassandra {
     owner   => 'cassandra',
     group   => 'cassandra',
     mode    => '0644',
-    require => [ Package['tablesnap'], ],
+    require => Package['tablesnap'],
     content => template('cassandra/tablesnap.erb'),
     notify  => Service['tablesnap']
   }
@@ -70,7 +70,7 @@ class cassandra {
     enable  => "true",
     hasstatus => "true",
     hasrestart => true,
-    require => Package["tablesnap"],
+    require => [Package["tablesnap"], File['tablesnap_conf']],
   }
 
 }
