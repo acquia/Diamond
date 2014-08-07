@@ -150,6 +150,7 @@ def aptly(cmd)
 end
 
 def get_repo(stack)
+  FileUtils.mkdir_p($base_path + 'packages/cache')
   s3 = Nemesis::Aws::Sdk::S3.new
   packages = get_bucket_from_stack(stack, 'repo')
   repo = s3.buckets[packages]
