@@ -161,5 +161,6 @@ fpm -t deb -s dir \
 
 # If we're in a VM, let's copy the deb file over
 if [ -d "/vagrant/" ]; then
-  mv -f *.deb /vagrant/
+  mkdir -p /vagrant/dist
+  mv -f *.deb /vagrant/dist/
 fi

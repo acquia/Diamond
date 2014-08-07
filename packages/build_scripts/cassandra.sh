@@ -20,9 +20,10 @@ apt-get -qq download cassandra
 
 # Clean up
 rm /etc/apt/sources.list.d/cassandra.list
-/usr/bin/apt-get update -qq
+apt-get update -qq
 
 # If in a VM copy then deb file over
 if [ -d "/vagrant/" ]; then
-  mv -f *.deb /vagrant/
+  mkdir -p /vagrant/dist
+  mv -f *.deb /vagrant/dist/
 fi

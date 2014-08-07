@@ -62,5 +62,6 @@ rm -rf ${INIT_SCRIPTS}
 
 # If in a VM copy then deb file over
 if [ -d "/vagrant/" ]; then
-  mv -f *.deb /vagrant/
+  mkdir -p /vagrant/dist
+  mv -f *.deb /vagrant/dist
 fi
