@@ -5,8 +5,6 @@ class cassandra {
   $cassandra_version = '2.0.8'
   $tablesnap_version = '0.6.2'
 
-
-
   group {'cassandra':
     gid => 535,
   }
