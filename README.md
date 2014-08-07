@@ -22,6 +22,8 @@ Dependencies needed to be available before working with the Nemesis Package Mana
     * Add $GOPATH/bin to your $PATH
   * Nemesis gem installed or available in RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
+  * fpm gem installed to build packages
+    * gem install fpm
 
 ## Setup
 
