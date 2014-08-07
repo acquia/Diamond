@@ -26,5 +26,6 @@ dpkg-buildpackage -b -d -tc
 
 # If we're in a VM, let's copy the deb file over
 if [ -d "/vagrant/" ]; then
-  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/
+  mkdir -p /vagrant/dist
+  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
 fi
