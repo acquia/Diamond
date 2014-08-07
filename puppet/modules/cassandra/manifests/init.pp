@@ -37,6 +37,16 @@ class cassandra {
     ensure  => link,
     target  => '/usr/share/java/jna.jar',
     require => Package['cassandra'],
+    notify => [ Service["cassandra"], ],
+  }
+
+  file {'/etc/cassandra/cassandra.yaml':
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0644',
+    content => cassandra_config,
+    require => Package['cassandra'],
+    notify => [ Service["cassandra"], ],
   }
 
   package {'tablesnap':
