@@ -6,7 +6,7 @@ module Puppet::Parser::Functions
   newfunction(:cloudformation_stackname, :type => :rvalue) do |args|
     instance_id = args[0]
     begin
-      cf = Nemesis::Aws::Sdk::CloudFormation.new
+      cf = AWS::CloudFormation.new
       stack = cf.stack_resource(instance_id)
       stack.stack_name
     rescue

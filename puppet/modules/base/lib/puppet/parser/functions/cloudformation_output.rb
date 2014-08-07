@@ -10,7 +10,7 @@ module Puppet::Parser::Functions
     tempalate_name = args[0]
     output_name = args[1]
 
-    cf = Nemesis::Aws::Sdk::CloudFormation.new
+    cf = AWS::CloudFormation.new
     stack = cf.stacks[tempalate_name]
 
     output = stack.outputs.detect { |x| x.key == output_name }
