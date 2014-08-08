@@ -49,6 +49,15 @@ class cassandra {
     notify => [ Service["cassandra"], ],
   }
 
+  file {'/etc/default/cassandra':
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0644',
+    content => template('cassandra/cassandra_default.erb'),,
+    require => Package['cassandra'],
+    notify => [ Service["cassandra"], ],
+  }
+
   package {'tablesnap':
     ensure  => $tablesnap_version,
     name    => 'tablesnap',
