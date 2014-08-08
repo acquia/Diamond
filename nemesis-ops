@@ -64,7 +64,7 @@ class Puppet < Nemesis::Cli::Base
     unless puppet_packages.empty?
       revision = puppet_packages.reduce(0) do |a, e|
         rev = e.match(/nemesis-puppet.*-(.*)_/)[1].to_i
-        a = rev if rev > a
+        a = rev > a ? rev : a
       end
       revision += 1
     else

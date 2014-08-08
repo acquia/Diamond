@@ -3,7 +3,7 @@ class cassandra {
   require java
 
   $cassandra_version = '2.0.8'
-  $tablesnap_version = '0.6.2'
+  $tablesnap_version = '0.6.2-1'
 
   group {'cassandra':
     gid => 535,
@@ -44,7 +44,7 @@ class cassandra {
     owner   => 'cassandra',
     group   => 'cassandra',
     mode    => '0644',
-    content => cassandra_config,
+    content => "$cassandra_config",
     require => Package['cassandra'],
     notify => [ Service["cassandra"], ],
   }
@@ -53,7 +53,7 @@ class cassandra {
     owner   => 'cassandra',
     group   => 'cassandra',
     mode    => '0644',
-    content => template('cassandra/cassandra_default.erb'),,
+    content => template('cassandra/cassandra_default.erb'),
     require => Package['cassandra'],
     notify => [ Service["cassandra"], ],
   }
