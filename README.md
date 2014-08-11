@@ -42,11 +42,11 @@ Dependencies needed to be available before working with the Nemesis Package Mana
 
     export stack_name='nemesis'
     nemesis bootstrap ${stack_name}
-    nemesis-ops package sync_cache_packages ${stack_name}
-    nemesis-ops package build_repo ${stack_name}
+    nemesis-ops package construct-repo ${stack_name}
+    nemesis-ops package upload-repo ${stack_name}
 
 
 ## Updating a specific package
 
-    nemesis-ops package upload nemesis packages/cache/*.deb
+    nemesis-ops package add ${stack_name} packages/cache/*.deb
 
