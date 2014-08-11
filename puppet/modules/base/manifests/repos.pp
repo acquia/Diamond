@@ -11,4 +11,6 @@ class base::repos {
     key_server  => 'pgp.mit.edu',
     include_src => false,
   }
+
+  apt::ppa { "ppa:webupd8team/java": }
 }
