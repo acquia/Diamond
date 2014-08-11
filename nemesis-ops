@@ -35,9 +35,15 @@ class Package < Nemesis::Cli::Base
     get_repo(stack)
   end
 
-  desc "upload-repo STACK", "Build the Apt repo for the given stack"
-  def upload_repo(stack)
+  desc "construct-repo STACK", "Build the Apt repo"
+  def construct_repo(stack)
     build_repo(stack)
+  end
+
+  desc "upload-repo STACK", "Upload the Apt repo for the given stack"
+  def upload_repo(stack)
+    package_repo = get_bucket_from_stack(stack)
+    s3_upload(package_repo, $base_path + 'packages/repo/public', :public_read)
   end
 end
 
@@ -176,30 +182,14 @@ def build_repo(stack)
     exit 1
   end
 
-  packages = get_bucket_from_stack(stack, 'packages')
-  package_repo = get_bucket_from_stack(stack, 'repo')
-  s3 = Nemesis::Aws::Sdk::S3.new
-  bucket = s3.buckets[packages]
   cache = $base_path + 'packages/cache'
   repo = $base_path + 'packages/repo'
 
-  # Hello cascade
-  Dir.chdir(repo) do |d|
-    # Download all packages from s3 and write them to disk if needed
-    bucket.objects.each do |obj|
-      path = cache + "#{obj.key}"
-      unless File.exists?(path)
-        Nemesis::Log.info("Downloading #{obj.key}")
-        File.open(cache + obj.key, 'wb') do |f|
-          obj.read do |chunk|
-            f.write(chunk)
-          end
-        end
-      else
-        Nemesis::Log.info("Using cached #{File.basename(path)}")
-      end
-    end
+  # Get the contents of the existing repo
+  get_repo(stack)
 
+  # Build the repo w/ Aptly
+  Dir.chdir(repo) do |d|
     unless File.directory?('db') && File.directory?('pool')
       aptly 'repo create --distribution=trusty --architectures=amd64 nemesis-testing'
     end
@@ -209,7 +199,6 @@ def build_repo(stack)
     else
       aptly 'publish update --gpg-key=23406CA7 trusty'
     end
-    s3_upload(package_repo, $base_path + 'packages/repo/public', :public_read)
   end
 end
 
