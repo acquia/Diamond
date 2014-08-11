@@ -79,7 +79,7 @@ class Puppet < Nemesis::Cli::Base
     result = eval(result)
     FileUtils.mv(result[:path], $base_path + 'packages/cache')
     if options[:upload]
-      build_repo(stack)
+      build_repo(stack_name)
     end
   end
 end
@@ -176,8 +176,8 @@ def build_repo(stack)
     exit 1
   end
 
-  packages = get_bucket_from_stack(stack_name, 'packages')
-  package_repo = get_bucket_from_stack(stack_name, 'repo')
+  packages = get_bucket_from_stack(stack, 'packages')
+  package_repo = get_bucket_from_stack(stack, 'repo')
   s3 = Nemesis::Aws::Sdk::S3.new
   bucket = s3.buckets[packages]
   cache = $base_path + 'packages/cache'
