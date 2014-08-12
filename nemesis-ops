@@ -10,7 +10,10 @@ require 'zlib'
 
 require 'nemesis'
 
+$gpg_key = "23406CA7"
+
 $base_path = Pathname.new(File.dirname(File.absolute_path(__FILE__)))
+$pkg_dir = $base_path.join("packages")
 
 # List of file patterns to always exclude from S3 syncs
 EXCLUDE_PATTERNS = [
@@ -145,12 +148,17 @@ def get_bucket_from_stack(stack, logical_name)
   cf.stacks[stack].resources[logical_name].physical_resource_id
 end
 
-def aptly(cmd)
-  pkg_dir = File.join($base_path, "packages")
-  FileUtils.mkdir_p File.join(pkg_dir, "cache")
-  FileUtils.mkdir_p File.join(pkg_dir, "repo")
+def bootstrap
+  cache_dir = $pkg_dir.join('cache')
+  repo_dir = $pkg_dir.join('repo')
 
-  command = "aptly --config=#{pkg_dir}/aptly.conf #{cmd}"
+  FileUtils.mkdir_p cache_dir
+  FileUtils.mkdir_p repo_dir
+end
+
+def aptly(cmd)
+  bootstrap
+  command = "aptly --config=#{$pkg_dir}/aptly.conf #{cmd}"
   Nemesis::Log.info(command)
   puts `#{command}`
 end
@@ -176,30 +184,35 @@ def get_repo(stack)
 end
 
 def build_repo(stack)
+  bootstrap
   result = `which aptly`
   if result.empty?
     puts "You need to install aptly"
     exit 1
   end
 
-  cache = $base_path + 'packages/cache'
-  repo = $base_path + 'packages/repo'
+  cache_dir = $pkg_dir.join('cache')
+  repo_dir = $pkg_dir.join('repo')
 
   # Get the contents of the existing repo
   get_repo(stack)
 
   # Build the repo w/ Aptly
-  Dir.chdir(repo) do |d|
+  Dir.chdir(repo_dir) do |d|
     unless File.directory?('db') && File.directory?('pool')
       aptly 'repo create --distribution=trusty --architectures=amd64 nemesis-testing'
     end
-    aptly "repo add nemesis-testing #{cache}"
+    aptly "repo add nemesis-testing #{cache_dir}"
     unless File.directory?('public')
-      aptly 'publish repo --gpg-key=23406CA7 nemesis-testing'
+      aptly 'publish repo --gpg-key=#{$gpg_key} nemesis-testing'
     else
-      aptly 'publish update --gpg-key=23406CA7 trusty'
+      aptly 'publish update --gpg-key=#{$gpg_key} trusty'
     end
   end
+
+  # Add the GPG key to the repo
+  key_file = repo.join("public", "pubkey.gpg")
+  `gpg --armor --output #{key_file} --export #{$gpg_key} `
 end
 
 
