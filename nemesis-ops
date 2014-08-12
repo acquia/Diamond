@@ -11,6 +11,7 @@ require 'zlib'
 require 'nemesis'
 
 $gpg_key = "23406CA7"
+$default_os = "trusty"
 
 $base_path = Pathname.new(File.dirname(File.absolute_path(__FILE__)))
 $pkg_dir = $base_path.join("packages")
@@ -45,7 +46,7 @@ class Package < Nemesis::Cli::Base
 
   desc "upload-repo STACK", "Upload the Apt repo for the given stack"
   def upload_repo(stack)
-    package_repo = get_bucket_from_stack(stack)
+    package_repo = get_bucket_from_stack(stack, 'repo')
     s3_upload(package_repo, $base_path + 'packages/repo/public', :public_read)
   end
 end
@@ -200,19 +201,19 @@ def build_repo(stack)
   # Build the repo w/ Aptly
   Dir.chdir(repo_dir) do |d|
     unless File.directory?('db') && File.directory?('pool')
-      aptly 'repo create --distribution=trusty --architectures=amd64 nemesis-testing'
+      aptly "repo create --distribution=#{$default_os} --architectures=amd64 nemesis-testing"
     end
     aptly "repo add nemesis-testing #{cache_dir}"
     unless File.directory?('public')
-      aptly 'publish repo --gpg-key=#{$gpg_key} nemesis-testing'
+      aptly "publish repo --gpg-key=#{$gpg_key} nemesis-testing"
     else
-      aptly 'publish update --gpg-key=#{$gpg_key} trusty'
+      aptly "publish update --gpg-key=#{$gpg_key} #{$default_os}"
     end
   end
 
   # Add the GPG key to the repo
-  key_file = repo.join("public", "pubkey.gpg")
-  `gpg --armor --output #{key_file} --export #{$gpg_key} `
+  key_file = repo_dir.join("public", "pubkey.gpg")
+  `gpg --armor --yes --output #{key_file} --export #{$gpg_key} `
 end
 
 
