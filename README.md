@@ -34,6 +34,7 @@ Dependencies needed to be available before working with the Nemesis Package Mana
 ## Building the packages
 
     vagrant up
+    sudo -E su
     cd /vagrant/packages/build_scripts
     for $x in *.sh; do bash ${x} ; done
 
