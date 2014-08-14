@@ -1,4 +1,4 @@
-#!/bin/bash bash
+#!/bin/bash
 #
 # Packages Graphite for distribution
 #
@@ -45,7 +45,7 @@ function gh-pip() {
 }
 
 # Install the build deps needed to create the packages
-apt-get install -y git-core python-virtualenv python-pip python-cairo python-dev libffi-dev ruby ruby-dev
+apt-get install -y git python-virtualenv python-pip python-cairo python-dev libffi-dev
 
 # Setup the virtual env
 mkdir -p $BASEDIR
@@ -145,8 +145,6 @@ EOF
 # Disable the virtual env
 deactivate
 
-gem install --no-ri --no-rdoc fpm
-
 # Create the deb
 fpm -t deb -s dir \
   --deb-user www-data --deb-group www-data \
@@ -167,5 +165,6 @@ fpm -t deb -s dir \
 
 # If we're in a VM, let's copy the deb file over
 if [ -d "/vagrant/" ]; then
-  mv -f *.deb /vagrant/
+  mkdir -p /vagrant/dist
+  mv -f *.deb /vagrant/dist/
 fi

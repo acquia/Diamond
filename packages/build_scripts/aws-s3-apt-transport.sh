@@ -14,9 +14,10 @@ if [ "$ARCH" = "i686" ]; then
 fi
 
 BASEDIR=/tmp/apt-s3
+mkdir -p ${BASEDIR}
 
-sudo apt-get install build-essential g++ libapt-pkg-dev libcurl4-openssl-dev
-sudo apt-get install dh-make debhelper cdbs
+apt-get install -y build-essential g++ libapt-pkg-dev libcurl4-openssl-dev
+apt-get install -y dh-make debhelper cdbs
 
 git clone https://github.com/jfarrell/apt-s3.git ${BASEDIR}
 
@@ -29,3 +30,6 @@ if [ -d "/vagrant/" ]; then
   mkdir -p /vagrant/dist
   mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
 fi
+
+# Cleanup
+rm -rf ${BASEDIR}
