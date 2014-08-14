@@ -79,7 +79,7 @@ class cassandra {
     enable  => "true",
     hasstatus => "true",
     hasrestart => true,
-    require => [Package["tablesnap"], File['tablesnap_conf']],
+    require => [Package["tablesnap"], File['tablesnap_conf'], ],
   }
 
 }
