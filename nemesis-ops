@@ -53,9 +53,9 @@ end
 
 class Puppet < Nemesis::Cli::Base
   desc "build", "Build the Nemesis Puppet deb"
-  method_option :upload, :aliases => '-u', :default => true
+  method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
   def build(stack_name)
-    version = '0.1'
+    version = '0.2'
     cache_dir = $pkg_dir.join('cache')
 
     Nemesis::Log.info('Syncing package mirror')
@@ -71,25 +71,27 @@ class Puppet < Nemesis::Cli::Base
     else
       revision = 1
     end
-    cli = 'fpm'\
-      " -C #{$base_path + 'puppet'}"\
-      ' -s dir'\
-      ' -t deb'\
-      ' -n nemesis-puppet'\
-      " -v #{version}-#{revision}"\
-      ' --vendor "Acquia, Inc."'\
-      ' --depends puppet'\
-      ' -m "hosting-eng@acquia.com"'\
-      " --description \"Acquia #{version}-#{revision} built on #{DateTime.now.to_s}\""\
-      " --prefix /etc/puppet/"\
-      " ."
+
+    cli = "fpm" \
+          " -C #{$base_path + 'puppet'}" \
+          " -s dir" \
+          " -t deb" \
+          " -n nemesis-puppet"\
+          " -v #{version}-#{revision}" \
+          " --vendor 'Acquia, Inc.'" \
+          " --depends puppet" \
+          " -m 'hosting-eng@acquia.com'" \
+          " --description \"Acquia #{version}-#{revision} built on #{DateTime.now.to_s}\" " \
+          " --prefix /etc/puppet/" \
+          " ."
+
     Nemesis::Log.info(cli)
     result = `#{cli}`
     Nemesis::Log.info(result)
     # Really unsafe
     result = eval(result)
     FileUtils.mv(result[:path], cache_dir)
-    if options[:upload]
+    if options[:build_repo]
       build_repo(stack_name)
     end
   end
