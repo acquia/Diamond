@@ -9,7 +9,6 @@ set -x
 
 NAME="graphite"
 VERSION="0.1.0"
-DEB_VERSION="acquia~"
 DEB_BUILD_VERSION="1"
 
 OS=$(lsb_release -cs)
@@ -161,7 +160,7 @@ fpm -t deb -s dir \
   --depends "python-virtualenv" \
   --depends "libffi-dev" \
   -n ${NAME} \
-  -v ${VERSION}-${DEB_VERSION}${OS}${DEB_BUILD_VERSION} \
+  -v ${VERSION}-${DEB_BUILD_VERSION}~${OS} \
   -m "hosting-eng@acquia.com" \
   --description "Acquia ${NAME} ${VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   ${BASEDIR}
