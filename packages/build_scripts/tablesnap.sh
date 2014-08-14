@@ -7,8 +7,8 @@ NAME="tablesnap"
 VERSION="0.6.2"
 DEB_BUILD_VERSION="1"
 
-ARCH=$(uname -m)
 OS=$(lsb_release -cs)
+ARCH=$(uname -m)
 
 if [ "$ARCH" = "i686" ]; then
   ARCH="i386"
@@ -31,7 +31,7 @@ function gh-pip() {
 }
 
 # Install the build deps needed to create the packages
-apt-get install -y git-core python-virtualenv python-pip python-dev
+apt-get install -y git python-virtualenv python-pip python-dev
 
 # Setup the virtual env
 mkdir -p $BASEDIR

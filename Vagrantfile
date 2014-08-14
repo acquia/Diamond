@@ -4,8 +4,12 @@
 $bootstrap_script = <<__BOOTSTRAP__
 echo "Provisioning defaults"
 
-sudo apt-get install build-essential git ruby-dev ruby
+sudo apt-get install -y build-essential git ruby ruby-dev
+
+echo "gem: --no-ri --no-rdoc" > /etc/gemrc
+
 sudo gem install aws-sdk --no-ri --no-rdoc
+sudo gem install fpm
 
 echo "Finished provisioning defaults"
 __BOOTSTRAP__
