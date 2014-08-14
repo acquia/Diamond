@@ -3,6 +3,7 @@ class diamond::packages {
     version    => 'system',
     dev        => true,
     virtualenv => true,
+    pip        => true,
   }
 
   python::pip { 'boto':

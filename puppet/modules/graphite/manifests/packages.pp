@@ -1,5 +1,5 @@
 class graphite::packages {
-  $version = '0.1.0-acquia~trusty1'
+  $version = '0.1.0-1~trusty'
 
   package { 'graphite':
     ensure  => $version,
