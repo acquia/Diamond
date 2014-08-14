@@ -4,7 +4,7 @@ require "yaml"
 
 Facter.add(:cassandra_config) do
   setcode do
-    defualt_config_file = "/etc/cassandra/cassandra.yaml"
+    default_config_file = "/etc/cassandra/cassandra.yaml"
     overriders_file = "/etc/cassandra_overrides.json"
 
     defaults = {
@@ -25,32 +25,34 @@ Facter.add(:cassandra_config) do
       "endpoint_snitch" => "Ec2Snitch",
     }
 
-    # Load the Cassandra defualt config
-    config = YAML.load(File.read(defualt_config_file))
-    config.merge!(defaults)
+    # Load the Cassandra default config
+    if File.exists?(default_config_file)
+      config = YAML.load(File.read(default_config_file))
+      config.merge!(defaults)
 
-    if File.exists?(overriders_file)
-      # Load the json overrides
-      overrides_config = JSON.parse(File.read(overriders_file))
+      if File.exists?(overriders_file)
+        # Load the json overrides
+        overrides_config = JSON.parse(File.read(overriders_file))
 
-       overrides = {
-         "cluster_name" => overrides_config["cluster_name"],
-         "seed_provider" => [
-          {
-            "parameters" => [
-              { "seeds" => overrides_config["seeds"] },
-            ],
-            "class_name" => "org.apache.cassandra.locator.SimpleSeedProvider",
-          },
-        ],
-      }
+         overrides = {
+           "cluster_name" => overrides_config["cluster_name"],
+           "seed_provider" => [
+            {
+              "parameters" => [
+                { "seeds" => overrides_config["seeds"] },
+              ],
+              "class_name" => "org.apache.cassandra.locator.SimpleSeedProvider",
+            },
+          ],
+        }
 
-      # Merge the overrides with the current defualt config
-      config.merge!(overrides)
+        # Merge the overrides with the current default config
+        config.merge!(overrides)
+      end
+
+      # return the updated config
+      config.to_yaml
     end
-
-    # return the updated config
-    config.to_yaml
   end
 end
 

@@ -14,6 +14,6 @@ module Puppet::Parser::Functions
     stack = cf.stacks[tempalate_name]
 
     output = stack.outputs.detect { |x| x.key == output_name }
-    output
+    output ? output.value : nil
   end
 end
