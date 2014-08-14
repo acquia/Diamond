@@ -1,10 +1,10 @@
-<% Puppet::Parser::Functions.autoloader.loadall %>
 <%-
-$stack_name = scope.function_cloudformation_stackname([@ec2_instance_id])
+Puppet::Parser::Functions.autoloader.loadall
+stack_name = scope.function_cloudformation_stackname([@ec2_instance_id])
 -%>
 # Defualt config file used by tablesnap init script, copy to /etc/default/tablesnap
 RUN=yes
-DAEMON_OPTS="<%= scope.function_cloudformation_output([$stack_name.to_s, 'NemesisS3Backups']) %> /var/lib/cassandra/data"
+DAEMON_OPTS="<%=scope.function_cloudformation_output([stack_name, 'NemesisS3BackupsBucketName']).value %> /var/lib/cassandra/data"
 
 # Log to syslog
 export TABLESNAP_SYSLOG=True

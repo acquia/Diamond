@@ -5,11 +5,10 @@
 
 NAME="tablesnap"
 VERSION="0.6.2"
-DEB_VERSION="acquia"
 DEB_BUILD_VERSION="1"
 
-OS=$(lsb_release -cs)
 ARCH=$(uname -m)
+OS=$(lsb_release -cs)
 
 if [ "$ARCH" = "i686" ]; then
   ARCH="i386"
@@ -22,8 +21,13 @@ BASEDIR=/opt/tablesnap
 # @param $1 owner
 # @param $2 repo name
 # @param $3 tag/branch name [default: 'master']
+# @param $4 private or public repo [default: 'public']
 function gh-pip() {
-  pip install git+ssh://git@github.com/${1}/${2}.git@${3:-"master"}
+  if [ "${4:-public}" == "private" ]; then
+    pip install git+ssh://git@github.com/${1}/${2}.git@${3:-"master"}
+  else
+    pip install git+https://github.com/${1}/${2}.git@${3:-"master"}
+  fi
 }
 
 # Install the build deps needed to create the packages
@@ -50,8 +54,8 @@ mkdir -p ${BASEDIR}/etc/tablesnap
 #
 ### BEGIN INIT INFO
 # Provides:          tablesnap
-# Required-Start:    $syslog
-# Required-Stop:     $syslog
+# Required-Start:    \$syslog
+# Required-Stop:     \$syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: tablesnap
@@ -59,14 +63,14 @@ mkdir -p ${BASEDIR}/etc/tablesnap
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/tablesnap/bin
-DAEMON=tablesnap
+DAEMON=/opt/tablesnap/bin/tablesnap
 NAME=tablesnap
 DESC=tablesnap
 
-test -x $DAEMON || exit 0
+test -x \$DAEMON || exit 0
 
 LOGDIR=/var/log/tablesnap
-PIDFILE=/var/run/$NAME.pid
+PIDFILE=/var/run/\$NAME.pid
 
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
@@ -80,7 +84,7 @@ fi
 # Enable the python venv
 . /opt/tablesnap/bin/activate
 
-if [ "$RUN" != "yes" ]; then
+if [ "\$RUN" != "yes" ]; then
     echo "Set RUN=yes in /etc/default/tablesnap to start"
     exit 0
 fi
@@ -88,22 +92,22 @@ fi
 set -e
 
 daemon_start() {
-    log_daemon_msg "Starting $DESC daemon" "$NAME"
-    start-stop-daemon --start --quiet --oknodo --make-pidfile --background \
-        --name "$NAME" --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_OPTS
-    status=$?
-    log_end_msg $status
+    log_daemon_msg "Starting \$DESC daemon" "\$NAME"
+    start-stop-daemon --start --quiet --oknodo --make-pidfile --background \\
+        --name "\$NAME" --pidfile \$PIDFILE --exec \$DAEMON -- \$DAEMON_OPTS
+    status=\$?
+    log_end_msg \$status
 }
 
 daemon_stop() {
-    log_daemon_msg "Stopping $DESC daemon" "$NAME"
-    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE \
-        --name "$NAME"
-    log_end_msg $?
-    rm -f $PIDFILE
+    log_daemon_msg "Stopping \$DESC daemon" "\$NAME"
+    start-stop-daemon --stop --quiet --oknodo --pidfile \$PIDFILE \\
+        --name "\$NAME"
+    log_end_msg \$?
+    rm -f \$PIDFILE
 }
 
-case "$1" in
+case "\$1" in
   start)
     daemon_start || exit 1
     ;;
@@ -115,11 +119,11 @@ case "$1" in
     daemon_start || exit 1
     ;;
   status)
-    status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+    status_of_proc "\$DAEMON" "\$NAME" && exit 0 || exit \$?
     ;;
   *)
-    N=/etc/init.d/$NAME
-    echo "Usage: $N {start|stop|restart|status}" >&2
+    N=/etc/init.d/\$NAME
+    echo "Usage: \$N {start|stop|restart|status}" >&2
     exit 1
     ;;
 esac
@@ -154,7 +158,7 @@ fpm -t deb -s dir \
   --depends "libffi-dev" \
   --deb-init "${BASEDIR}/etc/tablesnap/tablesnap.init" \
   -n ${NAME} \
-  -v ${VERSION}-${DEB_VERSION}${DEB_BUILD_VERSION}~${OS} \
+  -v ${VERSION}-${DEB_BUILD_VERSION}~${OS} \
   -m "hosting-eng@acquia.com" \
   --description "Acquia ${NAME} ${VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   ${BASEDIR}
