@@ -14,14 +14,11 @@ class diamond {
     comment => 'Diamond user',
   }
 
-  python::pip { 'diamond':
-    ensure  => present,
-    pkgname => 'diamond',
+  package { 'diamond':
+    ensure  => latest,
   }
 
-  # TODO Make this work
-  #service { 'diamond':
-  #  ensure   => running,
-  #  provider => 'upstart',
-  #}
+  service { 'diamond':
+    ensure   => running,
+  }
 }
