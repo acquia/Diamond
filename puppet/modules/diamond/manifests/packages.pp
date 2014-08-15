@@ -9,5 +9,6 @@ class diamond::packages {
   python::pip { 'boto':
     ensure  => present,
     pkgname => 'boto',
+    require => Class['python'],
   }
 }
