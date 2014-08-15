@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 #
-# Packages tablesnap for s3 backup of Cassandra sstables
+# Packages Diamond for system metric collection
 #
 
-NAME="apt-transport-s3"
-VERSION="1.1.1"
+NAME="diamond"
 
-BASEDIR=/tmp/apt-s3
+BASEDIR=/tmp/${NAME}
 mkdir -p ${BASEDIR}
 
-apt-get install -y build-essential g++ libapt-pkg-dev libcurl4-openssl-dev
-apt-get install -y dh-make debhelper cdbs
+apt-get install -y build-essential
+apt-get install -y dh-make debhelper cdbs python-support
 
-git clone https://github.com/jfarrell/apt-s3.git ${BASEDIR}
+git clone git@github.com:acquia/Diamond.git ${BASEDIR}
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}
@@ -24,5 +23,4 @@ if [ -d "/vagrant/" ]; then
   mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
 fi
 
-# Cleanup
 rm -rf ${BASEDIR}
