@@ -6,5 +6,4 @@ class base {
   require base::utils
   require diamond
   require puppet
-  require ruby
 }
