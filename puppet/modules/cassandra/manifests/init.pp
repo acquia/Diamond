@@ -2,8 +2,7 @@ class cassandra {
   require base
   require java
 
-  $cassandra_version = '2.0.8'
-  $tablesnap_version = '0.6.2-1'
+  $cassandra_version = '2.0.9'
 
   group {'cassandra':
     gid => 535,
@@ -44,7 +43,7 @@ class cassandra {
     owner   => 'cassandra',
     group   => 'cassandra',
     mode    => '0644',
-    content => "$cassandra_config",
+    content => template('cassandra/cassandra.yaml.erb'),
     require => Package['cassandra'],
     notify => [ Service["cassandra"], ],
   }
@@ -59,7 +58,7 @@ class cassandra {
   }
 
   package {'tablesnap':
-    ensure  => $tablesnap_version,
+    ensure  => 'latest',
     name    => 'tablesnap',
     require => Service['cassandra'],
   }

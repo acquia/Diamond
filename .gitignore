@@ -20,6 +20,7 @@ tmp
 .vagrant
 
 # Project-specific
+dist
 packages/cache/*.deb
 packages/repo/*
 packages/db/*
