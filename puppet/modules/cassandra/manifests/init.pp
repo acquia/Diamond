@@ -18,10 +18,30 @@ class cassandra {
     comment => 'Cassandra user',
   }
 
+  file { "/var/lib/cassandra":
+    ensure => "directory",
+    owner  => "cassandra",
+    group  => "cassandra",
+    mode   => 755,
+    require => [ User['cassandra'], ],
+  }
+
+  file { "/var/log/cassandra":
+    ensure => "directory",
+    owner  => "cassandra",
+    group  => "cassandra",
+    mode   => 755,
+    require => [ User['cassandra'], ],
+  }
+
   package {'cassandra':
     ensure  => $cassandra_version,
     name    => 'cassandra',
-    require => User['cassandra'],
+    require => [
+      User['cassandra'],
+      File["/var/lib/cassandra"],
+      File["/var/log/cassandra"],
+    ],
   }
 
   service {'cassandra':
@@ -63,8 +83,7 @@ class cassandra {
     require => Service['cassandra'],
   }
 
-  file {'tablesnap_conf':
-    path    => "/etc/default/tablesnap",
+  file {'/etc/default/tablesnap':
     owner   => 'cassandra',
     group   => 'cassandra',
     mode    => '0644',
@@ -78,7 +97,7 @@ class cassandra {
     enable  => "true",
     hasstatus => "true",
     hasrestart => true,
-    require => [Package["tablesnap"], File['tablesnap_conf'], ],
+    require => [ Package["tablesnap"], File['/etc/default/tablesnap'], ],
   }
 
 }
