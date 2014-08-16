@@ -3,7 +3,7 @@ require "facter"
 require "json"
 require "yaml"
 
-default_config_file = "/etc/cassandra/cassandra.yaml"
+default_config_file = File.join(File.dirname(__FILE__), "..", "files", "cassandra.yaml")
 overriders_file = "/etc/cassandra_overrides.json"
 
 defaults = {
@@ -26,7 +26,7 @@ defaults = {
 
 config = {}
 # Load the Cassandra default config
-config = YAML.load(File.read(default_config_file)) if File.exists?(default_config_file)
+config = YAML.load(File.read(default_config_file))
 config.merge!(defaults)
 
 if File.exists?(overriders_file)
@@ -44,6 +44,11 @@ if File.exists?(overriders_file)
       },
     ],
   }
+
+  # if this is a seed node then set the broadcast_address to the public_ipv4 for the Ec2Snitch to pick it up
+  if overrides_config["seeds"].include?(Facter.value("ec2_public_ipv4"))
+    overrides["broadcast_address"] = Facter.value("ec2_public_ipv4")
+  end
 
   # Merge the overrides with the current default config
   config.merge!(overrides)
