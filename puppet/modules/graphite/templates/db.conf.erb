@@ -73,3 +73,13 @@ DEFAULT_SLICE_CACHING_BEHAVIOR = latest
 # get filled in, which means instead of a simple 8-byte write to a new file we
 # could end up doing an (8 * MAX_SLICE_GAP)-byte write to the latest slice.
 MAX_SLICE_GAP = 80
+
+DATABASE_PLUGIN = carbon_cassandra_plugin.CarbonCassandraDatabase
+[cassandra]
+<%- region = @ec2_placement_availability_zone[0..-2] -%>
+KEYSPACE = graphite
+SERVERS = <%= @cassandra_nodes.gsub("'", '') %>
+REPLICATION_STRATEGY = NetworkTopologyStrategy
+STRATEGY_OPTIONS = {"<%= region %>" : "2"}
+LOCAL_DC_NAME = <%= region %>
+
