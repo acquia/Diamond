@@ -16,9 +16,11 @@ class diamond {
 
   package { 'diamond':
     ensure  => latest,
+    require => User['diamond'],
   }
 
   service { 'diamond':
-    ensure   => running,
+    ensure  => running,
+    require => Package['diamond'],
   }
 }
