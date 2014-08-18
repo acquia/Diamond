@@ -22,10 +22,15 @@ class graphite::config {
   }
 
   exec { 'syncdb':
-    command => 'bash -c "source /opt/graphite/bin/activate && /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
+    command => 'bash -c "/opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
     onlyif  => 'bash -c "test ! -f /opt/graphite/storage/graphite.db"',
     require => Package['graphite'],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
+  }
+
+   exec { 'setup_db_permissions':
+    command => "/bin/chown -R www-data:www-data /opt/graphite/storage",
+    require => [ Exec['syncdb'], ],
   }
 
   file { 'writer':
@@ -74,15 +79,6 @@ class graphite::config {
     require => Package['graphite'],
     path    => '/etc/init/carbon-writer.conf',
     source  => 'puppet:///modules/graphite/carbon-writer.conf',
-  }
-
-  exec { 'setup_db':
-    command => "/opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb",
-    creates => "/opt/graphite/storage/graphite.db",
-  }
-
-  exec { 'setup_db_permissions':
-    command => "chown -R www-data:www-data /opt/graphite/storage"
   }
 
   service { 'carbon-writer':
