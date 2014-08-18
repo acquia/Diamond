@@ -1,17 +1,39 @@
+# TODO This class (and whole module really) needs to be refactored
 class graphite::config {
-  file { 'writer':
-    ensure => directory,
-    path   => '/opt/graphite/conf/carbon-daemons/writer',
-    group  => 'www-data',
-    owner  => 'www-data',
-  }
+  $version = '0.1.0-1~trusty'
 
   define graphite_config($file = $title) {
     file { "/opt/graphite/conf/carbon-daemons/writer/${file}":
       ensure  => present,
       source  => "puppet:///modules/graphite/carbon-daemons/writer/${file}",
       require => File['writer'],
+      notify  => Service['carbon-writer'],
     }
+  }
+
+  package { 'graphite':
+    ensure  => $version,
+    notify  => Exec['own-graphite'],
+  }
+
+  exec {'own-graphite':
+    command     => '/bin/chown www-data:www-data /opt/graphite',
+    refreshonly => true,
+  }
+
+  exec { 'syncdb':
+    command => 'bash -c "source /opt/graphite/bin/activate && /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
+    onlyif  => 'bash -c "test ! -f /opt/graphite/storage/graphite.db"',
+    require => Package['graphite'],
+    path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
+  }
+
+  file { 'writer':
+    ensure  => directory,
+    path    => '/opt/graphite/conf/carbon-daemons/writer',
+    group   => 'www-data',
+    owner   => 'www-data',
+    require => Package['graphite'],
   }
 
   graphite_config { 'aggregation-filters.conf': }
@@ -44,5 +66,17 @@ class graphite::config {
     ensure  => present,
     content => template('graphite/db.conf.erb'),
     require => File['writer'],
+  }
+
+  file { 'upstart_conf':
+    ensure  => present,
+    require => Package['graphite'],
+    path    => '/etc/init/carbon-writer.conf',
+    source  => 'puppet:///modules/graphite/carbon-writer.conf',
+  }
+
+  service { 'carbon-writer':
+    ensure  => running,
+    require => [ File['upstart_conf'], Package['graphite'], Exec['own-graphite'] ],
   }
 }
