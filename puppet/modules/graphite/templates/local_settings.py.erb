@@ -20,7 +20,7 @@
 # Set your local timezone (Django's default is America/Chicago)
 # If your graphs appear to be offset by a couple hours then this probably
 # needs to be explicitly set to your local timezone.
-#TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = 'America/New_York'
 
 # Override this to provide documentation specific to your Graphite deployment
 #DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
@@ -256,3 +256,9 @@
 # MIDDLEWARE_CLASSES or APPS
 #from graphite.app_settings import *
 
+#####################################
+# Cassandra Plugin Settings         #
+#####################################
+GRAPHITE_DATABASE_PLUGIN='graphite_cassandra_plugin.GraphiteCassandraPlugin'
+CASSANDRA_KEYSPACE = 'graphite'
+CASSANDRA_SERVERS = [<%= @cassandra_nodes %>]
