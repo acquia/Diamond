@@ -52,6 +52,7 @@ class graphite::config {
 
   file { '/opt/graphite/conf/graphite.wsgi':
     ensure => present,
+    mode => 'a+x',
     source => 'puppet:///modules/graphite/graphite.wsgi',
   }
 
@@ -73,6 +74,15 @@ class graphite::config {
     require => Package['graphite'],
     path    => '/etc/init/carbon-writer.conf',
     source  => 'puppet:///modules/graphite/carbon-writer.conf',
+  }
+
+  exec { 'setup_db':
+    command => "/opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb",
+    creates => "/opt/graphite/storage/graphite.db",
+  }
+
+  exec { 'setup_db_permissions':
+    command => "chown -R www-data:www-data /opt/graphite/storage"
   }
 
   service { 'carbon-writer':
