@@ -7,8 +7,8 @@ class graphite::apache {
     notify => Exec['enable-graphite'],
   }
 
-  ecec { 'disable-default-site':
-    command => '/usr/sbin/a2dissite 000-default && service apache2 reload'
+  exec { 'disable-default-site':
+    command => '/usr/sbin/a2dissite 000-default && service apache2 reload',
     onlyif => '/usr/sbin/a2query -c 000-default',
   }
 
