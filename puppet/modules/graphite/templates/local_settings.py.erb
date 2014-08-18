@@ -1,3 +1,8 @@
+<%-
+require 'securerandom'
+
+secret_key = SecureRandom.uuid
+-%>
 ## Graphite local_settings.py
 # Edit this file to customize the default Graphite webapp settings
 #
@@ -10,7 +15,7 @@
 # install. This key is used for salting of hashes used in auth tokens,
 # CRSF middleware, cookie storage, etc. This should be set identically among
 # instances if used behind a load balancer.
-#SECRET_KEY = 'UNSAFE_DEFAULT'
+SECRET_KEY = <%= secret_key %>
 
 # In Django 1.5+ set this to the list of hosts your graphite instances is
 # accessible as. See:
@@ -148,7 +153,7 @@ TIME_ZONE = 'America/New_York'
 # NOTE: Ignored if DASHBOARD_REQUIRE_AUTHENTICATION is not set
 #DASHBOARD_REQUIRE_EDIT_GROUP = 'dashboard-editors-group'
 
-# If set to True, dashboards can be saved or deleted by any user having the appropriate 
+# If set to True, dashboards can be saved or deleted by any user having the appropriate
 # (change or delete) permission (as set in the Django Admin app).  Defaults to False
 # NOTE: Ignored if DASHBOARD_REQUIRE_AUTHENTICATION is not set
 #DASHBOARD_REQUIRE_PERMISSIONS = True
@@ -178,16 +183,16 @@ TIME_ZONE = 'America/New_York'
 #
 # Users with Django 1.2 or greater should use the new dictionary
 # specification as the old database specification style is removed in 1.4
-#DATABASES = {
-#    'default': {
-#        'NAME': '/opt/graphite/storage/graphite.db',
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'USER': '',
-#        'PASSWORD': '',
-#        'HOST': '',
-#        'PORT': ''
-#    }
-#}
+DATABASES = {
+    'default': {
+        'NAME': '/opt/graphite/storage/graphite.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': ''
+    }
+}
 #
 # Users still on Django 1.1 must use the old method instead:
 #DATABASE_ENGINE = 'django.db.backends.mysql'
