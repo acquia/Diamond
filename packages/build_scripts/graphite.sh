@@ -157,6 +157,7 @@ fpm -t deb -s dir \
   --depends "python" \
   --depends "python-virtualenv" \
   --depends "libffi-dev" \
+  --depends "libcairo2" \
   -n ${NAME} \
   -v ${VERSION}-${DEB_BUILD_VERSION}~${OS} \
   -m "hosting-eng@acquia.com" \
