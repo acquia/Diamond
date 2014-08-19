@@ -3,9 +3,18 @@ class graphite {
 
   $version = '0.1.0-1~trusty'
 
+  package { 'apache2':
+    ensure => 'latest',
+  }
+
+  package { 'libcairo2':
+    ensure => 'latest',
+  }
+
   package { 'graphite':
     ensure  => $version,
     notify  => Exec['own-graphite'],
+    require => [ Package['apache2'], Package['libcairo2']],
   }
 
   define graphite_config($file = $title) {
