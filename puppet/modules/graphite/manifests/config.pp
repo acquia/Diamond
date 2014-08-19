@@ -2,23 +2,24 @@
 class graphite::config {
   $version = '0.1.0-1~trusty'
 
-  define graphite_config($file = $title) {
-    file { "/opt/graphite/conf/carbon-daemons/writer/${file}":
-      ensure  => present,
-      source  => "puppet:///modules/graphite/carbon-daemons/writer/${file}",
-      require => File['writer'],
-      notify  => Service['carbon-writer'],
-    }
-  }
-
   package { 'graphite':
     ensure  => $version,
     notify  => Exec['own-graphite'],
   }
 
+  define graphite_config($file = $title) {
+    file { "/opt/graphite/conf/carbon-daemons/writer/${file}":
+      ensure  => present,
+      source  => "puppet:///modules/graphite/carbon-daemons/writer/${file}",
+      require => [ File['writer'], Package['graphite'], ],
+      notify  => Service['carbon-writer'],
+    }
+  }
+
   exec {'own-graphite':
     command     => '/bin/chown www-data:www-data /opt/graphite',
     refreshonly => true,
+    require => Package['graphite'],
   }
 
   exec { 'syncdb':
@@ -30,7 +31,7 @@ class graphite::config {
 
    exec { 'setup_db_permissions':
     command => "/bin/chown -R www-data:www-data /opt/graphite/storage",
-    require => [ Exec['syncdb'], ],
+    require => [ Package["graphite"], Exec['syncdb'], ],
   }
 
   file { 'writer':
@@ -59,6 +60,7 @@ class graphite::config {
     ensure => present,
     mode => 'a+x',
     source => 'puppet:///modules/graphite/graphite.wsgi',
+    require => [ Package["graphite"], ],
   }
 
   file { '/opt/graphite/webapp/graphite/local_settings.py':
@@ -66,12 +68,13 @@ class graphite::config {
     content  => template('graphite/local_settings.py.erb'),
     owner    => 'www-data',
     group    => 'www-data',
+    require => [ Package["graphite"], ],
   }
 
   file { '/opt/graphite/conf/carbon-daemons/writer/db.conf':
     ensure  => present,
     content => template('graphite/db.conf.erb'),
-    require => File['writer'],
+    require => [ Package['graphite'], File['writer'], ],
   }
 
   file { 'upstart_conf':
