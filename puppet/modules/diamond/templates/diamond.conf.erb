@@ -46,13 +46,26 @@ keys = rotated_file
 
 [[cloudwatchHandler]]
 
-region = <%= @ec2_placement_availability_zone[0..-1] %>
+region = <%= @ec2_placement_availability_zone[0..-2] %>
 
 # Generic CloudWatch metrics
 
-<% if @server_type == 'cassandra' %>
+<%- if @server_type == 'cassandra'
   # Cassandra-specific CloudWatch metrics (if any)
-<% end %>
+	  @jmx_objects.each do |object|
+		object_name = object['object_name'];
+		object['attributes'].each do |attribute|  metric_name = object_name + "." + attribute -%>
+	[[[cassandra.metric.<%=metric_name%>]]]
+	collector = CassandraCollector
+	metric = 'metric.<%=metric_name%>'
+	namespace = CassandraMetrics
+	name = '<%=metric_name%>'
+	unit = None
+<%-
+	    do
+	  do
+ end
+ -%>
 
 [[ArchiveHandler]]
 
