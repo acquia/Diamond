@@ -75,10 +75,13 @@ DEFAULT_SLICE_CACHING_BEHAVIOR = latest
 MAX_SLICE_GAP = 80
 
 [cassandra]
-<%- region = @ec2_placement_availability_zone[0..-2] -%>
+<%- 
+  # Strip off the AZ and region # out of a region
+  # ex. us-east-1a => us-east
+  region = @ec2_placement_availability_zone[0..-4]
+-%>
 KEYSPACE = graphite
 SERVERS = <%= @cassandra_nodes.gsub("'", '') %>
 REPLICATION_STRATEGY = NetworkTopologyStrategy
 STRATEGY_OPTIONS = {"<%= region %>" : "2"}
 LOCAL_DC_NAME = <%= region %>
-
