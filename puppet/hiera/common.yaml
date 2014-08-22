@@ -14,3 +14,8 @@
 ---
 classes:
   - base
+
+diamond_metrics:
+  jmx:
+	- object_name: 'test_name'
+	  attributes: ['attr1','attr2']

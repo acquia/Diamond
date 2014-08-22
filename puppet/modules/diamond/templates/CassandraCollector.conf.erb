@@ -1,15 +1,19 @@
-<%- if @server_type == 'cassandra' -%>
+<%- 
+jmx_config = ""
+if @jmx_objects
+	jmx_config = "[jmx objects]\n"
+	@jmx_objects.each_with_index do |object,index|
+		attrs = object['attributes'].map{|o| "'#{o}'"}.join(',')
+		jmx_config += "[[object#{index}]]\n"
+		jmx_config += "object_name = '#{object['object_name']}'\n"
+		jmx_config += "attributes = #{attrs}\n"
+	end
+end
+-%>
 enabled = True
-<%- end -%>
 ttl_multiplier = 2
 path_suffix = ""
 measure_collector_time = False
 byte_unit = byte,
 
-[jmx_objects]
-	<%- @jmx_objects.each_with_index do |object,index| -%>
-	[[object<%=index%>]]
-	object_name = '<%=object['object_name']%>'
-	<%- attrs = object['attributes']map{|o| "'#{o}'"}.join(',') -%>
-	attributes=<%= attrs %>
-	<%-end%>
+<%=jmx_config%>
