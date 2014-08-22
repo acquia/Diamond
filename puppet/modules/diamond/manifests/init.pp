@@ -1,7 +1,8 @@
 class diamond {
   include apt
-  require diamond::metrics_list
   require diamond::packages
+
+  $metrics = hiera('diamond_metrics')
 
   group { 'diamond':
     ensure => present,
@@ -34,12 +35,16 @@ class diamond {
     notify => Service['diamond'],
   }
 
-  file { '/etc/diamond/collectors/CassandraCollector.conf':
-    owner => 'diamond',
-    group => 'diamond',
-    ensure => file,
-    mode => '0644',
-    content => template('diamond/CassandraCollector.conf.erb'),
-    require => Package['diamond'],
+  if $server_type == 'cassandra'{
+    $jmx_objects = $metrics['jmx']
+
+    file { '/etc/diamond/collectors/CassandraCollector.conf':
+      owner => 'diamond',
+      group => 'diamond',
+      ensure => file,
+      mode => '0644',
+      content => template('diamond/CassandraCollector.conf.erb'),
+      require => Package['diamond'],
+    }
   }
 }
