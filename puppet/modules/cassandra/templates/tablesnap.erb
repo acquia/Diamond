@@ -1,10 +1,21 @@
 <%-
-Puppet::Parser::Functions.autoloader.loadall
-stack_name = scope.function_cloudformation_stackname([@ec2_instance_id])
+require 'json'
+
+overriders_file = "/etc/cassandra_overrides.json"
+s3_backup_bucket_name = ""
+
+if File.exists?(overriders_file)
+  # Load the json overrides
+  overrides_config = JSON.parse(File.read(overriders_file))
+  s3_backup_bucket_name = overrides_config["s3_backups"] if overrides_config["s3_backups"]
+end
+
 -%>
 # Defualt config file used by tablesnap init script, copy to /etc/default/tablesnap
-RUN=yes
-DAEMON_OPTS="<%=scope.function_cloudformation_output([stack_name, 'NemesisS3BackupsBucketName']) %> /var/lib/cassandra/data"
+RUN=<%=(!s3_backup_bucket_name.empty?) ? 'yes' : 'no'%>
+
+DAEMON_OPTS="<%=s3_backup_bucket_name%> /var/lib/cassandra/data"
 
 # Log to syslog
 export TABLESNAP_SYSLOG=True
+
