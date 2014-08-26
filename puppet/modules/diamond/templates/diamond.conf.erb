@@ -1,34 +1,118 @@
 <%-
-def cloudwatch_handler_options(section_name,collector, metric, name, unit="None", namespace="NemesisMetrics")
-	cw_metrics = "\n"
-	cw_metrics += "[[[#{section_name}]]]\n"
-	cw_metrics += "collector = #{collector}\n"
-	cw_metrics += "metric = '#{metric}'\n"
-	cw_metrics += "namespace = #{namespace}\n"
-	cw_metrics += "name = '#{name}'\n"
-	cw_metrics += "unit = #{unit}\n"
-	cw_metrics
+
+metrics = [
+  {
+    :collector => 'CassandraCollector',
+      :objects => 
+      [
+        {
+        :object_name => 'org.apache.cassandra.db:type=CompactionManager',
+        :attributes => ['TotalBytesCompacted','TotalCompactionsCompleted','CompletedTasks','PendingTasks']
+        },
+        {
+          :object_name => 'org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=peers',
+          :attributes => ['TotalDiskSpaceUsed',]
+        },
+        {
+          :object_name => 'org.apache.cassandra.db:type=Caches',
+          :attributes => ['KeyCacheHits','RowCacheHits','KeyCacheRequests','RowCacheRequests','KeyCacheEntries','KeyCacheSize'],
+        },
+        {
+          :object_name => 'org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=IndexInfo',
+          :attributes => ['LiveSSTableCount','TotalDiskSpaceUsed','TotalReadLatencyMicros','TotalWriteLatencyMicros'],
+        },
+        {
+          :object_name => 'org.apache.cassandra.db:type=StorageProxy',
+          :attributes => ['WriteOperations','ReadOperations']
+        },
+      ]
+  },
+  {
+    :collector => 'MemoryCollector',
+    :metric_names => ["Memtotal","MemFree"],
+    :path => 'memory'
+  },
+  {
+    :collector => 'CPUCollector',
+    :metric_names => ["total.iowait", "total.steal", "total.guest", "total.system", "total.user", "total.nice", "total.idle", "total.softirq", "total.irq"],
+    :normalize => 'False',
+    :percore => 'False',
+    :path => 'cpu'
+  },
+  {
+    :collector => 'DiskSpaceCollector',
+    :metric_names => ["_mnt.byte_percentfree", "_mnt.inodes_percentfree","root.byte_percentfree", "root.inodes_percentfree"],
+    :byte_unit => 'megabyte',
+    :path => 'diskspace'
+  }
+]
+
+def cloudwatch_handler_options(section_name,collector_path, metric, name, unit="None", namespace="NemesisMetrics")
+  cw_metrics = "\n"
+  cw_metrics += "[[[#{section_name}]]]\n"
+  cw_metrics += "collector = #{collector_path}\n"
+  cw_metrics += "metric = '#{metric}'\n"
+  cw_metrics += "namespace = #{namespace}\n"
+  cw_metrics += "name = '#{name}'\n"
+  cw_metrics += "unit = #{unit}\n"
+  cw_metrics
 end
 
+collectors_config = ""
 cw_handler_config = ""
-if @server_type == 'cassandra' and @metrics
-	@metrics.each do |type, objects|
-		if type == 'jmx'
-			objects.each_with_index do |object, oindex|
-				object_name = object['object_name']
-				object['attributes'].each_with_index do |attribute, aindex|
-					metric_name = object_name + "." + attribute
-					cw_handler_config += cloudwatch_handler_options("metric_#{type}#{oindex}#{aindex}", "CassandraCollector", "metric.#{metric_name}", metric_name)
-				end
-			end
-		else
-			objects.each_with_index do |object, oindex|
-				object_name = object['object_name']
-				cw_handler_config += "[[[metric_#{type}#{oindex}]]]\n"
-				cw_handler_config += "metric = 'metric.#{object_name}'\n"
-			end
-		end
-	end
+
+metrics.each_with_index do |source, sindex|
+  case source[:collector]
+  when 'CassandraCollector'
+    collectors_config += "\n[[#{source[:collector]}]]\n"
+    collectors_config += "enabled = True\n"
+    collectors_config += "[[[jmx_objects]]]\n"
+    source[:objects].each_with_index do |object, oindex|
+      object_name = object[:object_name]
+      attrs = object[:attributes].map{|o| "'#{o}'"}.join(',')
+
+      collectors_config += "[[[[#{object_name}]]]]\n"
+      collectors_config += "object_name = '#{object_name}'\n"
+      collectors_config += "attributes = #{attrs},\n"
+
+      object[:attributes].each_with_index do |attribute, aindex|
+        metric_name = object_name + "." + attribute
+        cw_handler_config += cloudwatch_handler_options("metric_#{sindex}#{oindex}#{aindex}", "CassandraCollector", "metric.#{metric_name}", metric_name)
+      end
+    end
+  when 'CPUCollector'
+    # collector config
+    collectors_config += "\n[[#{source[:collector]}]]\n"
+    collectors_config += "percore = #{source[:percore]}\n"
+    collectors_config += "normalize = #{source[:normalize]}\n"
+    collectors_config += "path = '#{source[:path]}'\n"
+    # handler config
+    if source[:metric_names]
+      source[:metric_names].each_with_index do |metric_name, oindex|
+        cw_handler_config += cloudwatch_handler_options("metric_#{sindex}#{oindex}", source[:path], metric_name, metric_name)
+      end
+    end
+  when 'DiskSpaceCollector'
+    # collector config
+    collectors_config += "\n[[#{source[:collector]}]]\n"
+    collectors_config += "byte_unit = #{source[:byte_unit]}\n"
+    collectors_config += "path = '#{source[:path]}'\n"
+    # handler config
+    if source[:metric_names]
+      source[:metric_names].each_with_index do |metric_name, oindex|
+        cw_handler_config += cloudwatch_handler_options("metric_#{sindex}#{oindex}", source[:path], metric_name, metric_name)
+      end
+    end
+  else
+    collectors_config += "\n[[#{source[:collector]}]]\n"
+    collectors_config += "enabled = True\n"
+    collectors_config += "path = '#{source[:path]}'\n"
+    if source[:metric_names]
+      source[:metric_names].each_with_index do |metric_name, oindex|
+        cw_handler_config += cloudwatch_handler_options("metric_#{sindex}#{oindex}", source[:path], metric_name, metric_name)
+      end
+    end
+  end
 end
 -%>
 ################################################################################
@@ -40,7 +124,7 @@ end
 [server]
 
 # Handlers for published metrics.
-handlers = diamond.handler.graphite.GraphiteHandler, diamond.handler.archive.ArchiveHandler, diamond.handler.cloudwatch.cloudwatchHandler
+handlers = diamond.handler.archive.ArchiveHandler, diamond.handler.cloudwatch.cloudwatchHandler
 
 # User diamond will run as
 # Leave empty to use the current user
@@ -79,7 +163,7 @@ keys = rotated_file
 
 [[cloudwatchHandler]]
 
-region = <%= @ec2_placement_availability_zone[0..-2] %>
+region = <%=Nemesis::Aws.region_from_az(@ec2_placement_availability_zone)%>
 
 # Generic CloudWatch metrics
 <%=cw_handler_config%>
@@ -91,82 +175,6 @@ log_file = /var/log/diamond/archive.log
 
 # Number of days to keep archive log files
 days = 7
-
-[[GraphiteHandler]]
-### Options for GraphiteHandler
-
-# Graphite server host
-# @todo This should be the Stats cluster endpoint for the region
-host = graphite
-
-# Port to send metrics to
-port = 2003
-
-# Socket timeout (seconds)
-timeout = 15
-
-# Batch size for metrics
-batch = 1
-
-[[GraphitePickleHandler]]
-### Options for GraphitePickleHandler
-
-# Graphite server host
-host = graphite
-
-# Port to send metrics to
-port = 2004
-
-# Socket timeout (seconds)
-timeout = 15
-
-# Batch size for pickled metrics
-batch = 256
-
-[[MySQLHandler]]
-### Options for MySQLHandler
-
-# MySQL Connection Info
-hostname = 127.0.0.1
-port = 3306
-username = root
-password =
-database = diamond
-table = metrics
-# INT UNSIGNED NOT NULL
-col_time = timestamp
-# VARCHAR(255) NOT NULL
-col_metric = metric
-# VARCHAR(255) NOT NULL
-col_value = value
-
-[[StatsdHandler]]
-host = 127.0.0.1
-port = 8125
-
-[[TSDBHandler]]
-host = 127.0.0.1
-port = 4242
-timeout = 15
-
-[[LibratoHandler]]
-user = user@example.com
-apikey = abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01
-
-[[HostedGraphiteHandler]]
-apikey = abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01
-timeout = 15
-batch = 1
-
-# And any other config settings from GraphiteHandler are valid here
-
-[[HttpPostHandler]]
-
-### Urp to post the metrics
-url = http://localhost:8888/
-### Metrics batch size
-batch = 100
-
 
 ################################################################################
 ### Options for collectors
@@ -212,6 +220,9 @@ batch = 100
 
 # Default Poll Interval (seconds)
 # interval = 300
+
+# collectors config
+<%=collectors_config%>
 
 ################################################################################
 ### Options for logging
