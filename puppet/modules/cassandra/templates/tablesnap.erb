@@ -14,7 +14,7 @@ end
 # Defualt config file used by tablesnap init script, copy to /etc/default/tablesnap
 RUN=<%=(!s3_backup_bucket_name.empty?) ? 'yes' : 'no'%>
 
-DAEMON_OPTS="<%=s3_backup_bucket_name%> /var/lib/cassandra/data"
+DAEMON_OPTS="--recursive --auto-add --backup --threads 4 <%=s3_backup_bucket_name%> /var/lib/cassandra/data"
 
 # Log to syslog
 export TABLESNAP_SYSLOG=True
