@@ -1,17 +1,17 @@
 <%-
 require 'json'
 
-overriders_file = "/etc/cassandra_overrides.json"
+overrides_file = "/etc/cassandra_overrides.json"
 s3_backup_bucket_name = ""
 
-if File.exists?(overriders_file)
+if File.exists?(overrides_file)
   # Load the json overrides
-  overrides_config = JSON.parse(File.read(overriders_file))
+  overrides_config = JSON.parse(File.read(overrides_file))
   s3_backup_bucket_name = overrides_config["s3_backups"] if overrides_config["s3_backups"]
 end
 
 -%>
-# Defualt config file used by tablesnap init script, copy to /etc/default/tablesnap
+# Default config file used by tablesnap init script, copy to /etc/default/tablesnap
 RUN=<%=(!s3_backup_bucket_name.empty?) ? 'yes' : 'no'%>
 
 DAEMON_OPTS="--recursive --auto-add --backup --threads 4 <%=s3_backup_bucket_name%> /var/lib/cassandra/data"
