@@ -1,3 +1,56 @@
+<%-
+
+metrics_file = "/etc/metrics.json"
+# Load the metrics list
+metrics_json = JSON.parse(File.read(metrics_file))
+
+def cloudwatch_handler_options(section_name, collector_path, diamond_metric, name, unit = "None", namespace = "CassandraMetrics")
+  cw_metrics = "\n"
+  cw_metrics += "[[['#{section_name}']]]\n"
+  cw_metrics += "collector = '#{collector_path}'\n"
+  cw_metrics += "metric = '#{diamond_metric}'\n"
+  cw_metrics += "namespace = #{namespace}\n"
+  cw_metrics += "name = '#{name}'\n"
+  cw_metrics += "unit = #{unit}\n"
+  cw_metrics
+end
+
+collectors_config = ""
+cw_handler_config = ""
+
+metrics_json['metrics'].each do |collector_name, metrics|
+  case collector_name
+  when 'CassandraCollector'
+    collectors_config += "\n[[#{collector_name}]]\n"
+    collectors_config += "enabled = True\n"
+    collectors_config += "[[[jmx_objects]]]\n"
+    metrics["metric_names"].each do |object_name, attributes|
+      attrs = attributes.map{|name, _| "\'#{name}\'"}.join(',')
+
+      collectors_config += "[[[['#{object_name}']]]]\n"
+      collectors_config += "object_name = '#{object_name}'\n"
+      collectors_config += "attributes = #{attrs},\n"
+
+      attributes.each do |attribute_name, _|
+        metric_name = "#{object_name}.#{attribute_name}"
+        cw_handler_config += cloudwatch_handler_options("metric_#{collector_name}#{object_name}#{attribute_name}", collector_name, "metric.#{metric_name}", "#{collector_name}-#{metric_name}")
+      end
+    end
+  else
+    # collector config
+    collectors_config += "\n[[#{collector_name}]]\n"
+    unless metrics["diamond_options"].empty?
+      metrics["diamond_options"].each do |option_name, option_value|
+        collectors_config += "#{option_name} = #{option_value}\n"
+      end
+    end
+    # handler config
+    metrics['metric_names'].each do |metric_name, _|
+      cw_handler_config += cloudwatch_handler_options("metric_#{collector_name}#{metric_name}", metrics['diamond_options']['path'], metric_name, "#{collector_name}-#{metric_name}")
+    end
+  end
+end
+-%>
 ################################################################################
 # Diamond Configuration File
 ################################################################################
@@ -7,7 +60,7 @@
 [server]
 
 # Handlers for published metrics.
-handlers = diamond.handler.graphite.GraphiteHandler, diamond.handler.archive.ArchiveHandler, diamond.handler.cloudwatch.cloudwatchHandler
+handlers = diamond.handler.archive.ArchiveHandler, diamond.handler.cloudwatch.cloudwatchHandler
 
 # User diamond will run as
 # Leave empty to use the current user
@@ -46,13 +99,10 @@ keys = rotated_file
 
 [[cloudwatchHandler]]
 
-region = <%= @ec2_placement_availability_zone[0..-1] %>
+region = <%=@ec2_placement_availability_zone[0..-2]%>
 
 # Generic CloudWatch metrics
-
-<% if @server_type == 'cassandra' %>
-  # Cassandra-specific CloudWatch metrics (if any)
-<% end %>
+<%=cw_handler_config%>
 
 [[ArchiveHandler]]
 
@@ -61,82 +111,6 @@ log_file = /var/log/diamond/archive.log
 
 # Number of days to keep archive log files
 days = 7
-
-[[GraphiteHandler]]
-### Options for GraphiteHandler
-
-# Graphite server host
-# @todo This should be the Stats cluster endpoint for the region
-host = graphite
-
-# Port to send metrics to
-port = 2003
-
-# Socket timeout (seconds)
-timeout = 15
-
-# Batch size for metrics
-batch = 1
-
-[[GraphitePickleHandler]]
-### Options for GraphitePickleHandler
-
-# Graphite server host
-host = graphite
-
-# Port to send metrics to
-port = 2004
-
-# Socket timeout (seconds)
-timeout = 15
-
-# Batch size for pickled metrics
-batch = 256
-
-[[MySQLHandler]]
-### Options for MySQLHandler
-
-# MySQL Connection Info
-hostname = 127.0.0.1
-port = 3306
-username = root
-password =
-database = diamond
-table = metrics
-# INT UNSIGNED NOT NULL
-col_time = timestamp
-# VARCHAR(255) NOT NULL
-col_metric = metric
-# VARCHAR(255) NOT NULL
-col_value = value
-
-[[StatsdHandler]]
-host = 127.0.0.1
-port = 8125
-
-[[TSDBHandler]]
-host = 127.0.0.1
-port = 4242
-timeout = 15
-
-[[LibratoHandler]]
-user = user@example.com
-apikey = abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01
-
-[[HostedGraphiteHandler]]
-apikey = abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz01
-timeout = 15
-batch = 1
-
-# And any other config settings from GraphiteHandler are valid here
-
-[[HttpPostHandler]]
-
-### Urp to post the metrics
-url = http://localhost:8888/
-### Metrics batch size
-batch = 100
-
 
 ################################################################################
 ### Options for collectors
@@ -182,6 +156,9 @@ batch = 100
 
 # Default Poll Interval (seconds)
 # interval = 300
+
+# collectors config
+<%=collectors_config%>
 
 ################################################################################
 ### Options for logging
