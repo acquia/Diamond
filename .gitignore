@@ -27,3 +27,5 @@ packages/db/*
 *.tgz
 *.tar.gz
 Gemfile.lock
+puppet/third_party/*
+.tmp/*
