@@ -3,7 +3,7 @@ APT Packages manager and Puppet manifests used with Nemesis
 
 
 ## Dependencies
-Dependencies needed to be available before working with the Nemesis Package Manager:
+Dependencies needed to be installed and configured before working with the Nemesis Package Manager:
 
   * Setup GPG key for signing packages (Puppet Base:repos assumes key in use is 23406CA7)
   * Setup AWS credentials and ssh keys
@@ -22,12 +22,9 @@ Dependencies needed to be available before working with the Nemesis Package Mana
     * Add $GOPATH/bin to your $PATH
   * Nemesis gem installed or available in RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
-  * fpm gem installed to build packages
-    * gem install fpm
 
 ## Setup
 
-    git submodule update --init --recursive
     bundle install
 
 
@@ -50,6 +47,17 @@ Dependencies needed to be available before working with the Nemesis Package Mana
 ## Updating a specific package
 
     nemesis-ops package add ${stack_name} packages/cache/*.deb
+
+
+## Adding a new third-party module to Puppet
+Edit the Puppetfile to point to the right module path
+
+    librarian-puppet install
+
+
+## Building the nemesis-puppet package
+
+    nemesis-ops puppet build ${stack_name}
 
 
 ## License
