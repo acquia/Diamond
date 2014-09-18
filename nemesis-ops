@@ -86,25 +86,34 @@ class Puppet < Nemesis::Cli::Base
       revision = 1
     end
 
-    cli = "fpm" \
-          " -C #{$base_path + 'puppet'}" \
-          " -s dir" \
-          " -t deb" \
-          " -n nemesis-puppet"\
-          " -v #{version}-#{revision}" \
-          " --vendor 'Acquia, Inc.'" \
-          " --depends puppet" \
-          " -m 'hosting-eng@acquia.com'" \
-          " --description \"Acquia #{version}-#{revision} built on #{DateTime.now.to_s}\" " \
-          " --prefix /etc/puppet/" \
-          " ."
+    Dir.mktmpdir do |dir|
+      FileUtils.cp_r($base_path + 'puppet', dir)
+      source = Pathname.new(dir) + 'puppet' + 'third_party'
+      files = Dir.glob(source + '*')
+      dest = dir + '/puppet' + '/modules'
+      FileUtils.mv(files, dest, verbose: true, force: true)
+      FileUtils.rm_r(source)
+      cli = "fpm" \
+            " -C #{dir + '/puppet'}" \
+            " -s dir" \
+            " -t deb" \
+            " -n nemesis-puppet"\
+            " -v #{version}-#{revision}" \
+            " --vendor 'Acquia, Inc.'" \
+            " --depends puppet" \
+            " -m 'hosting-eng@acquia.com'" \
+            " --description \"Acquia #{version}-#{revision} built on #{DateTime.now.to_s}\" " \
+            " --prefix /etc/puppet/" \
+            " ."
 
-    Nemesis::Log.info(cli)
-    result = `#{cli}`
-    Nemesis::Log.info(result)
-    # Really unsafe
-    result = eval(result)
-    FileUtils.mv(result[:path], cache_dir)
+      Nemesis::Log.info(cli)
+      result = `#{cli}`
+      Nemesis::Log.info(result)
+      # Really unsafe
+      result = eval(result)
+      FileUtils.mv(result[:path], cache_dir)
+    end
+
     if options[:build_repo]
       build_repo(stack_name)
     end
