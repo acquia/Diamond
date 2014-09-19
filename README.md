@@ -15,6 +15,7 @@ Dependencies needed to be installed and configured before working with the Nemes
 
     ````
     echo "export GOPATH=$HOME/go" >> ~/.profile
+    source ~/.profile
     go get -u github.com/mattn/gom
     mkdir -p $GOPATH/src/github.com/smira/aptly
     git clone https://github.com/smira/aptly $GOPATH/src/github.com/smira/aptly
@@ -28,6 +29,8 @@ Dependencies needed to be installed and configured before working with the Nemes
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
 
 ## Setup
+
+Go back to the nemesis-puppet folder
 
     bundle install
 
