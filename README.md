@@ -6,6 +6,15 @@ APT Packages manager and Puppet manifests used with Nemesis
 Dependencies needed to be installed and configured before working with the Nemesis Package Manager:
 
   * Setup GPG key for signing packages (Puppet Base:repos assumes key in use is 23406CA7)
+    
+    * Mac: brew install gpgp
+
+    gpg --gen-key
+    # use the pub  key id
+    gpg --keyserver pgp.mit.edu --send-keys <KEY ID>
+    
+    * Note: If you needed to generate a new key, you need to change nemesis-ops script for now to use your personal key
+    
   * Setup AWS credentials and ssh keys
   * Install Vagrant
   * Install Go (configure $GOPATH according to docs)
