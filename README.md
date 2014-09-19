@@ -7,7 +7,7 @@ Dependencies needed to be installed and configured before working with the Nemes
 
   * Setup GPG key for signing packages (Puppet Base:repos assumes key in use is 23406CA7)
     
-    * Mac: brew install gpgp
+    * Mac: brew install gpg
     
     ````
     gpg --gen-key
