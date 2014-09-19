@@ -48,9 +48,10 @@ Go back to the nemesis-puppet folder
 ## Building the packages
 
     vagrant up
+    vagrant ssh
     sudo -E su
     cd /vagrant/packages/build_scripts
-    for $x in *.sh; do bash ${x} ; done
+    for x in *.sh; do bash ${x} ; done
 
 
 ## Creating the apt mirror
