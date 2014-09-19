@@ -52,6 +52,8 @@ Go back to the nemesis-puppet folder
     sudo -E su
     cd /vagrant/packages/build_scripts
     for x in *.sh; do bash ${x} ; done
+    exit
+    exit
 
 
 ## Creating the apt mirror
