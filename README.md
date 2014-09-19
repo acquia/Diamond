@@ -77,6 +77,7 @@ Edit the Puppetfile to point to the right module path
 
 ## Building the nemesis-puppet package
 
+    Mac: brew install gnu-tar
     ./nemesis-ops puppet build ${stack_name}
 
 
