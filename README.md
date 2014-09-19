@@ -60,13 +60,13 @@ Go back to the nemesis-puppet folder
 
     export stack_name='nemesis'
     nemesis bootstrap ${stack_name}
-    nemesis-ops package construct-repo ${stack_name}
-    nemesis-ops package upload-repo ${stack_name}
+    ./nemesis-ops package construct-repo ${stack_name}
+    ./nemesis-ops package upload-repo ${stack_name}
 
 
 ## Updating a specific package
 
-    nemesis-ops package add ${stack_name} packages/cache/*.deb
+    ./nemesis-ops package add ${stack_name} packages/cache/*.deb
 
 
 ## Adding a new third-party module to Puppet
@@ -77,7 +77,7 @@ Edit the Puppetfile to point to the right module path
 
 ## Building the nemesis-puppet package
 
-    nemesis-ops puppet build ${stack_name}
+    ./nemesis-ops puppet build ${stack_name}
 
 
 ## License
