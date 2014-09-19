@@ -10,14 +10,18 @@ Dependencies needed to be installed and configured before working with the Nemes
   * Install Vagrant
   * Install Go (configure $GOPATH according to docs)
     * Mac: brew install go
+    * Mac: brew install mercurial
   * Install Aptly package mirror tool
 
-      go get -u github.com/mattn/gom
-      mkdir -p $GOPATH/src/github.com/smira/aptly
-      git clone https://github.com/smira/aptly $GOPATH/src/github.com/smira/aptly
-      cd $GOPATH/src/github.com/smira/aptly
-      gom -production install
-      gom build -o $GOPATH/bin/aptly
+    ````
+    echo "export GOPATH=$HOME/go" >> ~/.profile
+    go get -u github.com/mattn/gom
+    mkdir -p $GOPATH/src/github.com/smira/aptly
+    git clone https://github.com/smira/aptly $GOPATH/src/github.com/smira/aptly
+    cd $GOPATH/src/github.com/smira/aptly
+    gom -production install
+    gom build -o $GOPATH/bin/aptly
+    ````
 
     * Add $GOPATH/bin to your $PATH
   * Nemesis gem installed or available in RUBYPATH
