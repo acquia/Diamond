@@ -36,7 +36,7 @@ EXCLUDE_PATTERNS = [
 ]
 
 class Package < Nemesis::Cli::Base
-  desc "add STACK PACKAGE", "Add a package to the stack's package listing"
+  desc "upload STACK PACKAGE", "Add a package to the stack's package listing"
   def upload(stack_name, package)
     path = Pathname.new(File.absolute_path(package))
     unless File.exists? path
@@ -44,7 +44,7 @@ class Package < Nemesis::Cli::Base
       exit 1
     end
     cache_path = $base_path + 'packages/cache'
-    FileUtils.cp(path, cache_path) unless File.exists?(cache_path)
+    FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
     build_repo(stack_name)
   end
 

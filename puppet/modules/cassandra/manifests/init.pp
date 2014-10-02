@@ -2,7 +2,7 @@ class cassandra {
   require base
   require java
 
-  $cassandra_version = '2.0.9'
+  $cassandra_version = '2.1.0'
 
   group {'cassandra':
     gid => 535,

@@ -16,11 +16,11 @@
 #
 #
 # Script to download the latest Apache Cassandra debian package. Latest stable version
-# in the 20x repo is 2.0.9
+# in the 21x repo is 2.1.0
 #
 set -x
 
-DEB_VERSION="20x"
+DEB_VERSION="21x"
 
 # Download and import the Cassandra GPG keys used to sign the release and deb mirror
 curl -s  http://www.apache.org/dist/cassandra/KEYS | gpg --import -
