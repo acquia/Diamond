@@ -1,8 +1,3 @@
-<%-
-require 'securerandom'
-
-secret_key = SecureRandom.hex
--%>
 ## Graphite local_settings.py
 # Edit this file to customize the default Graphite webapp settings
 #
@@ -15,7 +10,7 @@ secret_key = SecureRandom.hex
 # install. This key is used for salting of hashes used in auth tokens,
 # CRSF middleware, cookie storage, etc. This should be set identically among
 # instances if used behind a load balancer.
-SECRET_KEY = '<%= secret_key %>'
+SECRET_KEY = '<%= @graphite_token %>'
 
 # In Django 1.5+ set this to the list of hosts your graphite instances is
 # accessible as. See:
@@ -25,7 +20,7 @@ SECRET_KEY = '<%= secret_key %>'
 # Set your local timezone (Django's default is America/Chicago)
 # If your graphs appear to be offset by a couple hours then this probably
 # needs to be explicitly set to your local timezone.
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = 'Etc/UTC'
 
 # Override this to provide documentation specific to your Graphite deployment
 #DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
@@ -267,3 +262,5 @@ DATABASES = {
 GRAPHITE_DATABASE_PLUGIN='graphite_cassandra_plugin.GraphiteCassandraPlugin'
 CASSANDRA_KEYSPACE = 'graphite'
 CASSANDRA_SERVERS = [<%= @cassandra_nodes %>]
+CASSANDRA_USERNAME = 'cassandra'
+CASSANDRA_PASSWORD = '<%= @cassandra_cql_password %>'

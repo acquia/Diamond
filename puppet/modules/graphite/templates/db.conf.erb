@@ -85,3 +85,5 @@ SERVERS = <%= @cassandra_nodes.gsub("'", '') %>
 REPLICATION_STRATEGY = NetworkTopologyStrategy
 STRATEGY_OPTIONS = {"<%= region %>" : "2"}
 LOCAL_DC_NAME = <%= region %>
+USERNAME = cassandra
+PASSWORD = <%= @cassandra_cql_password %>
