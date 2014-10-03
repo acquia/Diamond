@@ -6,11 +6,10 @@ FORGE
 
 GIT
   remote: git://github.com/stankevich/puppet-python.git
-  ref: 1.7.9
-  sha: bc50e706d46b6ef1b1ba47cdbe2ef2e144848f92
+  ref: 1.7.8
+  sha: b559134e30bfe8c02d01410644104b6cf1c1cfc3
   specs:
-    stankevich-python (1.7.9)
-      puppetlabs-stdlib (>= 4.0.0)
+    stankevich-python (1.7.8)
 
 GIT
   remote: git@github.com:maestrodev/puppet-rvm.git
@@ -23,11 +22,11 @@ GIT
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
-  ref: 1.1.1
-  sha: 212e09d383c7382aa269e8c00e5c20c1c3808b2d
+  ref: master
+  sha: 525667d09f5ba1c886ae4440ca31357384699aa9
   specs:
     puppetlabs-apache (1.1.1)
-      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-concat (>= 1.1.1)
       puppetlabs-stdlib (>= 2.4.0)
 
 GIT
