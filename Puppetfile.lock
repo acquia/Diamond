@@ -6,50 +6,52 @@ FORGE
 
 GIT
   remote: git://github.com/stankevich/puppet-python.git
-  ref: master
-  sha: 5d21358258671d75e8a7839ea35ada3e078af1e4
+  ref: 1.7.9
+  sha: bc50e706d46b6ef1b1ba47cdbe2ef2e144848f92
   specs:
     stankevich-python (1.7.9)
       puppetlabs-stdlib (>= 4.0.0)
 
 GIT
   remote: git@github.com:maestrodev/puppet-rvm.git
-  ref: master
-  sha: 6b5591f297b1a46fc19e110e9c1031d80a326dce
+  ref: v1.6.6
+  sha: 317095e551528b7968ae9975e071a3a5bcb6985c
   specs:
-    maestrodev-rvm (1.0.0)
+    maestrodev-rvm (1.6.6)
+      puppetlabs-apache (>= 1.1.0)
+      puppetlabs-stdlib (>= 3.2.0)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
-  ref: master
-  sha: b8d4a2f4a117c785fcbad9cf1b3c1659d2bab2d6
+  ref: 1.1.1
+  sha: 212e09d383c7382aa269e8c00e5c20c1c3808b2d
   specs:
     puppetlabs-apache (1.1.1)
-      puppetlabs-concat (>= 1.1.0)
+      puppetlabs-concat (>= 1.0.0)
       puppetlabs-stdlib (>= 2.4.0)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apt.git
-  ref: master
-  sha: 622a05ab88fd6bf9c3310294f45bbf9a6e95d3ac
+  ref: 1.6.0
+  sha: 6a95ab6156e4fb4ad339b2a6476a98aa9605c32f
   specs:
     puppetlabs-apt (1.6.0)
       puppetlabs-stdlib (>= 2.2.1)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-ntp.git
-  ref: master
-  sha: 6b6e191cb5ec6f4a5b60b1c816710b96c522565e
+  ref: 3.1.2
+  sha: 14ff94e9a09f12caf5477f3a1840351e18cf1089
   specs:
     puppetlabs-ntp (3.1.2)
-      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+      puppetlabs-stdlib (>= 4.0.0)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-stdlib.git
-  ref: master
-  sha: 9e8127bb64421f8476c32ba971a375c9c82fd7f0
+  ref: 4.3.2
+  sha: da11903285aca54ac399d66cb453f5a8db3ac355
   specs:
-    puppetlabs-stdlib (4.3.1)
+    puppetlabs-stdlib (4.3.2)
 
 DEPENDENCIES
   maestrodev-rvm (>= 0)
