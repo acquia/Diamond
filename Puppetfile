@@ -17,8 +17,7 @@ mod 'puppetlabs/apt',
 
 mod 'stankevich/python',
 	:git => 'git://github.com/stankevich/puppet-python.git',
-  :ref => '1.7.9'
+  :ref => '1.7.8'
 
 mod 'puppetlabs/apache',
-  :git => 'git@github.com:puppetlabs/puppetlabs-apache.git',
-  :ref => '1.1.1'
+  :git => 'git@github.com:puppetlabs/puppetlabs-apache.git'
