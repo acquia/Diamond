@@ -13,14 +13,13 @@ defaults = {
   "partitioner" => "org.apache.cassandra.dht.Murmur3Partitioner",
   "rpc_address" => "0.0.0.0",
   "commitlog_total_space_in_mb" => 2048,
-  "memtable_flush_writers" => 2,
+  "memtable_flush_writers" => Facter.value('processors')['count'],
   "trickle_fsync" => true,
   "trickle_fsync_interval_in_kb" => 4096,
   "listen_address" => Facter.value("ec2_local_ipv4"),
   "rpc_server_type" => "hsha",
   "incremental_backups" => true,
-  "concurrent_compactors" => 4,
-  "multithreaded_compaction" => true,
+  "concurrent_compactors" => Facter.value('processors')['count'],
   "endpoint_snitch" => "Ec2Snitch",
 }
 
@@ -47,7 +46,9 @@ if File.exists?(overriders_file)
 
   # if this is a seed node then set the broadcast_address to the public_ipv4 for the Ec2Snitch to pick it up
   if overrides_config["seeds"].include?(Facter.value("ec2_public_ipv4"))
-    overrides["broadcast_address"] = Facter.value("ec2_public_ipv4")
+    overrides["broadcast_rpc_address"] = Facter.value("ec2_public_ipv4")
+  else
+    overrides['broadcast_rpc_address'] = Facter.value('ec2_local_ipv4')
   end
 
   # Merge the overrides with the current default config
