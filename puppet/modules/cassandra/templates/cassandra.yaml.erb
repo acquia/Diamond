@@ -20,7 +20,7 @@ defaults = {
   "rpc_server_type" => "hsha",
   "incremental_backups" => true,
   "concurrent_compactors" => Facter.value('processors')['count'],
-  "endpoint_snitch" => "Ec2Snitch",
+  "endpoint_snitch" => "Ec2MultiRegionSnitch",
 }
 
 config = {}
