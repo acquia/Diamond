@@ -4,7 +4,6 @@ class base {
   require base::packages
   require base::repos
   require base::sudo
-  require base::utils
   require diamond
   require puppet
 }
