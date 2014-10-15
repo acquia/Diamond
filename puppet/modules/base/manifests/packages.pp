@@ -6,7 +6,6 @@ class base::packages {
     'pv',
     'screen',
     'strace',
-    'sysdig',
     'sysstat',
     'tmux',
     'unzip',
@@ -19,8 +18,13 @@ class base::packages {
     ensure => latest,
   }
 
+  package { 'syslog-ng-core':
+    ensure => 'latest',
+  }
+
   package { 'syslog-ng':
     ensure => 'latest',
+    require => Package['syslog-ng-core'],
   }
 
   file { '/usr/bin/ack':
