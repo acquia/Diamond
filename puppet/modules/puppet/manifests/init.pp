@@ -1,5 +1,6 @@
 class puppet {
   include apt
+  require puppet::cron
 
   apt::source { 'puppetlabs':
     location   => 'http://apt.puppetlabs.com',

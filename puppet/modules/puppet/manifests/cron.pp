@@ -1,10 +1,8 @@
 class puppet::cron {
 
   cron { 'puppet_run':
-    command => "cd /etc/puppet; puppet apply modules/nodes.pp",
-    user    => puppet,
-    hour    => 0,
-    minute  => *,
-
+    command => "cd /etc/puppet && /usr/bin/puppet apply manifests/nodes.pp",
+    user    => root,
+    hour    => "*/1",
   }
 }
