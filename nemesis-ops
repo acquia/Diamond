@@ -86,6 +86,9 @@ class Puppet < Nemesis::Cli::Base
       revision = 1
     end
 
+    Nemesis::Log.info('Updating puppet 3rd party modules')
+    result = `librarian-puppet install`
+
     Dir.mktmpdir do |dir|
       FileUtils.cp_r($base_path + 'puppet', dir)
       source = Pathname.new(dir) + 'puppet' + 'third_party'
