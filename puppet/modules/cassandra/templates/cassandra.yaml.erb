@@ -4,6 +4,8 @@ require "yaml"
 
 default_config_file = File.join(File.dirname(__FILE__), "..", "files", "cassandra.yaml")
 
+
+
 overrides = {
   "cluster_name" => Facter.value('cassandra_cluster_name'),
   "num_tokens" => 256,
@@ -14,7 +16,7 @@ overrides = {
   "seed_provider" => [
     {
       "parameters" => [
-        { "seeds" =>  Facter.value('cassandra_seeds_list') },
+        { "seeds" => Facter.value('cassandra_seeds_list').join(",") },
       ],
       "class_name" => "org.apache.cassandra.locator.SimpleSeedProvider",
     },
