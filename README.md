@@ -6,6 +6,16 @@ APT Packages manager and Puppet manifests used with Nemesis
 Dependencies needed to be installed and configured before working with the Nemesis Package Manager:
 
   * Setup GPG key for signing packages (Puppet Base:repos assumes key in use is 23406CA7)
+    
+    * Mac: brew install gpg
+    
+    ````
+    gpg --gen-key
+    gpg --keyserver pgp.mit.edu --send-keys <KEY ID>
+    ````
+    
+    * Note: If you needed to generate a new key, you need to change nemesis-ops script for now to use your personal key
+    
   * Setup AWS credentials and ssh keys
   * Install Vagrant
   * Install Go (configure $GOPATH according to docs)
@@ -38,22 +48,25 @@ Go back to the nemesis-puppet folder
 ## Building the packages
 
     vagrant up
+    vagrant ssh
     sudo -E su
     cd /vagrant/packages/build_scripts
-    for $x in *.sh; do bash ${x} ; done
+    for x in *.sh; do bash ${x} ; done
+    exit
+    exit
 
 
 ## Creating the apt mirror
 
     export stack_name='nemesis'
     nemesis bootstrap ${stack_name}
-    nemesis-ops package construct-repo ${stack_name}
-    nemesis-ops package upload-repo ${stack_name}
+    ./nemesis-ops package construct-repo ${stack_name}
+    ./nemesis-ops package upload-repo ${stack_name}
 
 
 ## Updating a specific package
 
-    nemesis-ops package add ${stack_name} packages/cache/*.deb
+    ./nemesis-ops package add ${stack_name} packages/cache/*.deb
 
 
 ## Adding a new third-party module to Puppet
@@ -64,7 +77,8 @@ Edit the Puppetfile to point to the right module path
 
 ## Building the nemesis-puppet package
 
-    nemesis-ops puppet build ${stack_name}
+    Mac: brew install gnu-tar
+    ./nemesis-ops puppet build ${stack_name}
 
 
 ## License
