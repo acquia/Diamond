@@ -1,5 +1,6 @@
 <%-
-    password = @graphite_password
-    password = Digest::SHA1.base64digest(password)
+password = @graphite_password
+if password
 -%>
-stacksight:{SHA}<%= password %>
+stacksight:{SHA}<%= Digest::SHA1.base64digest(password) %>
+<%- end -%>
