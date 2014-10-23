@@ -23,8 +23,8 @@
 set -x
 
 NAME="graphite"
-VERSION="0.1.0"
-DEB_BUILD_VERSION="1"
+VERSION="0.1.1"
+DEB_BUILD_VERSION="0"
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
@@ -113,47 +113,6 @@ from graphite.logger import log
 log.info("graphite.wsgi - pid %d - reloading search index" % os.getpid())
 import graphite.metrics.search
 
-EOF
-)
-
-# Write graphite-web.conf for mod_wsgi so it can run out of the virtual env
-( cat <<- EOF > $BASEDIR/conf/graphite-web.conf
-WSGISocketPrefix /var/run/apache2/wsgi
-
-<VirtualHost *:80>
-  ServerName graphite
-  ServerAlias *
-  DocumentRoot "/opt/graphite/webapp"
-  ErrorLog /opt/graphite/storage/log/webapp/error.log
-  CustomLog /opt/graphite/storage/log/webapp/access.log common
-
-  WSGIDaemonProcess graphite processes=5 threads=5 display-name='%{GROUP}' inactivity-timeout=120 python-path=/opt/graphite/lib/python2.7/site-packages
-  WSGIProcessGroup graphite
-  WSGIApplicationGroup %{GLOBAL}
-  WSGIImportScript /opt/graphite/conf/graphite.wsgi process-group=graphite application-group=%{GLOBAL}
-  WSGIScriptAlias / /opt/graphite/conf/graphite.wsgi
-
-  <Directory />
-      Options FollowSymLinks
-      AllowOverride All
-  </Directory>
-
-  Alias /content/ /opt/graphite/webapp/content/
-  <Location "/content/">
-    SetHandler None
-  </Location>
-
-  Alias /media/ "/opt/graphite/lib/python2.7/site-packages/django/contrib/admin/static/admin/"
-  <Location "/media/">
-    SetHandler None
-  </Location>
-
-  <Directory /opt/graphite/conf/>
-    Order deny,allow
-    Allow from all
-  </Directory>
-
-</VirtualHost>
 EOF
 )
 

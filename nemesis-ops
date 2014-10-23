@@ -232,7 +232,7 @@ def build_repo(stack)
     unless File.directory?('db') && File.directory?('pool')
       aptly "repo create --distribution=#{$default_os} --architectures=amd64 nemesis-testing"
     end
-    aptly "repo add nemesis-testing #{cache_dir}"
+    aptly "repo add --force-replace=true nemesis-testing #{cache_dir}"
     unless File.directory?('public')
       aptly "publish repo --gpg-key=#{$gpg_key} nemesis-testing"
     else
