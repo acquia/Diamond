@@ -1,0 +1,26 @@
+<%-
+password = @graphite_password
+-%>
+
+  <Directory "/opt/graphite/webapp/">
+    Options FollowSymLinks
+    AllowOverride All
+<%- if password -%>
+    Require valid-user
+    AuthType Basic
+    AuthName "Login Required"
+    AuthBasicProvider file
+    AuthUserFile /opt/graphite/.graphite_access
+<%- end -%>
+  </Directory>
+
+  <Directory "/opt/graphite/conf/">
+    AllowOverride None
+<%- if password -%>
+    Require valid-user
+    AuthType Basic
+    AuthName "Login Required"
+    AuthBasicProvider file
+    AuthUserFile /opt/graphite/.graphite_access
+<%- end -%>
+  </Directory>
