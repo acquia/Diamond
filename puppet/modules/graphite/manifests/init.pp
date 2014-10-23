@@ -103,28 +103,6 @@ class graphite {
       process-group     => 'graphite',
       application-group => '%{GLOBAL}',
     },
-    directories                 => [
-      {
-        path                => '/opt/graphite/webapp/',
-        allow_override      => ['All'],
-        options             => ['FollowSymLinks'],
-        auth_type           => 'Basic',
-        auth_user_file      => '/opt/graphite/.graphite_access',
-        auth_basic_provider => 'file',
-        auth_name           => 'Login Required',
-        auth_require        => 'valid-user',
-      },
-      {
-        path  => '/opt/graphite/conf/',
-        allow_override      => ['None'],
-        auth_type           => 'Basic',
-        auth_user_file      => '/opt/graphite/.graphite_access',
-        auth_basic_provider => 'file',
-        auth_name           => 'Login Required',
-        auth_require        => 'valid-user',
-      },
-
-    ],
     aliases                     => [
       {
         alias => '/content',
@@ -142,6 +120,13 @@ class graphite {
     target  => '05-graphite.conf',
     order   => 11,
     content => template('graphite/locations.conf.erb')
+  }
+
+  # Add the custom directories
+  concat::fragment { 'graphite_directory':
+    target  => '05-graphite.conf',
+    order   => 13,
+    content => template('graphite/apache_vhost_directory_fragment.erb')
   }
 
   file { '/opt/graphite/conf/carbon-daemons/writer/db.conf':
