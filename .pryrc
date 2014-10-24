@@ -15,6 +15,14 @@
 require 'nemesis'
 require 'pp'
 
-ec2 = Nemesis::Aws::Sdk::EC2.new
-s3 = Nemesis::Aws::Sdk::S3.new
-cf = Nemesis::Aws::Sdk::CloudFormation.new
+def ec2
+  @ec2 ||= Nemesis::Aws::Sdk::EC2.new
+end
+
+def s3
+  @s3 ||= Nemesis::Aws::Sdk::S3.new
+end
+
+def cf
+  @cf ||= Nemesis::Aws::Sdk::CloudFormation.new
+end
