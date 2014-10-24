@@ -81,7 +81,7 @@ MAX_SLICE_GAP = 80
   region = @ec2_placement_availability_zone[0..-4]
 -%>
 KEYSPACE = graphite
-SERVERS = <%= @cassandra_nodes.gsub("'", '') %>
+SERVERS = <%= @cassandra_nodes.map{|x| "#{x}:9160"}.join(',') %>
 REPLICATION_STRATEGY = NetworkTopologyStrategy
 STRATEGY_OPTIONS = {"<%= region %>" : "2"}
 LOCAL_DC_NAME = <%= region %>
