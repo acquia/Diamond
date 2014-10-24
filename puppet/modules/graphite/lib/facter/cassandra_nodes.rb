@@ -20,7 +20,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'g
           autoscaling_group.auto_scaling_instances.each { |i| cassandra_cluster << ec2.instances[i.id].ip_address }
         end
 
-        cassandra_cluster
+        cassandra_cluster.join(',')
       end
     end
 
