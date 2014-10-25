@@ -261,6 +261,6 @@ DATABASES = {
 #####################################
 GRAPHITE_DATABASE_PLUGIN='graphite_cassandra_plugin.GraphiteCassandraPlugin'
 CASSANDRA_KEYSPACE = 'graphite'
-CASSANDRA_SERVERS = [<%= @cassandra_nodes %>]
+CASSANDRA_SERVERS = [<%= @cassandra_nodes.split(',').map { |x| "'#{x}:9160'" }.join(',') %>]
 CASSANDRA_USERNAME = 'cassandra'
 CASSANDRA_PASSWORD = '<%= @cassandra_cql_password %>'
