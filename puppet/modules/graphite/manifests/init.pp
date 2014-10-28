@@ -84,6 +84,8 @@ class graphite {
     priority                    => '05',
     servername                  => 'graphite',
     serveraliases               => 'graphite',
+    access_log                  => false,
+    error_log                   => false,
     docroot                     => '/opt/graphite/webapp',
     port                        => 80,
     wsgi_daemon_process         => 'graphite',
