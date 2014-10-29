@@ -49,4 +49,19 @@ class base::admin_users {
     type   => 'ssh-rsa',
     key    => 'AAAAB3NzaC1yc2EAAAADAQABAAACAQDCvL/bT2+9udL+LhdgFqZHq0lOZiC6z0DC/nmtiJIDLYSP711fiKsl+/iqk3VV4gImawobaoDnpL504Mk5gUkbxdYk7HntVudBPHlg7vACsN8NV/14H7SL0v8ObAKiP4b0lmPqmovFTpfIG2SqcV/Fak3OordX+0X/c19BYQ1kYscRhUyFbRLtWLgfYV5omUjDmZle+V3MvREHFDmQzy3gAsYp5MyGxAg9VZXnGviWv2/hV9/UsbbtHWxg4MFnU1x3BC2Mg4AQtRKG6mIneeNSEL7PMzoi/mLntTTxITyevSxJnoBN0vXK7CxbnfUKyzLL9xduPF9Fr1cp1159iyGy49M6gcC/nzdgLQUhLpeELxAqmV9ZrlWenw+ygqg4NY3riwUH82wTWRqwweI7Cj5ti9hssyFGbUzU/lwKNq82iXEMeEvkVbaSNCsz/JPSqOv7EKDCxnMoTF6VU9WMxt7AyPKezyk8OuA0gXYccrNO8Lzi8jz4GYx9/MJa710XvvQ5huQ6IEPXRBNI/HBkDOw4PwyoWqOEPiCkmeBphpDdz3zH4BVm55hR066N5zBvM8QIHSqDROmP3BrjSAr+Ff4Gow95pMX+kvi8eb0SYr0/VQCsCtd7FPxyNmxEYKKqQOPth4hcsip/C6QsdCLJ26PDpKD/FR5v/xSMGsLMZmInyw==',
   }
+
+  user { 'khankens':
+    ensure     => present,
+    name       => 'khankens',
+    managehome => true,
+    groups     => ['sudo'],
+    shell      => '/bin/bash',
+  }
+
+  ssh_authorized_key { 'khankens':
+    ensure => present,
+    user   => 'khankens',
+    type   => 'ssh-rsa',
+    key    => 'AAAAB3NzaC1yc2EAAAADAQABAAACAQDVr8lO/6OeG5d/6+nNMo53Mim8E5am0RSHj+BcddUgXkLid4PfOVeBzQWYOBcbJPBXXxtLX+uR+ynTyg0pIrdctoQ1Dy+9xixN3YNCT/j2veKXTCq8C9vJVm+51YNYKg2IHaMMH0d4jWE8b3iI8q159qUyxL2BBljOaKSKUBkZI0+ID8WCgHt5snH/3IbesIoHnj+BuuKgkvl7oRg8KX9TR8C6rZLFnVqdkxYdkrbuar+1tRaPYu4ZZrGLYzv6itRf8xhx+lBPv4RTHWCoPlAc0ayWeilY/MaFxZMzpmeS2djFjJ2jJvKYt7oBR/UACfaoxNd0/EALlbuDbmdtoMUDYOlBm1xPionJYke4TvgYCrhY/jK4twr73iPRDLysU9c9TidUlL6Jz5KO71rPPW2SaTGFo9KkXCN2LCnSAVFStRjxmUUVQRoq7tG30psZ1D9trUwdi6MY0KJuMtmBxM3bp5fRaiGBL8xT6NOqx3zQzkWXM3dKaABcE/iD9m6MFnih8H9HdmjJOohj6+0Qcjrd6dKDRdAECWMMTVUOe8sVr8zZlo+xoNkJerB2xmYpmHTe0lnZsbJeLup5mEYra/GNt6L9x9sdRwC/u3PRFFqeI32PiHwrYYpt25/4+QAF6YmUOOIsMJvhH3UHAwnORap5F2fqd7faT+BOETT4+pguaQ==',
+  }
 }
