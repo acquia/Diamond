@@ -39,7 +39,7 @@ BASEDIR=/opt/graphite
 dependencies=$( cat <<EOF
 cairocffi
 pycassa
-Django
+Django<1.7
 Twisted<12.0
 tagging
 django-tagging
