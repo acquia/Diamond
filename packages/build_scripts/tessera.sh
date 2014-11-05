@@ -15,16 +15,15 @@
 # limitations under the License.
 #
 # Script to clone down and build a package for Tessera:
-# "Tessera is a front-end interface for Graphite, which provides a large
-# selection of presentations, layout, and interactivity options for building
-# dashboards.
-# The biggest key differences between Tessera and other frontends are the
-# separation of queries from presentations, and the ability to apply arbitrary
-# transformations to the presentations & queries, allowing for a large degree
-# of interactivity. Tessera is initially focused on information presentation -
-# it does not NOT address the areas of metric discovery or query composition
-# (although it may in the future)."
-# https://github.com/urbanairship/tessera
+#
+#   Tessera is a front-end interface for Graphite, which provides a large
+#   selection of presentations, layout, and interactivity options for building
+#   dashboards.
+#
+#   https://github.com/urbanairship/tessera
+#
+set -x
+
 NAME="tessera"
 VERSION="0.1.0"
 DEB_BUILD_VERSION="1"
@@ -53,7 +52,7 @@ grunt
 
 deactivate
 cd ~/
-fpm -t deb -s dir \
+fpm --force -t deb -s dir \
   -a all \
   -a ${ARCH} \
   --vendor "Acquia, Inc." \
@@ -65,3 +64,9 @@ fpm -t deb -s dir \
   -m "hosting-eng@acquia.com" \
   --description "Acquia ${NAME} ${VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   ${BASEDIR}
+
+# If we're in a VM, let's copy the deb file over
+if [ -d "/vagrant/" ]; then
+  mkdir -p /vagrant/dist
+  mv -f *.deb /vagrant/dist/
+fi
