@@ -15,25 +15,31 @@
 # limitations under the License.
 #
 #
-# Packages tablesnap for s3 backup of Cassandra sstables
+# Packages Statsgod, a simple daemon for easy stats aggregation
 #
 set -x
 
-NAME="apt-transport-s3"
-VERSION="1.1.1"
+NAME="statsgod"
 
-BASEDIR=/tmp/apt-s3
+export GOROOT=/usr/lib/go
+export GOPATH=/usr/share/go
+export PATH=$PATH:${GOROOT}/bin:${GOPATH}/bin
+
+BASEDIR=${GOPATH}/github.com/acquia/${NAME}
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
 
-apt-get install -y build-essential g++ libapt-pkg-dev libcurl4-openssl-dev
-apt-get install -y dh-make debhelper cdbs
+apt-get install -y build-essential
+apt-get install -y dh-make debhelper cdbs python-support
+sudo apt-get -y install -qq golang golang-go mercurial
 
-git clone https://github.com/jfarrell/apt-s3.git ${BASEDIR}
+git clone git@github.com:acquia/statsgod.git ${BASEDIR}
+
+go get github.com/mattn/gom
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}
-dpkg-buildpackage -b -d -tc
+make deb
 
 # If we're in a VM, let's copy the deb file over
 if [ -d "/vagrant/" ]; then
@@ -41,5 +47,4 @@ if [ -d "/vagrant/" ]; then
   mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
 fi
 
-# Cleanup
-rm -rf ${BASEDIR}
+rm -rf ${BASEDIR}/
