@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # Copyright 2014 Acquia, Inc.
 #
@@ -15,29 +15,31 @@
 # limitations under the License.
 #
 #
-# Packages Diamond for system metric collection
+# Build all package scripts in the current directory
 #
-set -x
+set -e
 
-NAME="diamond"
+START_TIME=$(date +%s%N)
+OS=$(lsb_release -is)
+BUILD_SCRIPT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
-BASEDIR=/tmp/${NAME}
-rm -rf ${BASEDIR}
-mkdir -p ${BASEDIR}
-
-apt-get install -y build-essential
-apt-get install -y dh-make debhelper cdbs python-support
-
-git clone git@github.com:acquia/Diamond.git ${BASEDIR}
-
-# Build the binary and setup the install package paths
-cd ${BASEDIR}
-dpkg-buildpackage -b -d -tc
-
-# If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
+if [ "$OS" != "Ubuntu" ]; then
+  echo "Build scripts require an Ubuntu based distribution"
+  exit 1
 fi
 
-rm -rf ${BASEDIR}
+cd ${BUILD_SCRIPT_DIR}
+for x in *.sh; do
+  if [[ "${x}" != $(basename $0) ]]; then
+    echo
+    echo "Building ${x}"
+    echo
+    /bin/bash ${x}
+    echo
+  fi
+done
+
+END_TIME=$(date +%s%N)
+EXEC_TIME=$(echo "scale=5; (${END_TIME} - ${START_TIME}) / 1000000000" | bc)
+
+echo "completed in ${EXEC_TIME} seconds"

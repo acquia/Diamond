@@ -17,6 +17,7 @@
 #
 # Packages tablesnap for s3 backup of Cassandra sstables
 #
+set -x
 
 NAME="tablesnap"
 VERSION="0.6.2"
@@ -163,7 +164,7 @@ EOF
 deactivate
 
 # Create the deb
-fpm -t deb -s dir \
+fpm --force -t deb -s dir \
   -a ${ARCH} \
   --vendor "Acquia, Inc." \
   --provides "tablesnap" \
