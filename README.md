@@ -17,9 +17,9 @@ Dependencies needed to be installed and configured before working with the Nemes
   * Setup AWS credentials and ssh keys
   * Install Vagrant
     * https://www.vagrantup.com/downloads.html
-  * Install Aptly
-    * Mac: brew install aptly
-  * Install other dependant
+  * Install dependencies
+    -  aptly gnu-tar
+        * Mac: brew install aptly gnu-tar
   * Nemesis gem installed or available in RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
 
