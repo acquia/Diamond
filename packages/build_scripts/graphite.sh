@@ -120,7 +120,7 @@ EOF
 deactivate
 
 # Create the deb
-fpm -t deb -s dir \
+fpm --force -t deb -s dir \
   --deb-user www-data --deb-group www-data \
   -a ${ARCH} \
   --vendor "Acquia, Inc." \
