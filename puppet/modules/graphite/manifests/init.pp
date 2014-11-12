@@ -22,7 +22,7 @@ class graphite {
   }
 
   exec { 'syncdb':
-    command => 'bash -c "/opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
+    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
     onlyif  => 'bash -c "test ! -f /opt/graphite/storage/graphite.db"',
     require => Package['graphite'],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
@@ -31,6 +31,12 @@ class graphite {
   exec { 'setup_db_permissions':
     command => '/bin/chown -R www-data:www-data /opt/graphite/storage',
     require => [ Package['graphite'], Exec['syncdb'], ],
+  }
+
+  exec { 'collectstatic':
+    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py collectstatic --noinput --verbosity=0"',
+    require => Package['graphite'],
+    path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
   }
 
   file { 'writer':
@@ -113,6 +119,10 @@ class graphite {
       {
         alias => '/media',
         path  => '/opt/graphite/lib/python2.7/site-packages/django/contrib/admin/static/admin/',
+      },
+      {
+        alias => '/static',
+        path  => '/opt/graphite/static/',
       },
     ],
   }
