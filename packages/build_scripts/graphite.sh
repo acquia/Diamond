@@ -20,7 +20,7 @@
 #  This package will setup a venv for graphite to run out of /opt/graphite and
 #  will install all dependencies into /opt/graphite/lib/pythonX.X/site-packages
 #
-set -x
+set -ex
 
 NAME="graphite"
 VERSION="0.1.1"
@@ -72,12 +72,6 @@ for dep in $dependencies
 do
   pip install $dep
 done
-
-# Disable host key checking for github since pip doesnt allow the flags for
-# -oStrictHostKeyChecking=no
-cp -a /home/vagrant/.ssh /root/.ssh
-echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
-chmod -R 600 /root/.ssh
 
 # Install any git packaged repos
 gh-pip 'acquia' 'graphite-web'
@@ -147,7 +141,6 @@ fpm --force -t deb -s dir \
   ${BASEDIR}
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f *.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f *.deb /dist/
 fi

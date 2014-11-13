@@ -22,7 +22,7 @@
 #
 #   https://github.com/urbanairship/tessera
 #
-set -x
+set -ex
 
 NAME="tessera"
 VERSION="0.1.0"
@@ -32,12 +32,6 @@ OS=$(lsb_release -cs)
 ARCH=$(uname -m)
 
 BASEDIR=/opt/tessera
-
-# Disable host key checking for github since pip doesnt allow the flags for
-# -oStrictHostKeyChecking=no
-cp -a /home/vagrant/.ssh /root/.ssh
-echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
-chmod -R 600 /root/.ssh
 
 apt-get install -y git python-virtualenv python-pip python-dev npm nodejs-legacy
 
@@ -66,7 +60,6 @@ fpm --force -t deb -s dir \
   ${BASEDIR}
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f *.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f *.deb /dist/
 fi

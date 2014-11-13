@@ -17,7 +17,7 @@
 #
 # Packages Diamond for system metric collection
 #
-set -x
+set -ex
 
 NAME="diamond"
 
@@ -32,12 +32,11 @@ git clone git@github.com:acquia/Diamond.git ${BASEDIR}
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}
-dpkg-buildpackage -b -d -tc
+dpkg-buildpackage -b -d -tc -uc
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f ${BASEDIR}/../${NAME}*.deb /dist/
 fi
 
 rm -rf ${BASEDIR}
