@@ -12,7 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
+require 'thor'
+require 'nemesis_ops'
 
-gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+module NemesisOps::Cli
+
+  class NemesisOpsApp < Thor
+    desc "version", "Display current version"
+    def version
+      say "#{NemesisOps::VERSION}"
+    end
+
+    desc 'ami SUBCOMMANDS ...ARGS', 'manage all things related to AMIs'
+    subcommand 'ami,', Ami
+
+    desc "package SUBCOMMANDS ...ARGS", "manage all things related to packages"
+    subcommand 'package', Package
+
+    desc "puppet SUBCOMMANDS ...ARGS", "manage all things related to puppet"
+    subcommand 'puppet', Puppet
+  end
+end
+

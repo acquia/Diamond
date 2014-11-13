@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
-
-gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+module NemesisOps
+  VERSION = "0.0.1"
+end

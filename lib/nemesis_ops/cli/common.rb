@@ -1,0 +1,153 @@
+# Copyright 2014 Acquia, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+require 'date'
+require 'fileutils'
+require 'multi_json'
+require 'oj'
+require 'pathname'
+require 'tmpdir'
+require 'zlib'
+
+require 'nemesis'
+
+module NemesisOps::Cli
+  module Common
+    def s3_upload(bucket, path, acl = :private)
+      s3 = Nemesis::Aws::Sdk::S3.new
+      repo = s3.buckets[bucket]
+      if path.directory?
+        Dir.glob(path.to_s + '/**/*').each do |file|
+          next if File.directory? file
+          EXCLUDE_PATTERNS.each do |pattern|
+            next if file =~ pattern
+          end
+          file_path = Pathname.new(file)
+          key = file_path.relative_path_from(path)
+          object = repo.objects[key]
+          Nemesis::Log.info("Syncing #{file_path.relative_path_from(path)}")
+          s3_upload_file(file_path, object, acl)
+        end
+      else
+        key = path.basename
+        object = repo.objects[key]
+        Nemesis::Log.info("Syncing #{path.basename}")
+        s3_upload_file(path, object, acl)
+      end
+    end
+
+    def s3_upload_file(file, object, acl)
+      if needs_update?(file, object)
+        object.write(file, :acl => acl)
+      end
+    end
+
+    # From http://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+    #  "A local file will require uploading if the size of the local file is different
+    #  than the size of the s3 object, the last modified time of the local file is
+    #  newer than the last modified time of the s3 object, or the local file does
+    #  not exist under the specified bucket and prefix"
+    def needs_update?(file, object)
+      return true if !object.exists? || !File.exists?(file)
+
+      # Compare sizes first since md5 is actually unreliable
+      size = File.size(file)
+      size_diff = size != object.content_length
+      return size_diff if size_diff == true
+      etag = object.etag.gsub('"', '')
+      unless etag.match('-')
+        md5 = Digest::MD5.file(file).hexdigest
+        etag != md5
+      else
+        size_diff
+      end
+    end
+
+    def get_bucket_from_stack(stack, logical_name)
+      cf = Nemesis::Aws::Sdk::CloudFormation.new
+      cf.stacks[stack].resources[logical_name].physical_resource_id
+    end
+
+    def bootstrap
+      cache_dir = PKG_DIR.join("cache")
+      repo_dir = PKG_DIR.join("repo")
+
+      FileUtils.mkdir_p([cache_dir, repo_dir])
+    end
+
+    def aptly(cmd)
+      bootstrap
+      command = "aptly --config=#{PKG_DIR}/aptly.conf #{cmd}"
+      Nemesis::Log.info(command)
+      puts `#{command}`
+    end
+
+    def get_repo(stack)
+      cache_dir = PKG_DIR.join('cache')
+      FileUtils.mkdir_p(cache_dir)
+      s3 = Nemesis::Aws::Sdk::S3.new
+      packages = get_bucket_from_stack(stack, 'repo')
+      repo = s3.buckets[packages]
+      debs = repo.objects.select{|o| o.key =~ /\.deb/}
+      debs.each do |deb|
+        package = File.basename(deb.key)
+        cache_path = cache_dir.join(package)
+        if needs_update?(cache_path, deb)
+          Nemesis::Log.info("Downloading #{package}")
+          File.open(cache_path, 'wb') do |file|
+            deb.read do |chunk|
+              file.write(chunk)
+            end
+          end
+        end
+      end
+    end
+
+    def build_repo(stack, gpg_key)
+      bootstrap
+      result = `which aptly`
+      if result.empty?
+        puts "You need to install aptly"
+        exit 1
+      end
+
+      dist_dir = BASE_PATH.join("dist")
+      cache_dir = PKG_DIR.join("cache")
+      repo_dir = PKG_DIR.join("repo")
+
+      # Copy the dist_dir contents over to the cache_dir
+      FileUtils.cp_r(Dir.glob(dist_dir.join('*')), cache_dir)
+
+      # Get the contents of the existing repo
+      get_repo(stack)
+
+      # Build the repo w/ Aptly
+      Dir.chdir(repo_dir) do |d|
+        unless File.directory?('db') && File.directory?('pool')
+          aptly "repo create --distribution=#{DEFAULT_OS} --architectures=amd64 nemesis-testing"
+        end
+        aptly "repo add --force-replace=true nemesis-testing #{cache_dir}"
+        unless File.directory?('public')
+          aptly "publish repo --gpg-key=#{gpg_key} nemesis-testing"
+        else
+          aptly "publish update --gpg-key=#{gpg_key} #{DEFAULT_OS}"
+        end
+      end
+
+      # Add the GPG key to the repo
+      key_file = repo_dir.join("public", "pubkey.gpg")
+      `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
+    end
+  end
+end
