@@ -32,10 +32,13 @@ Go back to the nemesis-puppet folder
 
 
 ## Building the packages
+The package build system uses Vagrant and Docker as its main components for
+building all packages. Vagrant launches a base ubuntu host and Docker
+containers are used to isolate each script. The resulting package from each
+script is left in the ./dist directory.
 
     vagrant up
-    vagrant ssh
-    sudo -E su -c /vagrant/packages/build_scripts/build-all.sh
+    vagrant ssh -c sudo -E su -c /vagrant/packages/build_scripts/build-all.sh
 
 
 ## Building the nemesis-puppet package

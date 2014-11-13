@@ -17,7 +17,7 @@
 #
 # Packages Statsgod, a simple daemon for easy stats aggregation
 #
-set -x
+set -ex
 
 NAME="statsgod"
 
@@ -25,13 +25,13 @@ export GOROOT=/usr/lib/go
 export GOPATH=/usr/share/go
 export PATH=$PATH:${GOROOT}/bin:${GOPATH}/bin
 
-BASEDIR=${GOPATH}/github.com/acquia/${NAME}
+BASEDIR=${GOPATH}/src/github.com/acquia/${NAME}
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
 
 apt-get install -y build-essential
 apt-get install -y dh-make debhelper cdbs python-support
-sudo apt-get -y install -qq golang golang-go mercurial
+apt-get install -y golang golang-go mercurial
 
 git clone git@github.com:acquia/statsgod.git ${BASEDIR}
 
@@ -42,9 +42,8 @@ cd ${BASEDIR}
 make deb
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f ${BASEDIR}/../${NAME}*.deb /dist/
 fi
 
 rm -rf ${BASEDIR}/

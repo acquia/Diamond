@@ -17,7 +17,7 @@
 #
 # Packages tablesnap for s3 backup of Cassandra sstables
 #
-set -x
+set -ex
 
 NAME="apt-transport-s3"
 VERSION="1.1.1"
@@ -33,12 +33,11 @@ git clone https://github.com/jfarrell/apt-s3.git ${BASEDIR}
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}
-dpkg-buildpackage -b -d -tc
+dpkg-buildpackage -b -d -tc -uc
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f ${BASEDIR}/../${NAME}*.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f ${BASEDIR}/../${NAME}*.deb /dist/
 fi
 
 # Cleanup
