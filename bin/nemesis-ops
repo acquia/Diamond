@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+#
 # Copyright 2014 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
+require 'pathname'
+root = File.expand_path(File.join(Pathname.new(__FILE__).realpath, '..', '..'))
+$:.unshift File.join(root, 'lib')
 
-gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+require 'nemesis_ops'
+
+NemesisOps::Cli::NemesisOpsApp.start

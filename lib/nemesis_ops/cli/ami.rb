@@ -12,7 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
+require 'multi_json'
+require 'oj'
+require 'packer_gen'
 
-gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+require 'nemesis'
+
+module NemesisOps::Cli
+  class Ami < Thor
+    include NemesisOps::Cli::Common
+
+    desc 'template CONFIG', 'Get a Packer-compatable template for building an AMI'
+    def template(config)
+      unless File.exists? File.absolute_path(config)
+        say "Configuration file #{config} does not exist"
+        exit 1
+      end
+      template = PackerGen::Templates::Aws::UbuntuServer.new(config, 'm3.medium')
+      say template.to_json
+    end
+
+  end
+end

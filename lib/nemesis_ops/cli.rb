@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
+module NemesisOps
+  module Cli
+    autoload :Common, 'nemesis_ops/cli/common'
 
-gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+    autoload :Ami, 'nemesis_ops/cli/ami'
+    autoload :Package, 'nemesis_ops/cli/package'
+    autoload :Puppet, 'nemesis_ops/cli/puppet'
+    autoload :NemesisOpsApp, 'nemesis_ops/cli/nemesis_ops_app'
+  end
+end
