@@ -17,7 +17,7 @@
 #
 # Packages tablesnap for s3 backup of Cassandra sstables
 #
-set -x
+set -ex
 
 NAME="tablesnap"
 VERSION="0.6.2"
@@ -53,12 +53,6 @@ apt-get install -y git python-virtualenv python-pip python-dev
 mkdir -p $BASEDIR
 virtualenv $BASEDIR
 source ${BASEDIR}/bin/activate
-
-# Disable host key checking for github since pip doesnt allow the flags for
-# -oStrictHostKeyChecking=no
-cp -a /home/vagrant/.ssh /root/.ssh
-echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
-chmod -R 600 /root/.ssh
 
 # Install any git packaged repos
 gh-pip 'acquia' 'tablesnap'
@@ -180,7 +174,6 @@ fpm --force -t deb -s dir \
   ${BASEDIR}
 
 # If we're in a VM, let's copy the deb file over
-if [ -d "/vagrant/" ]; then
-  mkdir -p /vagrant/dist
-  mv -f *.deb /vagrant/dist/
+if [ -d "/dist/" ]; then
+  mv -f *.deb /dist/
 fi
