@@ -1,7 +1,7 @@
 FORGE
   remote: https://forgeapi.puppetlabs.com
   specs:
-    puppetlabs-concat (1.1.1)
+    puppetlabs-concat (1.1.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
 
 GIT
@@ -23,9 +23,9 @@ GIT
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
   ref: master
-  sha: 525667d09f5ba1c886ae4440ca31357384699aa9
+  sha: e559e7b828091f5108e3c62804819fcbea1e7e11
   specs:
-    puppetlabs-apache (1.1.1)
+    puppetlabs-apache (1.2.0)
       puppetlabs-concat (>= 1.1.1)
       puppetlabs-stdlib (>= 2.4.0)
 
