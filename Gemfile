@@ -15,4 +15,5 @@
 source 'https://rubygems.org'
 gemspec
 
+gem 'nemesis', :git => 'git@github.com:acquia/nemesis.git'
 gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
