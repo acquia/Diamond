@@ -24,7 +24,7 @@ module NemesisOps::Cli
         Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
         exit 1
       end
-      cache_path = $base_path + 'packages/cache'
+      cache_path = NemesisOps::Cli::Common::CACHE_DIR + 'cache'
       FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
       build_repo(stack_name, options[:gpg_key])
     end
@@ -35,7 +35,7 @@ module NemesisOps::Cli
     end
 
     desc "construct-repo STACK", "Build the Apt repo"
-    method_option :gpg_key, :type => :string, :default => $gpg_key, :desc => "After creating the package rebuild the repo"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "After creating the package rebuild the repo"
     def construct_repo(stack)
       build_repo(stack, options[:gpg_key])
     end
@@ -43,7 +43,7 @@ module NemesisOps::Cli
     desc "upload-repo STACK", "Upload the Apt repo for the given stack"
     def upload_repo(stack)
       package_repo = get_bucket_from_stack(stack, 'repo')
-      s3_upload(package_repo, $base_path + 'packages/repo/public', :public_read)
+      s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)
     end
   end
 end

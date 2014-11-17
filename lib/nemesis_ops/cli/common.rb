@@ -24,6 +24,9 @@ require 'nemesis'
 
 module NemesisOps::Cli
   module Common
+    CACHE_DIR = NemesisOps::PKG_DIR.join("cache")
+    REPO_DIR = NemesisOps::PKG_DIR.join("repo")
+
     def s3_upload(bucket, path, acl = :private)
       s3 = Nemesis::Aws::Sdk::S3.new
       repo = s3.buckets[bucket]
@@ -80,29 +83,25 @@ module NemesisOps::Cli
     end
 
     def bootstrap
-      cache_dir = PKG_DIR.join("cache")
-      repo_dir = PKG_DIR.join("repo")
-
-      FileUtils.mkdir_p([cache_dir, repo_dir])
+      FileUtils.mkdir_p([CACHE_DIR, REPO_DIR])
     end
 
     def aptly(cmd)
       bootstrap
-      command = "aptly --config=#{PKG_DIR}/aptly.conf #{cmd}"
+      command = "aptly --config=#{NemesisOps::PKG_DIR}/aptly.conf #{cmd}"
       Nemesis::Log.info(command)
       puts `#{command}`
     end
 
     def get_repo(stack)
-      cache_dir = PKG_DIR.join('cache')
-      FileUtils.mkdir_p(cache_dir)
+      FileUtils.mkdir_p(CACHE_DIR)
       s3 = Nemesis::Aws::Sdk::S3.new
       packages = get_bucket_from_stack(stack, 'repo')
       repo = s3.buckets[packages]
       debs = repo.objects.select{|o| o.key =~ /\.deb/}
       debs.each do |deb|
         package = File.basename(deb.key)
-        cache_path = cache_dir.join(package)
+        cache_path = CACHE_DIR.join(package)
         if needs_update?(cache_path, deb)
           Nemesis::Log.info("Downloading #{package}")
           File.open(cache_path, 'wb') do |file|
@@ -122,31 +121,29 @@ module NemesisOps::Cli
         exit 1
       end
 
-      dist_dir = BASE_PATH.join("dist")
-      cache_dir = PKG_DIR.join("cache")
-      repo_dir = PKG_DIR.join("repo")
+      dist_dir = NemesisOps::BASE_PATH.join("dist")
 
-      # Copy the dist_dir contents over to the cache_dir
-      FileUtils.cp_r(Dir.glob(dist_dir.join('*')), cache_dir)
+      # Copy the dist_dir contents over to the CACHE_DIR 
+      FileUtils.cp_r(Dir.glob(dist_dir.join('*')), CACHE_DIR)
 
       # Get the contents of the existing repo
       get_repo(stack)
 
       # Build the repo w/ Aptly
-      Dir.chdir(repo_dir) do |d|
+      Dir.chdir(REPO_DIR) do |d|
         unless File.directory?('db') && File.directory?('pool')
           aptly "repo create --distribution=#{DEFAULT_OS} --architectures=amd64 nemesis-testing"
         end
-        aptly "repo add --force-replace=true nemesis-testing #{cache_dir}"
+        aptly "repo add --force-replace=true nemesis-testing #{CACHE_DIR}"
         unless File.directory?('public')
           aptly "publish repo --gpg-key=#{gpg_key} nemesis-testing"
         else
-          aptly "publish update --gpg-key=#{gpg_key} #{DEFAULT_OS}"
+          aptly "publish update --gpg-key=#{gpg_key} #{NemesisOps::DEFAULT_OS}"
         end
       end
 
       # Add the GPG key to the repo
-      key_file = repo_dir.join("public", "pubkey.gpg")
+      key_file = REPO_DIR.join("public", "pubkey.gpg")
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
   end

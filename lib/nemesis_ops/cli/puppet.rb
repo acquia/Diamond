@@ -18,15 +18,14 @@ module NemesisOps::Cli
 
     desc "build", "Build the Nemesis Puppet deb"
     method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
-    method_option :gpg_key, :type => :string, :default => $gpg_key, :desc => "After creating the package rebuild the repo"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "After creating the package rebuild the repo"
     def build(stack_name)
       version = '0.4'
-      cache_dir = $pkg_dir.join('cache')
 
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)
 
-      puppet_packages = Dir.glob(cache_dir.join("/*.deb")).select{|package| package.match("nemesis-puppet_#{version}")}
+      puppet_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("/*.deb")).select{|package| package.match("nemesis-puppet_#{version}")}
       unless puppet_packages.empty?
         revision = puppet_packages.reduce(0) do |a, e|
           rev = e.match(/nemesis-puppet.*-(.*)_/)[1].to_i
@@ -38,17 +37,17 @@ module NemesisOps::Cli
       end
 
       Nemesis::Log.info('Updating puppet 3rd party modules')
-      result = `librarian-puppet install`
+      Nemesis::Log.info(`librarian-puppet install`)
 
       Dir.mktmpdir do |dir|
-        FileUtils.cp_r($base_path + 'puppet', dir)
+        FileUtils.cp_r(NemesisOps::BASE_PATH + 'puppet', dir)
         source = Pathname.new(dir) + 'puppet' + 'third_party'
         files = Dir.glob(source + '*')
         dest = dir + '/puppet' + '/modules'
         FileUtils.mv(files, dest, verbose: true, force: true)
         FileUtils.rm_r(source)
         cli = "fpm" \
-              "--force" \
+              " --force" \
               " -C #{dir + '/puppet'}" \
               " -s dir" \
               " -t deb" \
@@ -66,7 +65,7 @@ module NemesisOps::Cli
         Nemesis::Log.info(result)
         # Really unsafe
         result = eval(result)
-        FileUtils.mv(result[:path], cache_dir)
+        FileUtils.mv(result[:path], NemesisOps::Cli::Common::CACHE_DIR)
       end
 
       if options[:build_repo]
