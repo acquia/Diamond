@@ -33,7 +33,7 @@ module NemesisOps::Cli
       if path.directory?
         Dir.glob(path.to_s + '/**/*').each do |file|
           next if File.directory? file
-          EXCLUDE_PATTERNS.each do |pattern|
+          NemesisOps::EXCLUDE_PATTERNS.each do |pattern|
             next if file =~ pattern
           end
           file_path = Pathname.new(file)
@@ -132,7 +132,7 @@ module NemesisOps::Cli
       # Build the repo w/ Aptly
       Dir.chdir(REPO_DIR) do |d|
         unless File.directory?('db') && File.directory?('pool')
-          aptly "repo create --distribution=#{DEFAULT_OS} --architectures=amd64 nemesis-testing"
+          aptly "repo create --distribution=#{NemesisOps::DEFAULT_OS} --architectures=amd64 nemesis-testing"
         end
         aptly "repo add --force-replace=true nemesis-testing #{CACHE_DIR}"
         unless File.directory?('public')

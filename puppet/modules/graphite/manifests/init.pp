@@ -2,7 +2,7 @@ class graphite {
   include apt
   require graphite::apache
 
-  $version = '0.1.1-0~trusty'
+  $version = '0.1.2-0~trusty'
 
   package { 'libcairo2':
     ensure => 'latest',
@@ -22,7 +22,7 @@ class graphite {
   }
 
   exec { 'syncdb':
-    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py syncdb --noinput"',
+    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/bin/django-admin.py syncdb --noinput --settings=graphite.settings"',
     onlyif  => 'bash -c "test ! -f /opt/graphite/storage/graphite.db"',
     require => Package['graphite'],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
@@ -34,7 +34,7 @@ class graphite {
   }
 
   exec { 'collectstatic':
-    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/webapp/graphite/manage.py collectstatic --noinput --verbosity=0"',
+    command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/bin/django-admin.py collectstatic --noinput --verbosity=0 --settings=graphite.settings"',
     require => Package['graphite'],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
   }
