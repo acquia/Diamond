@@ -77,8 +77,8 @@ done
 gh-pip 'acquia' 'graphite-web'
 gh-pip 'acquia' 'ceres'
 gh-pip 'acquia' 'carbon' 'db-plugin'
-gh-pip 'acquia' 'graphite-cassandra-plugin'
 gh-pip 'acquia' 'carbon-cassandra-plugin'
+gh-pip 'acquia' 'graphite-cassandra-plugin'
 
 # Write graphite.wsgi to graphite-web conf so it can run out of the virtual env
 ( cat <<- EOF > $BASEDIR/conf/graphite.wsgi
