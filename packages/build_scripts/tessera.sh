@@ -33,13 +33,14 @@ ARCH=$(uname -m)
 
 BASEDIR=/opt/tessera
 
-apt-get install -y git python-virtualenv python-pip python-dev npm nodejs-legacy
+apt-get install -y git python-virtualenv python-pip python-dev npm nodejs-legacy libmysqlclient-dev
 
 git clone git@github.com:urbanairship/tessera.git $BASEDIR
 cd $BASEDIR
 virtualenv $BASEDIR
 source ${BASEDIR}/bin/activate
 pip install -r requirements.txt
+pip install mysql-python
 npm install -g grunt-cli
 npm install
 grunt
