@@ -1,0 +1,6 @@
+<%-
+password = @tessera_password
+if password
+-%>
+stacksight:{SHA}<%= Digest::SHA1.base64digest(password) %>
+<%- end -%>
