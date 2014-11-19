@@ -26,7 +26,7 @@ set -ex
 
 NAME="tessera"
 VERSION="0.1.0"
-DEB_BUILD_VERSION="1"
+DEB_BUILD_VERSION="2"
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
