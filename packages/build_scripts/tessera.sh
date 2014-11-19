@@ -54,6 +54,7 @@ fpm --force -t deb -s dir \
   --provides "tessera" \
   --depends "python" \
   --depends "python-virtualenv" \
+  --depends "libmysqlclient-dev" \
   -n ${NAME} \
   -v ${VERSION}-${DEB_BUILD_VERSION}~${OS} \
   -m "hosting-eng@acquia.com" \
