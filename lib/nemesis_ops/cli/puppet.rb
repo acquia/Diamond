@@ -16,11 +16,11 @@ module NemesisOps::Cli
   class Puppet < Thor
     include NemesisOps::Cli::Common
 
-    desc "build", "Build the Nemesis Puppet deb"
+    desc "build STACK", "Build the Nemesis Puppet deb"
     method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "After creating the package rebuild the repo"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
     def build(stack_name)
-      version = '0.4'
+      version = '0.9.7'
 
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)

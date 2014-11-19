@@ -17,7 +17,7 @@ module NemesisOps::Cli
     include NemesisOps::Cli::Common
 
     desc "upload STACK PACKAGE", "Add a package to the stack's package listing"
-    method_option :gpg_key, :type => :string, :default => $gpg_key, :desc => "After creating the package rebuild the repo"
+    method_option :gpg_key, :type => :string, :default => $gpg_key, :desc => "The GPG key used to sign the packages"
     def upload(stack_name, package)
       path = Pathname.new(File.absolute_path(package))
       unless File.exists? path
@@ -35,7 +35,7 @@ module NemesisOps::Cli
     end
 
     desc "construct-repo STACK", "Build the Apt repo"
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "After creating the package rebuild the repo"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
     def construct_repo(stack)
       build_repo(stack, options[:gpg_key])
     end
