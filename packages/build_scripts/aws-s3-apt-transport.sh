@@ -26,6 +26,7 @@ BASEDIR=/tmp/apt-s3
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
 
+apt-get update -y
 apt-get install -y build-essential g++ libapt-pkg-dev libcurl4-openssl-dev
 apt-get install -y dh-make debhelper cdbs
 

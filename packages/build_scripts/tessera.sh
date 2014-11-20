@@ -33,6 +33,7 @@ ARCH=$(uname -m)
 
 BASEDIR=/opt/tessera
 
+apt-get update -y
 apt-get install -y git python-virtualenv python-pip python-dev npm nodejs-legacy libmysqlclient-dev
 
 git clone git@github.com:urbanairship/tessera.git $BASEDIR

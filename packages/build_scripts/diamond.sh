@@ -25,6 +25,7 @@ BASEDIR=/tmp/${NAME}
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
 
+apt-get update -y
 apt-get install -y build-essential
 apt-get install -y dh-make debhelper cdbs python-support
 
