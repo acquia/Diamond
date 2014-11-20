@@ -21,7 +21,7 @@ tmp
 
 # Project-specific
 dist
-packages/cache/*.deb
+packages/cache/*
 packages/repo/*
 packages/db/*
 *.tgz
