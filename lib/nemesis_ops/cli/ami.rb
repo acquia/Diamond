@@ -23,12 +23,11 @@ module NemesisOps::Cli
     include NemesisOps::Cli::Common
 
     desc 'template CONFIG', 'Get a Packer-compatable template for building an AMI'
+    method_option :repo, alias: '-r', type: 'string', default: nil, desc: 'Stack to write the AMI to'
+    method_option :regions, type: :array, required: true, desc: 'A list of regions to copy the resulting AMI to'
+    method_option :tag, type: :string, required: true, desc: 'A tag to apply to use to find the AMI when launching in Nemesis'
     def template(config)
-      unless File.exists? File.absolute_path(config)
-        say "Configuration file #{config} does not exist"
-        exit 1
-      end
-      template = PackerGen::Templates::Aws::UbuntuServer.new(config, 'm3.medium')
+      template = NemesisOps::Ami.generate_template(options)
       say template.to_json
     end
 

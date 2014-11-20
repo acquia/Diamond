@@ -22,6 +22,8 @@ Dependencies needed to be installed and configured before working with the Nemes
         * Mac: brew install aptly gnu-tar
   * Nemesis gem installed or available in RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
+  * Packer
+    * Mac: brew tap homebrew/binary && brew install packer
 
 ## Setup
 
@@ -43,19 +45,31 @@ script is left in the ./dist directory.
 
 ## Building the nemesis-puppet package
 
-    ./nemesis-ops puppet build ${stack_name}
+    nemesis-ops puppet build ${stack_name}
 
 
 ## Creating the apt mirror
 
     nemesis bootstrap ${stack_name}
-    ./nemesis-ops package construct-repo ${stack_name}
-    ./nemesis-ops package upload-repo ${stack_name}
+    nemesis-ops package construct-repo ${stack_name}
+    nemesis-ops package upload-repo ${stack_name}
 
 
 ## Updating a specific package
 
-    ./nemesis-ops package add ${stack_name} packages/cache/*.deb
+    nemesis-ops package add ${stack_name} packages/cache/*.deb
+
+## Building an AMI
+Run the following commands to generate an AMI in the region specified above.
+Passing in a list of regions stores the AMI in the first region in the list and
+copies it to the other regions once the build is complete.
+
+    nemesis-ops ami template --repo ${stack_name} \
+      --tag ${tag} \
+      --regions=<list_of_regions> 
+      <path_to_yaml_file> > /tmp/ami.json
+
+    packer build /tmp/ami.json
 
 
 ## License
