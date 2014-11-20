@@ -25,6 +25,7 @@ sudo apt-get upgrade -y
 # Install default packages
 sudo apt-get install -y build-essential curl git
 sudo apt-get install -y ruby ruby-dev
+sudo gem install --no-ri --no-rdoc fpm
 
 # Install latest Docker version
 sudo curl -sSL https://get.docker.io/gpg | sudo apt-key add -

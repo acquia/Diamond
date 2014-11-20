@@ -20,7 +20,7 @@
 #
 # Usage:
 # 	build-all.sh
-# 	build-all.sh cassandra.sh
+# 	build-all.sh -b cassandra.sh
 #
 set -e
 
