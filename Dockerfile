@@ -17,20 +17,30 @@ FROM ubuntu:trusty
 ENV HOME /root
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get update -y && apt-get dist-upgrade -y
 
 # Install default packages
-RUN apt-get install -y build-essential git curl \
+RUN apt-get install -y build-essential pkg-config git curl \
+                       libtool libpcre3-dev libreadline-dev \
                        dh-make debhelper cdbs python-support \
                        ruby ruby-dev \
                        python-virtualenv python-pip python-dev \
                        golang golang-go mercurial
 
 # Ruby Gems
-RUN echo 'gem: --no-rdoc --no-ri' >> /etc/gemrc
-RUN gem install aws-sdk fpm pry
+RUN echo 'gem: --no-rdoc --no-ri' >> /etc/gemrc && \
+      gem install aws-sdk fpm pry
 
 # Add default known_hosts
 RUN mkdir -p $HOME/.ssh && \
       ssh-keyscan github.com >> $HOME/.ssh/known_hosts && \
       chmod -R 600 $HOME/.ssh
+
+# Clean up
+RUN apt-get clean && \
+      rm -rf /var/cache/apt/* && \
+      rm -rf /var/lib/apt/lists/* && \
+      rm -rf /tmp/* && \
+      rm -rf /var/tmp/*
+
+WORKDIR $HOME
