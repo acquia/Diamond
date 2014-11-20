@@ -47,6 +47,7 @@ function gh-pip() {
 }
 
 # Install the build deps needed to create the packages
+apt-get update -y
 apt-get install -y git python-virtualenv python-pip python-dev
 
 # Setup the virtual env

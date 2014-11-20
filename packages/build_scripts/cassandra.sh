@@ -30,7 +30,7 @@ gpg --export --armor | sudo apt-key add -
 echo "deb http://www.apache.org/dist/cassandra/debian ${DEB_VERSION} main" > /etc/apt/sources.list.d/cassandra.list
 
 # Update and download the cassandra deb package
-apt-get update
+apt-get update -y
 apt-get download cassandra
 
 # If in a VM copy then deb file over
