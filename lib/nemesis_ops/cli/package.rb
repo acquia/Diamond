@@ -17,7 +17,7 @@ module NemesisOps::Cli
     include NemesisOps::Cli::Common
 
     desc "upload STACK PACKAGE", "Add a package to the stack's package listing"
-    method_option :gpg_key, :type => :string, :default => $gpg_key, :desc => "The GPG key used to sign the packages"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
     def upload(stack_name, package)
       path = Pathname.new(File.absolute_path(package))
       unless File.exists? path
