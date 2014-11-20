@@ -1,0 +1,15 @@
+<%-
+password = @tessera_password
+-%>
+  ErrorLog /opt/tessera/etc/log/error.log
+  CustomLog /opt/tessera/etc/log/access.log common
+	
+  <%- if password -%>	
+	  <Location />
+	    AuthType Basic
+	    AuthName "Login Required"
+	    AuthBasicProvider file
+	    AuthUserFile /opt/tessera/.tessera_access
+	    Require valid-user
+	  </Location>
+  <%- end -%>
