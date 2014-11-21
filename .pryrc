@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require 'nemesis'
+require 'nemesis_ops'
 require 'pp'
 
 def ec2
