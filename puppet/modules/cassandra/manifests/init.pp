@@ -18,19 +18,19 @@ class cassandra {
     comment => 'Cassandra user',
   }
 
-  file { "/var/lib/cassandra":
-    ensure => "directory",
-    owner  => "cassandra",
-    group  => "cassandra",
-    mode   => 755,
+  file { '/var/lib/cassandra':
+    ensure  => 'directory',
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0755',
     require => [ User['cassandra'], ],
   }
 
-  file { "/var/log/cassandra":
-    ensure => "directory",
-    owner  => "cassandra",
-    group  => "cassandra",
-    mode   => 755,
+  file { '/var/log/cassandra':
+    ensure  => 'directory',
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0755',
     require => [ User['cassandra'], ],
   }
 
@@ -39,24 +39,24 @@ class cassandra {
     name    => 'cassandra',
     require => [
       User['cassandra'],
-      File["/var/lib/cassandra"],
-      File["/var/log/cassandra"],
+      File['/var/lib/cassandra'],
+      File['/var/log/cassandra'],
     ],
   }
 
   service {'cassandra':
-    ensure  => "running",
-    enable  => "true",
-    hasstatus => "true",
+    ensure     => 'running',
+    enable     => true,
+    hasstatus  => true,
     hasrestart => true,
-    require => Package["cassandra"],
+    require    => Package['cassandra'],
   }
 
   file {'/usr/share/cassandra/lib/jna.jar':
     ensure  => link,
     target  => '/usr/share/java/jna.jar',
     require => Package['cassandra'],
-    notify => [ Service["cassandra"], ],
+    notify  => [ Service['cassandra'], ],
   }
 
   file {'/etc/cassandra/cassandra.yaml':
@@ -65,7 +65,7 @@ class cassandra {
     mode    => '0644',
     content => template('cassandra/cassandra.yaml.erb'),
     require => Package['cassandra'],
-    notify => [ Service["cassandra"], ],
+    notify  => [ Service['cassandra'], ],
   }
 
   file {'/etc/default/cassandra':
@@ -74,7 +74,7 @@ class cassandra {
     mode    => '0644',
     content => template('cassandra/cassandra_default.erb'),
     require => Package['cassandra'],
-    notify => [ Service["cassandra"], ],
+    notify  => [ Service['cassandra'], ],
   }
 
   package {'tablesnap':
@@ -93,11 +93,11 @@ class cassandra {
   }
 
   service {'tablesnap':
-    ensure  => "running",
-    enable  => "true",
-    hasstatus => "true",
+    ensure     => 'running',
+    enable     => true,
+    hasstatus  => true,
     hasrestart => true,
-    require => [ Package["tablesnap"], File['/etc/default/tablesnap'], ],
+    require    => [ Package['tablesnap'], File['/etc/default/tablesnap'], ],
   }
 
 }

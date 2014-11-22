@@ -17,3 +17,10 @@ gemspec
 
 gem 'nemesis', :git => 'git@github.com:acquia/nemesis.git'
 gem 'packer_gen', :git => 'git@github.com:acquia/packer-gen.git'
+
+group :development, :test do
+  gem 'rake',                    require: false
+  gem 'puppetlabs_spec_helper',  require: false
+  gem 'puppet-lint',             require: false
+  gem 'rubocop',                 require: false
+end

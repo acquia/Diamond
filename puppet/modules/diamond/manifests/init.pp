@@ -25,11 +25,11 @@ class diamond {
   }
 
   file {'/etc/diamond/diamond.conf':
-    owner => 'diamond',
-    group => 'diamond',
-    mode => '0644',
+    owner   => 'diamond',
+    group   => 'diamond',
+    mode    => '0644',
     require => Package['diamond'],
     content => template('diamond/diamond.conf.erb'),
-    notify => Service['diamond'],
+    notify  => Service['diamond'],
   }
 }
