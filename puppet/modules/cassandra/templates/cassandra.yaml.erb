@@ -28,6 +28,7 @@ overrides = {
   "listen_address" => Facter.value("ec2_local_ipv4"),
   "broadcast_rpc_address" => Facter.value('ec2_local_ipv4'),
   "rpc_server_type" => "hsha",
+  "rpc_max_threads" => 2048,
   "incremental_backups" => true,
   "concurrent_compactors" => Facter.value('processors')['count'],
   "endpoint_snitch" => "Ec2MultiRegionSnitch",
