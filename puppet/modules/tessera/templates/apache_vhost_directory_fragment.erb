@@ -1,10 +1,10 @@
 <%-
-password = @tessera_password
+password = @tessera_web_ui_password
 -%>
   ErrorLog /opt/tessera/etc/log/error.log
   CustomLog /opt/tessera/etc/log/access.log common
-	
-  <%- if password -%>	
+
+  <%- if password -%>
 	  <Location />
 	    AuthType Basic
 	    AuthName "Login Required"

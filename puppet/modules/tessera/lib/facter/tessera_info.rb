@@ -33,7 +33,13 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
     end
   end
 
-  Facter.add('tessera_password') do
+  Facter.add('tessera_web_ui_username') do
+    setcode do
+      params['TesseraUiUsername']
+    end
+  end
+
+  Facter.add('tessera_web_ui_password') do
     setcode do
       params['TesseraUiPassword']
     end

@@ -1,6 +1,7 @@
 <%-
-password = @tessera_password
+username = @tessera_web_ui_username
+password = @tessera_web_ui_password
 if password
 -%>
-stacksight:{SHA}<%= Digest::SHA1.base64digest(password) %>
+<%= username %>:{SHA}<%= Digest::SHA1.base64digest(password) %>
 <%- end -%>
