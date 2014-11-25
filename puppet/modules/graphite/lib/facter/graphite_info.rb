@@ -8,7 +8,13 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'g
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
   params = stack.stack.parameters
 
-  Facter.add('graphite_password') do
+  Facter.add('graphite_web_ui_username') do
+    setcode do
+      params['GraphiteUiUsername']
+    end
+  end
+
+  Facter.add('graphite_web_ui_password') do
     setcode do
       params['GraphiteUiPassword']
     end
