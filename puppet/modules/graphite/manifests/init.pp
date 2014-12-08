@@ -164,6 +164,7 @@ class graphite {
 
   service { 'carbon-writer':
     ensure  => running,
+    provider => 'upstart',
     require => [ File['upstart_conf'], Package['graphite'], Exec['own-graphite'] ],
   }
 
