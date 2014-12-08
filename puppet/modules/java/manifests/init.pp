@@ -10,18 +10,18 @@ class java {
     mode   => '0600',
   }
 
-  package { "oracle-jdk7-installer":
-    ensure => installed,
+  package { 'oracle-jdk7-installer':
+    ensure       => installed,
     responsefile => '/tmp/java.preseed',
-    require => [ File['/tmp/java.preseed'], Package['openjdk-7-jre-headless'] ],
+    require      => [ File['/tmp/java.preseed'], Package['openjdk-7-jre-headless'] ],
   }
 
-  package { "oracle-java7-set-default":
-    ensure => installed,
-    require => [ Package["oracle-jdk7-installer"], ],
+  package { 'oracle-java7-set-default':
+    ensure  => installed,
+    require => [ Package['oracle-jdk7-installer'], ],
   }
 
-  package{"libjna-java":
+  package{'libjna-java':
     ensure => installed,
   }
 }

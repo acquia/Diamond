@@ -13,5 +13,5 @@ class base::repos {
   #  include_src => false,
   #}
 
-  apt::ppa { "ppa:webupd8team/java": }
+  apt::ppa { 'ppa:webupd8team/java': }
 }

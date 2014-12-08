@@ -23,7 +23,7 @@ class base::packages {
   }
 
   package { 'syslog-ng':
-    ensure => 'latest',
+    ensure  => 'latest',
     require => Package['syslog-ng-core'],
   }
 

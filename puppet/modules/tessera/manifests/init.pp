@@ -14,34 +14,34 @@ class tessera {
   }
     
   file { '/opt/tessera/etc/config.py':
-    ensure   => present,
-    content  => template('tessera/config.py.erb'),
-    require  => [ Package["tessera"], ],
+    ensure  => present,
+    content => template('tessera/config.py.erb'),
+    require => [ Package['tessera'], ],
   }
   
-  file { [ "/opt", "/opt/tessera", "/opt/tessera/etc", "/opt/tessera/etc/log" ]:
+  file { [ '/opt', '/opt/tessera', '/opt/tessera/etc', '/opt/tessera/etc/log' ]:
     ensure => directory,
     before => File ['/opt/tessera/etc/config.py'],
-  } 
+  }
 
   file { '/opt/tessera/etc/tessera.wsgi':
     ensure  => present,
-    source => 'puppet:///modules/tessera/tessera.wsgi',
-    mode => 'a+x',
-    require => [ Package["tessera"], ], 
+    source  => 'puppet:///modules/tessera/tessera.wsgi',
+    mode    => 'a+x',
+    require => [ Package['tessera'], ],
   }
 
   file { '/opt/tessera/etc/initialize_mysql.py' :
     ensure => present,
     source => 'puppet:///modules/tessera/initialize_mysql.py',
-    mode => 'a+x',
+    mode   => 'a+x',
     before => [Exec['own-tessera'], ],
   }
 
   exec {'own-tessera':
     command     => '/bin/chown www-data:www-data /opt/tessera',
     refreshonly => true,
-    require => Package["tessera"],
+    require     => Package['tessera'],
   }
 
   apache::vhost { 'tessera':
@@ -93,8 +93,8 @@ class tessera {
 
   exec { 'disable-default-site':
     command => '/usr/sbin/a2dissite 000-default && service apache2 reload',
-    onlyif => '/usr/sbin/a2query -c 000-default',
-    require => [Package["tessera"], ],
+    onlyif  => '/usr/sbin/a2query -c 000-default',
+    require => [Package['tessera'], ],
   }
 
 }
