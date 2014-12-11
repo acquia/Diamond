@@ -21,6 +21,8 @@
 set -ex
 
 DEB_VERSION="21x"
+# This needs to be kept in sync with the Cassandra module
+PACKAGE_VERSION='2.1.2'
 
 # Download and import the Cassandra GPG keys used to sign the release and deb mirror
 curl -s  https://dist.apache.org/repos/dist/release/cassandra/KEYS | gpg --import -
@@ -31,7 +33,7 @@ echo "deb http://www.apache.org/dist/cassandra/debian ${DEB_VERSION} main" > /et
 
 # Update and download the cassandra deb package
 apt-get update -y
-apt-get download cassandra
+apt-get download cassandra=$PACKAGE_VERSION
 
 # If in a VM copy then deb file over
 if [ -d "/dist/" ]; then
