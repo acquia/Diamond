@@ -19,8 +19,8 @@ module NemesisOps::Cli
     desc "build STACK", "Build the Nemesis Puppet deb"
     method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
-    def build(stack_name: Nemesis::DEFAULT_BOOTSTRAP_REPO)
-      version = '0.9.7'
+    def build(stack_name = Nemesis::DEFAULT_BOOTSTRAP_REPO)
+      version = '0.9.9.4'
 
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)
@@ -70,6 +70,16 @@ module NemesisOps::Cli
 
       if options[:build_repo]
         build_repo(stack_name, options[:gpg_key])
+      end
+    end
+
+    desc 'kick STACK', 'Trigger a Puppet run using the latest nemesis-puppet package'
+    def kick(stack)
+      cluster = Nemesis::Entities::Cluster.new(stack)
+      cluster.ssh.parallel_exec('apt-get update && apt-get install -y nemesis-puppet')
+      result = cluster.ssh.parallel_exec('cd /etc/puppet && puppet apply manifests/nodes.pp')
+      result.each do |server_result|
+        Nemesis::Log.info(server_result.first)
       end
     end
   end

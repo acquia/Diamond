@@ -1,8 +1,8 @@
 class puppet {
-  include apt
+  include base::repos
   require puppet::cron
 
-  apt::source { 'puppetlabs':
+  apt::source { 'puppet':
     location   => 'http://apt.puppetlabs.com',
     repos      => 'main',
     key        => '4BD6EC30',

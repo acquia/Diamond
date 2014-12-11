@@ -1,8 +1,15 @@
 class puppet::cron {
 
+  file { 'cron_script':
+    path   => '/usr/local/bin/run_puppet',
+    mode   => 0755,
+    source => 'puppet:///modules/puppet/run_puppet',
+  }
+
   cron { 'puppet_run':
-    command => 'cd /etc/puppet && /usr/bin/puppet apply manifests/nodes.pp',
-    user    => root,
-    hour    => '*/1',
+    require => File['cron_script'],
+    command => '/usr/local/bin/run_puppet',
+    user    => 'root',
+    minute  => '*/30',
   }
 }

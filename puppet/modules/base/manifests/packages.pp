@@ -1,4 +1,6 @@
 class base::packages {
+  require base::repos
+
   $common_packages = [
     'ack-grep',
     'ethtool',
@@ -25,6 +27,10 @@ class base::packages {
   package { 'syslog-ng':
     ensure  => 'latest',
     require => Package['syslog-ng-core'],
+  }
+
+  package { 'nemesis-puppet':
+    ensure => latest,
   }
 
   file { '/usr/bin/ack':

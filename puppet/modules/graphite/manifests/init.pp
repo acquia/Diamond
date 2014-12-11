@@ -1,5 +1,5 @@
 class graphite {
-  include apt
+  require base::repos
   require graphite::apache
 
   $version = '0.1.2-0~trusty'
