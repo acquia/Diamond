@@ -29,11 +29,11 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
 
   Facter.add('tessera_rds_endpoint_address') do
     setcode do
-      rds_db = cf.stack_resource(stack.stack_name,'TesseraRDSDB')
-      if rds_db.exists?
+      begin
+        rds_db = cf.stack_resource(stack.stack_name,'TesseraRDSDB')
         rds = AWS::RDS::DBInstance.new(rds_db.physical_resource_id)
         rds.endpoint_address
-      else
+      rescue
         nil
       end 
     end
