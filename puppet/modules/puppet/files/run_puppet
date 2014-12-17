@@ -1,0 +1,10 @@
+#!/bin/bash
+
+apt-get update
+VERSION_COUNT=$(apt-cache policy nemesis-puppet |  awk '/Installed|Candidate/{print $2}' | sort -u | wc -l)
+
+if [ ${VERSION_COUNT} -ne 1 ]; then
+  apt-get install -y nemesis-puppet
+fi
+
+cd /etc/puppet && puppet apply manifests/nodes.pp

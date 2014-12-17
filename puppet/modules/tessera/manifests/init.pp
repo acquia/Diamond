@@ -1,5 +1,5 @@
 class tessera {
-  include apt
+  require base::repos 
   require tessera::apache
 
   package { 'tessera':
