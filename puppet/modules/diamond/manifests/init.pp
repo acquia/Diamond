@@ -1,5 +1,5 @@
 class diamond {
-  include apt
+  require base::repos
   require diamond::packages
 
   group { 'diamond':
