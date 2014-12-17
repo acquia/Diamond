@@ -1,4 +1,5 @@
 # Nemesis Package Manager
+[![Build Status](https://magnum.travis-ci.com/acquia/nemesis-puppet.svg?token=fuZxkY8h1TVDnxYTXZSB&branch=master)](https://magnum.travis-ci.com/acquia/nemesis-puppet)  
 APT Packages manager and Puppet manifests used with Nemesis
 
 
