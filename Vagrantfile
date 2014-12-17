@@ -31,7 +31,7 @@ sudo gem install --no-ri --no-rdoc fpm
 sudo curl -sSL https://get.docker.io/gpg | sudo apt-key add -
 sudo echo "deb http://get.docker.io/ubuntu docker main" > /etc/apt/sources.list.d/docker.list
 sudo apt-get update -y
-sudo apt-get install -y linux-image-extra-`uname -r` aufs
+sudo apt-get install -y linux-image-extra-`uname -r` aufs-tools
 sudo apt-get install -y lxc-docker
 
 echo "Finished provisioning defaults"
