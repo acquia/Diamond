@@ -15,14 +15,15 @@
 # limitations under the License.
 #
 #
-# Packages Graphite for distribution
+# Packages Carbon for distribution
 #
-#  This package will setup a venv for graphite to run out of /opt/graphite and
+#  This package will setup a venv for carbon to run out of /opt/graphite and
 #  will install all dependencies into /opt/graphite/lib/pythonX.X/site-packages
+# This should not be used to run an actual carbon instance, we're just using it for rollups on Cassandra nodes
 #
 set -ex
 
-NAME="graphite"
+NAME="carbon"
 VERSION="0.1.3"
 DEB_BUILD_VERSION="0"
 
@@ -37,16 +38,8 @@ BASEDIR=/opt/graphite
 
 # Graphite python dependencies to install into the virtual env
 dependencies=$( cat <<EOF
-cairocffi
 pycassa
-Django<1.7
 Twisted<12.0
-tagging
-django-tagging
-pytz
-pyparsing
-simplejson
-whisper
 EOF
 )
 
@@ -61,7 +54,7 @@ function gh-pip() {
 
 # Install the build deps needed to create the packages
 apt-get update -y
-apt-get install -y git python-virtualenv python-pip python-cairo python-dev libffi-dev
+apt-get install -y git python-virtualenv python-pip python-dev
 
 # Setup the virtual env
 mkdir -p $BASEDIR
@@ -75,11 +68,8 @@ do
 done
 
 # Install any git packaged repos
-gh-pip 'acquia' 'graphite-web'
-gh-pip 'acquia' 'ceres'
 gh-pip 'acquia' 'carbon' 'db-plugin'
 gh-pip 'acquia' 'carbon-cassandra-plugin'
-gh-pip 'acquia' 'graphite-cassandra-plugin'
 
 # Disable the virtual env
 deactivate
@@ -89,14 +79,9 @@ fpm --force -t deb -s dir \
   --deb-user www-data --deb-group www-data \
   -a ${ARCH} \
   --vendor "Acquia, Inc." \
-  --provides "graphite" \
   --provides "carbon" \
-  --depends "apache2" \
-  --depends "libapache2-mod-wsgi" \
   --depends "python" \
   --depends "python-virtualenv" \
-  --depends "libffi-dev" \
-  --depends "libcairo2" \
   -n ${NAME} \
   -v ${VERSION}-${DEB_BUILD_VERSION}~${OS} \
   -m "hosting-eng@acquia.com" \
