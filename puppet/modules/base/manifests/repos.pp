@@ -1,6 +1,5 @@
 class base::repos {
   class { 'apt':
-    apt_update_frequency => 'daily',
     purge_sources_list_d => true,
   }
 
