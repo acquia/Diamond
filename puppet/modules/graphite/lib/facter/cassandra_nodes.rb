@@ -29,8 +29,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'g
     # Return the cassandra cql password
     Facter.add('cassandra_cql_password') do
       setcode do
-        cql_password = cf.stacks[cassandra_stack_name].outputs.select{|output| output.key == 'CqlPassword'}
-        (!cql_password.empty?) ? cql_password.first.value : nil
+        cf.stacks[cassandra_stack_name].parameters['CqlPassword']
       end
     end
 
