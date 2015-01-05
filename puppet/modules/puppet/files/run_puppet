@@ -7,4 +7,4 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   apt-get install -y nemesis-puppet
 fi
 
-cd /etc/puppet && puppet apply manifests/nodes.pp
+cd /etc/puppet && puppet apply manifests/nodes.pp --logdest /var/log/puppet.log
