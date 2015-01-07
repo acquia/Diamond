@@ -1,7 +1,6 @@
 class cassandra {
   require base
   require java
-  include cassandra::carbon
 
   $cassandra_version = '2.1.2'
 
