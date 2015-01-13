@@ -108,13 +108,6 @@ keys = rotated_file
 ### Defaults options for all Handlers
 [[default]]
 
-[[cloudwatchHandler]]
-
-region = <%= @ec2_placement_availability_zone[0..-2] %>
-
-# Generic CloudWatch metrics
-<%= cw_handler_config unless cw_handler_config.empty? %>
-
 [[ArchiveHandler]]
 
 # File to write archive log files
