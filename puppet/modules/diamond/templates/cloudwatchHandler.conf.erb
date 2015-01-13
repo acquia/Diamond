@@ -1,0 +1,90 @@
+region = <%= @ec2_placement_availability_zone[0..-2] %>
+
+# These configurations are derived by looking into the collector code.
+# The "collector" key maps to the "path" defined in the collector config.
+# The "metric" key maps to the value passed to the "publish" method when
+# the collector is processed.
+# The "namespace" key is a value that CloudWatch will use to group the metrics.
+# The "name" key is the unique name that CloudWatch will use to identify it.
+# The "unit" is one of the CloudWatch enums used to identify the metric unit.
+
+# Load Average metrics.
+[LoadAvg01]
+collector = loadavg
+metric = 01
+namespace = MachineLoad
+name = Avg01
+unit = None
+
+[LoadAvg05]
+collector = loadavg
+metric = 05
+namespace = MachineLoad
+name = Avg05
+unit = None
+
+[LoadAvg15]
+collector = loadavg
+metric = 15
+namespace = MachineLoad
+name = Avg15
+unit = None
+
+# Memory metrics.
+[MemTotal]
+collector = memory
+metric = MemTotal
+namespace = Memory
+name = MemTotal
+unit = None
+
+[MemFree]
+collector = memory
+metric = MemFree
+namespace = Memory
+name = MemFree
+unit = None
+
+[SwapTotal]
+collector = memory
+metric = SwapTotal
+namespace = Memory
+name = SwapTotal
+unit = None
+
+[SwapFree]
+collector = memory
+metric = SwapFree
+namespace = Memory
+name = SwapFree
+unit = None
+
+# Disk space metrics.
+[DiskMntAvail]
+collector = diskspace
+metric = _mnt.byte_avail
+namespace = DiskSpace
+name = MntAvail
+unit = None
+
+[DiskMntFree]
+collector = diskspace
+metric = _mnt.byte_free
+namespace = DiskSpace
+name = MntFree
+unit = None
+
+[DiskMntPercentFree]
+collector = diskspace
+metric = _mnt.byte_percentfree
+namespace = DiskSpace
+name = MntPercentFree
+unit = None
+
+[DiskMntUsed]
+collector = diskspace
+metric = _mnt.byte_used
+namespace = DiskSpace
+name = MntUsed
+unit = None
+

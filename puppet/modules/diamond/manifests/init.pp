@@ -32,4 +32,21 @@ class diamond {
     content => template('diamond/diamond.conf.erb'),
     notify  => Service['diamond'],
   }
+
+  file {'/etc/diamond/handlers':
+    ensure  => directory,
+    owner   => 'diamond',
+    group   => 'diamond',
+    mode    => '0644',
+    require => Package['diamond'],
+  }
+
+  file {'/etc/diamond/handlers/cloudwatchHandler.conf':
+    owner   => 'diamond',
+    group   => 'diamond',
+    mode    => '0644',
+    require => [ Package['diamond'], File['/etc/diamond/handlers'] ],
+    content => template('diamond/cloudwatchHandler.conf.erb'),
+    notify  => Service['diamond'],
+  }
 }
