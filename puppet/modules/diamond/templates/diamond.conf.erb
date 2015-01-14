@@ -1,67 +1,3 @@
-<%-
-
-  metrics_file = "/etc/metrics.json"
-  collectors_config = ""
-  cw_handler_config = ""
-
-  if File.exists? metrics_file
-    # Load the metrics list
-    metrics_json = JSON.parse(File.read(metrics_file))
-
-    def cloudwatch_handler_options(section_name, collector_path, diamond_metric, name, unit = "None", namespace = "CassandraMetrics")
-      cw_metrics = "\n"
-      cw_metrics << "[[['#{section_name}']]]\n"
-      cw_metrics << "collector = '#{collector_path}'\n"
-      cw_metrics << "metric = '#{diamond_metric}'\n"
-      cw_metrics << "namespace = #{namespace}\n"
-      cw_metrics << "name = '#{name}'\n"
-      cw_metrics << "unit = #{unit}\n"
-      cw_metrics
-    end
-
-    def write_cassandra_collector(collector_name, metrics)
-      conf = ''
-      handler = ''
-      conf << "\n[[#{collector_name}]]\n"
-      conf << "enabled = True\n"
-      conf << "[[[jmx_objects]]]\n"
-      metrics["metric_names"].each do |object_name, attributes|
-        attrs = attributes.map{|name, _| "\'#{name}\'"}.join(',')
-
-        conf << "[[[['#{object_name}']]]]\n"
-        conf << "object_name = '#{object_name}'\n"
-        conf << "attributes = #{attrs},\n"
-
-        attributes.each do |attribute_name, _|
-          metric_name = "#{object_name}.#{attribute_name}"
-          handler << cloudwatch_handler_options("#{metric_name.split('=').last}", collector_name, "metric.#{metric_name}", "#{collector_name}-#{metric_name}")
-        end
-      end
-      [conf, handler]
-    end
-
-    metrics_json['metrics'].each do |collector_name, metrics|
-      case collector_name
-      when 'CassandraCollector'
-        collector, handler = write_cassandra_collector(collector_name, metrics)
-        collectors_config << collector
-        cw_handler_config << handler
-      else
-        # collector config
-        collectors_config << "\n[[#{collector_name}]]\n"
-        unless metrics["diamond_options"].empty?
-          metrics["diamond_options"].each do |option_name, option_value|
-            collectors_config << "#{option_name} = #{option_value}\n"
-          end
-        end
-        # handler config
-        metrics['metric_names'].each do |metric_name, _|
-          cw_handler_config << cloudwatch_handler_options("#{metric_name}", metrics['diamond_options']['path'], metric_name, "#{collector_name}-#{metric_name}")
-        end
-      end
-    end
-  end
--%>
 ################################################################################
 # Diamond Configuration File
 ################################################################################
@@ -160,9 +96,6 @@ days = 7
 
 # Default Poll Interval (seconds)
 interval = 60
-
-# collectors config
-<%= collectors_config unless collectors_config.empty? %>
 
 ################################################################################
 ### Options for logging

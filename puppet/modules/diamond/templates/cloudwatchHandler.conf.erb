@@ -8,6 +8,8 @@ region = <%= @ec2_placement_availability_zone[0..-2] %>
 # The "name" key is the unique name that CloudWatch will use to identify it.
 # The "unit" is one of the CloudWatch enums used to identify the metric unit.
 
+# Default handler conf.
+
 # Load Average metrics.
 [LoadAvg01]
 collector = loadavg
