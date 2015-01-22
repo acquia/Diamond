@@ -19,24 +19,29 @@ describe 'base::instance_store' do
         aws_block_devices: ['/dev/xvdb'],
       }
     )
-
   end
 
   describe 'by default' do
     it { should compile.with_all_deps }
     it { should contain_physical_volume('/dev/xvdb') }
     it { should contain_physical_volume('/dev/xvdc') }
-    it { should contain_volume_group('instancevg').with({
-      ensure: 'present',
-      physical_volumes: ['/dev/xvdb', '/dev/xvdc'],
-      })
-    }
+    it do
+      should contain_volume_group('instancevg').with(
+        {
+          ensure: 'present',
+          physical_volumes: ['/dev/xvdb', '/dev/xvdc'],
+        }
+      )
+    end
 
-    it { should contain_logical_volume('islv').with({
-      volume_group: 'instancevg',
-      size: nil,
-      })
-    }
+    it do
+      should contain_logical_volume('islv').with(
+        {
+          volume_group: 'instancevg',
+          size: nil,
+        }
+      )
+    end
 
     it { should contain_mount('/mnt') }
     it { should contain_cron('ssd_trim') }

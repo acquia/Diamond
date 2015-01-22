@@ -23,7 +23,7 @@
 set -ex
 
 NAME="graphite"
-VERSION="0.1.7"
+VERSION="0.1.8"
 DEB_BUILD_VERSION="0"
 
 OS=$(lsb_release -cs)
