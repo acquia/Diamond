@@ -1,5 +1,4 @@
 class puppet {
-  include base::repos
   require puppet::cron
 
   apt::source { 'puppet':

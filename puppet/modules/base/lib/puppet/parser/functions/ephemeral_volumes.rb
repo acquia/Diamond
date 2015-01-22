@@ -12,7 +12,7 @@ module Puppet::Parser::Functions
     # Remove xvda and xvdb from this list
     # xvdb is managed seperately from this scheme because it is mounted
     # under /mnt on some aws instances
-    other_devices = blockdevices.split(',').reject{|dev| %w(xvda xvdb).include? dev}
+    other_devices = blockdevices.split(',').reject { |dev| %w(xvda xvdb).include? dev }
 
     index = 1
     logical_vols = other_devices.reduce({}) do |acc, device|

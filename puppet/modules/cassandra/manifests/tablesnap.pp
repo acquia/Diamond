@@ -1,6 +1,4 @@
 class cassandra::tablesnap {
-  require java
-
   package {'python-dateutil':
     ensure  => 'latest',
   }
