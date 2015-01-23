@@ -58,12 +58,6 @@ class diamond (
     order   => '01',
   }
 
-  concat::fragment {'cloudwatchHandlerDefault':
-    target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
-    source  => 'puppet:///modules/diamond/cloudwatch_handlers/default.conf',
-    order   => '02',
-  }
-
   file {'/etc/diamond/collectors':
     ensure  => directory,
     owner   => 'diamond',
