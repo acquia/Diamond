@@ -20,7 +20,7 @@ module NemesisOps::Cli
     method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
     def build(stack_name = Nemesis::DEFAULT_BOOTSTRAP_REPO)
-      version = '0.9.9.8'
+      version = '0.9.9.9'
 
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)
