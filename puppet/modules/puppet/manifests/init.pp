@@ -20,4 +20,9 @@ class puppet {
   package { 'hiera':
     ensure => latest,
   }
+
+  file { '/etc/puppet/puppet.conf':
+    ensure  => present,
+    source => 'puppet:///modules/puppet/puppet.conf',
+  }
 }

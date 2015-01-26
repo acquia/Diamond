@@ -62,6 +62,6 @@ class base::admin_users {
     ensure => present,
     user   => 'msonnabaum',
     type   => 'ssh-rsa',
-    key    => 'AAAAB3NzaC1yc2EAAAABIwAAAQEAyLvp8BrAncsxw1pbtDdQQMiWgHHO5MR9VRAhUTt1T/AOJWAGap0FYXQW3FCeaJNDi4HHnP5yKOXBlbrFCTC64UiTwba30KhZ8rDadivrwCkadcyxq/rwtbH4ti+pqG3GZBVdLFs2JtSFjZXE+9X0TxeKujEjGNtRcYbgNkI4HgXkpHrynKWkNzNsuBDkzBdnb5dZ1nfBz9sUwXzNm9wsSGUD/Sh9N6R01ZaY+FO10WH3cFIs36gV34t6GbtE4+U5cdl9dKY0lOYM5ZPbPD82yJmTXe6qWA9iJEA262ofEvo/JPzGggNM6kgZMukxiUOvZw+EF5IxUyuvgd2TEI6CvQ== msonnabaum@msonnabaum-mbp.local',
+    key    => 'AAAAB3NzaC1yc2EAAAABIwAAAQEAyLvp8BrAncsxw1pbtDdQQMiWgHHO5MR9VRAhUTt1T/AOJWAGap0FYXQW3FCeaJNDi4HHnP5yKOXBlbrFCTC64UiTwba30KhZ8rDadivrwCkadcyxq/rwtbH4ti+pqG3GZBVdLFs2JtSFjZXE+9X0TxeKujEjGNtRcYbgNkI4HgXkpHrynKWkNzNsuBDkzBdnb5dZ1nfBz9sUwXzNm9wsSGUD/Sh9N6R01ZaY+FO10WH3cFIs36gV34t6GbtE4+U5cdl9dKY0lOYM5ZPbPD82yJmTXe6qWA9iJEA262ofEvo/JPzGggNM6kgZMukxiUOvZw+EF5IxUyuvgd2TEI6CvQ==',
   }
 }
