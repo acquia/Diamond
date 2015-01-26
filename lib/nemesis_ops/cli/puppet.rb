@@ -25,16 +25,18 @@ module NemesisOps::Cli
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)
 
-      puppet_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("/*.deb")).select{|package| package.match("nemesis-puppet_#{version}")}
-      unless puppet_packages.empty?
-        revision = puppet_packages.reduce(0) do |a, e|
-          rev = e.match(/nemesis-puppet.*-(.*)_/)[1].to_i
-          a = rev > a ? rev : a
-        end
-        revision += 1
-      else
-        revision = 1
-      end
+      # TODO this needs to be fixed
+      #puppet_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("/*.deb")).select{|package| package.match("nemesis-puppet_#{version}")}
+      #unless puppet_packages.empty?
+      #  revision = puppet_packages.reduce(0) do |a, e|
+      #    rev = e.match(/nemesis-puppet.*-(.*)_/)[1].to_i
+      #    a = rev > a ? rev : a
+      #  end
+      #  revision += 1
+      #else
+      #  revision = 1
+      #end
+      revision = 3
 
       Nemesis::Log.info('Updating puppet 3rd party modules')
       Nemesis::Log.info(`librarian-puppet install`)
