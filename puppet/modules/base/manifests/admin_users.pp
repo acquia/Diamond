@@ -64,4 +64,19 @@ class base::admin_users {
     type   => 'ssh-rsa',
     key    => 'AAAAB3NzaC1yc2EAAAADAQABAAACAQDVr8lO/6OeG5d/6+nNMo53Mim8E5am0RSHj+BcddUgXkLid4PfOVeBzQWYOBcbJPBXXxtLX+uR+ynTyg0pIrdctoQ1Dy+9xixN3YNCT/j2veKXTCq8C9vJVm+51YNYKg2IHaMMH0d4jWE8b3iI8q159qUyxL2BBljOaKSKUBkZI0+ID8WCgHt5snH/3IbesIoHnj+BuuKgkvl7oRg8KX9TR8C6rZLFnVqdkxYdkrbuar+1tRaPYu4ZZrGLYzv6itRf8xhx+lBPv4RTHWCoPlAc0ayWeilY/MaFxZMzpmeS2djFjJ2jJvKYt7oBR/UACfaoxNd0/EALlbuDbmdtoMUDYOlBm1xPionJYke4TvgYCrhY/jK4twr73iPRDLysU9c9TidUlL6Jz5KO71rPPW2SaTGFo9KkXCN2LCnSAVFStRjxmUUVQRoq7tG30psZ1D9trUwdi6MY0KJuMtmBxM3bp5fRaiGBL8xT6NOqx3zQzkWXM3dKaABcE/iD9m6MFnih8H9HdmjJOohj6+0Qcjrd6dKDRdAECWMMTVUOe8sVr8zZlo+xoNkJerB2xmYpmHTe0lnZsbJeLup5mEYra/GNt6L9x9sdRwC/u3PRFFqeI32PiHwrYYpt25/4+QAF6YmUOOIsMJvhH3UHAwnORap5F2fqd7faT+BOETT4+pguaQ==',
   }
+
+  user { 'msonnabaum':
+    ensure     => present,
+    name       => 'msonnabaum',
+    managehome => true,
+    groups     => ['sudo'],
+    shell      => '/bin/bash',
+  }
+
+  ssh_authorized_key { 'msonnabaum':
+    ensure => present,
+    user   => 'msonnabaum',
+    type   => 'ssh-rsa',
+    key    => 'AAAAB3NzaC1yc2EAAAABIwAAAQEAyLvp8BrAncsxw1pbtDdQQMiWgHHO5MR9VRAhUTt1T/AOJWAGap0FYXQW3FCeaJNDi4HHnP5yKOXBlbrFCTC64UiTwba30KhZ8rDadivrwCkadcyxq/rwtbH4ti+pqG3GZBVdLFs2JtSFjZXE+9X0TxeKujEjGNtRcYbgNkI4HgXkpHrynKWkNzNsuBDkzBdnb5dZ1nfBz9sUwXzNm9wsSGUD/Sh9N6R01ZaY+FO10WH3cFIs36gV34t6GbtE4+U5cdl9dKY0lOYM5ZPbPD82yJmTXe6qWA9iJEA262ofEvo/JPzGggNM6kgZMukxiUOvZw+EF5IxUyuvgd2TEI6CvQ== msonnabaum@msonnabaum-mbp.local',
+  }
 }
