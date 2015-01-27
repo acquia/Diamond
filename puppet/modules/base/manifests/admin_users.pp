@@ -64,4 +64,19 @@ class base::admin_users {
     type   => 'ssh-rsa',
     key    => 'AAAAB3NzaC1yc2EAAAABIwAAAQEAyLvp8BrAncsxw1pbtDdQQMiWgHHO5MR9VRAhUTt1T/AOJWAGap0FYXQW3FCeaJNDi4HHnP5yKOXBlbrFCTC64UiTwba30KhZ8rDadivrwCkadcyxq/rwtbH4ti+pqG3GZBVdLFs2JtSFjZXE+9X0TxeKujEjGNtRcYbgNkI4HgXkpHrynKWkNzNsuBDkzBdnb5dZ1nfBz9sUwXzNm9wsSGUD/Sh9N6R01ZaY+FO10WH3cFIs36gV34t6GbtE4+U5cdl9dKY0lOYM5ZPbPD82yJmTXe6qWA9iJEA262ofEvo/JPzGggNM6kgZMukxiUOvZw+EF5IxUyuvgd2TEI6CvQ==',
   }
+
+  user { 'pimvanderwal':
+    ensure     => present,
+    name       => 'pimvanderwal',
+    managehome => true,
+    groups     => ['sudo'],
+    shell      => '/bin/bash',
+  }
+
+  ssh_authorized_key { 'pimvanderwal':
+    ensure => present,
+    user   => 'pimvanderwal',
+    type   => 'ssh-rsa',
+    key    => 'AAAAB3NzaC1yc2EAAAABIwAAAgEAlTTDohwyY3fqDBnax613RcQX/A1b8bajw53Kt5oN/dtjV9P0qkbwKKwoQce8gGA/A9rwHmO70/kEBf+EN/t8C7QKTqViwY7hvWX6gp8OB4VqeUrSb1XIl2UZV8IGb5SaRQ98jxkE2pfm1TLW86qJ0yxW63QYXXUNj0E6Sfw7T7GSjF94a0bm4TwhDqFnpe1Nv7hw/gigWldoIKrR/WG9w2hwtN6lROuW0SUcYTMoRgZBg6t2AuIWOsdb8AlS0VPdOh+bK3QRI9/dr0N7rx8xG5Nr7IcRN8dD4DYN+P+T99VAkmKszVDlCmdXMl/bIEGZUZl/6DR/VTEXPYITea8n+qbag8Pyc2FOQ+NO31Lt6fyJgGnGQTcXT0H24f3PNosb65gOo/fquEAVowg8uHD6DbipyzC2rinokvY5LAaxp+DHWsJAlnD29jrwjzPyesP6yv/SKGBKp4XSZAjDhwhTNiXiAaNoqP3uEdWeWLawRWp7ky8o70Ne1O6Dq/pomzaLSe72bZMAVVP2A1z5EUizJe57h3vbvzPZO14eze4ayL1L6gILrnxLCjhvvl4E2mLEqOF5Y7dfDDpupCAo7z8+AryrejXXyWOMqNu10NNs1OM6vCBDkAYPFTbaB/6BRJsBWmQnbgg+5cTX3u5FjPgJ2Nqwf9xONxFSgH9Ey0kIcq0=',
+  }
 }
