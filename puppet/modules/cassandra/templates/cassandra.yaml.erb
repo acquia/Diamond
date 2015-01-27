@@ -11,6 +11,7 @@ overrides = {
   "num_tokens" => 256,
   "max_hints_delivery_threads" => 8,
   "authenticator" => "PasswordAuthenticator",
+  "authorizer" => "CassandraAuthorizer",
   "partitioner" => "org.apache.cassandra.dht.Murmur3Partitioner",
   "rpc_address" => "0.0.0.0",
   "seed_provider" => [
