@@ -12,6 +12,6 @@ connect-port=2888
 backup-extra=throttle\=&bucket-name\=<%= @zk_config_location %>&key-prefix\=<%= @zk_s3_prefix %>&max-retries\=4&retry-sleep-ms\=30000
 observer-threshold=0
 election-port=3888
-zoo-cfg-extra=tickTime\=2000&initLimit\=10&syncLimit\=5&quorumListenOnAllIPs\=true
 auto-manage-instances-settling-period-ms=0
 auto-manage-instances=1
+zoo-cfg-extra=tickTime\=2000&initLimit\=10&syncLimit\=5&quorumListenOnAllIPs\=true&autopurge.purgeInterval\=24&autopurge.snapRetainCount\=5
