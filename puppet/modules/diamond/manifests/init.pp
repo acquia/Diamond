@@ -43,36 +43,49 @@ class diamond (
     require => Package['diamond'],
   }
 
-  concat {'/etc/diamond/handlers/cloudwatchHandler.conf':
-    ensure => present,
-    notify  => Service['diamond'],
-    owner   => 'diamond',
-    group   => 'diamond',
-    mode    => '0644',
-    require => [ Package['diamond'], File['/etc/diamond/handlers'] ],
-  }
+  if (str2bool($::cloudwatch_enabled)) {
+    # Cloudwatch contains config fragments for different services.
+    concat {'/etc/diamond/handlers/cloudwatchHandler.conf':
+      ensure => present,
+      notify  => Service['diamond'],
+      owner   => 'diamond',
+      group   => 'diamond',
+      mode    => '0644',
+      require => [ Package['diamond'], File['/etc/diamond/handlers'] ],
+    }
 
-  concat::fragment {'cloudwatchHandlerHeader':
-    target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
-    content => template('diamond/cloudwatchHandler.conf.erb'),
-    order   => '01',
-  }
+    # Default cloudwatch handler fragment.
+    concat::fragment {'cloudwatchHandlerHeader':
+      target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
+      content => template('diamond/cloudwatchHandler.conf.erb'),
+      order   => '01',
+    }
 
-  file {'/etc/diamond/collectors':
-    ensure  => directory,
-    owner   => 'diamond',
-    group   => 'diamond',
-    mode    => '0644',
-    require => Package['diamond'],
+    file {'/etc/diamond/collectors':
+      ensure  => directory,
+      owner   => 'diamond',
+      group   => 'diamond',
+      mode    => '0644',
+      require => Package['diamond'],
+    }
+
+    if ($cassandra) {
+      # Cassandra cloudwatch handler fragment.
+      concat::fragment {'cloudwatchHandlerCassandra':
+        target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
+        source  => 'puppet:///modules/diamond/cloudwatch_handlers/cassandra.conf',
+        order   => '03',
+      }
+    }
+  }
+  else {
+    file {'/etc/diamond/handlers/cloudwatchHandler.conf':
+      ensure => absent,
+      notify  => Service['diamond'],
+    }
   }
 
   if ($cassandra) {
-    concat::fragment {'cloudwatchHandlerCassandra':
-      target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
-      source  => 'puppet:///modules/diamond/cloudwatch_handlers/cassandra.conf',
-      order   => '03',
-    }
-
     file {'/etc/diamond/collectors/CassandraCollector.conf':
       owner   => 'diamond',
       group   => 'diamond',
@@ -82,6 +95,9 @@ class diamond (
       notify  => Service['diamond'],
     }
   }
-
-
+  else {
+    file {'/etc/diamond/collectors/CassandraCollector.conf':
+      ensure => absent,
+    }
+  }
 }
