@@ -79,4 +79,19 @@ class base::admin_users {
     type   => 'ssh-rsa',
     key    => 'AAAAB3NzaC1yc2EAAAABIwAAAgEAlTTDohwyY3fqDBnax613RcQX/A1b8bajw53Kt5oN/dtjV9P0qkbwKKwoQce8gGA/A9rwHmO70/kEBf+EN/t8C7QKTqViwY7hvWX6gp8OB4VqeUrSb1XIl2UZV8IGb5SaRQ98jxkE2pfm1TLW86qJ0yxW63QYXXUNj0E6Sfw7T7GSjF94a0bm4TwhDqFnpe1Nv7hw/gigWldoIKrR/WG9w2hwtN6lROuW0SUcYTMoRgZBg6t2AuIWOsdb8AlS0VPdOh+bK3QRI9/dr0N7rx8xG5Nr7IcRN8dD4DYN+P+T99VAkmKszVDlCmdXMl/bIEGZUZl/6DR/VTEXPYITea8n+qbag8Pyc2FOQ+NO31Lt6fyJgGnGQTcXT0H24f3PNosb65gOo/fquEAVowg8uHD6DbipyzC2rinokvY5LAaxp+DHWsJAlnD29jrwjzPyesP6yv/SKGBKp4XSZAjDhwhTNiXiAaNoqP3uEdWeWLawRWp7ky8o70Ne1O6Dq/pomzaLSe72bZMAVVP2A1z5EUizJe57h3vbvzPZO14eze4ayL1L6gILrnxLCjhvvl4E2mLEqOF5Y7dfDDpupCAo7z8+AryrejXXyWOMqNu10NNs1OM6vCBDkAYPFTbaB/6BRJsBWmQnbgg+5cTX3u5FjPgJ2Nqwf9xONxFSgH9Ey0kIcq0=',
   }
+
+  user { 'kasisnu':
+    ensure     => present,
+    name       => 'kasisnu',
+    managehome => true,
+    groups     => ['sudo'],
+    shell      => '/bin/bash',
+  }
+
+  ssh_authorized_key { 'kasisnu':
+    ensure => present,
+    user   => 'kasisnu',
+    type   => 'ssh-rsa',
+    key    => 'AAAAB3NzaC1yc2EAAAADAQABAAACAQDJEf3UFVNP68faCfuwacJoee3wUY+PWYvU5hHREVcyh63TeUKovrqKsS5p6dO9tZhOQayXGmM//JJn51m+2IP/cVRCUthDksVHkDQeXONgzgJbuRJT7hIrx0mUGB3QYlO9lQB63T3oNyJof6Ce3GUETDSiWCRah4RrYc/use06vEHQM2JqOOmEHfGocn91qawKV0xTE2wxe67KNlnp1hauoChQVe3FBMnUdYrMYBBvQRE5l33Th0el3+7YJPMz/v3qGRim054Yv3kns28LXANhiDwV9pIWz6+vBg6detyAk0KpKb7FhNsNugalQFdplz1+Hcr7CukUP30X5zqRCjBZ6Jah1sjTi8ee/85Xae6afWJA8TZiiQPfT6mJLGzSHnrBxtmZe356uIg16vbokpKLk4Nkn+BGAjp7nB3WDHwmcBVln14z9M+Wn2XYDbIxdufFKHGgnbr8IwIdveduaxnlAhMiGsud1uhkJAx46mUe/bOsri8KEhESRAS8vCLouVERxtsXAUIFzjX97QSkh2Be5Rr1Z1MuHqNNMEHOj51Dlsut1yjoslBrCG93LoTMJ8H6Hm4MjV6r9djWj6gH/KICziPa87z1DSutjKaw9C//H00pVUA6x5lqaydA8J4whNz79hS++OnSt2oMnA4yCKBO0UHVVvEWqfeqg0mA+XPYTQ==',
+  }
 }
