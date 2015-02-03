@@ -90,7 +90,7 @@ module NemesisOps::Cli
       bootstrap
       command = "aptly --config=#{NemesisOps::PKG_DIR}/aptly.conf #{cmd}"
       Nemesis::Log.info(command)
-      puts `#{command}`
+      `#{command}`
     end
 
     def get_repo(stack)
