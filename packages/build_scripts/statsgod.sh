@@ -21,18 +21,22 @@ set -ex
 
 NAME="statsgod"
 
+apt-get update -y
+apt-get install -y build-essential
+apt-get install -y dh-make debhelper cdbs python-support
+apt-get install -y curl mercurial
+
+# Set up golang
+export GO_VERSION=1.4.1
+curl -sSL https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/lib/ -xz && \
+	mkdir -p /usr/share/go
 export GOROOT=/usr/lib/go
 export GOPATH=/usr/share/go
-export PATH=$PATH:${GOROOT}/bin:${GOPATH}/bin
+export PATH=${GOROOT}/bin:${GOPATH}/bin:$PATH
 
 BASEDIR=${GOPATH}/src/github.com/acquia/${NAME}
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
-
-apt-get update -y
-apt-get install -y build-essential
-apt-get install -y dh-make debhelper cdbs python-support
-apt-get install -y golang golang-go mercurial
 
 git clone git@github.com:acquia/statsgod.git ${BASEDIR}
 
