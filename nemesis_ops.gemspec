@@ -41,5 +41,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'librarian-puppet'
   spec.add_dependency 'oj'
   spec.add_dependency 'puppet'
+  spec.add_dependency 'semantic'
   spec.add_dependency 'thor'
 end

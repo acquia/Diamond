@@ -101,14 +101,22 @@ module NemesisOps::Cli
         Nemesis::Log.info("Cleaning out s3/aptly/local-cache")
         s3 = Nemesis::Aws::Sdk::S3.new
         repo = s3.buckets[get_bucket_from_stack(stack_name, 'repo')]
-        #Find deletable devel packages in the bucket
+
+        # Find deletable devel packages in the bucket
         s3_del_candidates = repo.objects.select{|package| package.key =~ /nemesis-puppet.*\.deb/}
-        #Delete packages from bucket
+
+        # Delete packages from bucket
         s3_del_candidates.map(&:delete)
-        #Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
-        Dir.chdir(REPO_DIR) do |d|
-          aptly "db cleanup"
+
+        # Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
+        if File.exists? REPO_DIR
+          Dir.chdir(REPO_DIR) do |d|
+            aptly "db cleanup"
+          end
+        else
+          puts "Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?"
         end
+
         #Find packages and delete from local-cache.
         puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("*.deb")).select{|package| package =~ /nemesis-puppet.*\.deb/}
         FileUtils.rm(puppet_del_packages)
