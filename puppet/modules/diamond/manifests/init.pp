@@ -43,6 +43,14 @@ class diamond (
     require => Package['diamond'],
   }
 
+  file {'/etc/diamond/collectors':
+    ensure  => directory,
+    owner   => 'diamond',
+    group   => 'diamond',
+    mode    => '0644',
+    require => Package['diamond'],
+  }
+
   if (str2bool($::cloudwatch_enabled)) {
     # Cloudwatch contains config fragments for different services.
     concat {'/etc/diamond/handlers/cloudwatchHandler.conf':
@@ -59,14 +67,6 @@ class diamond (
       target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
       content => template('diamond/cloudwatchHandler.conf.erb'),
       order   => '01',
-    }
-
-    file {'/etc/diamond/collectors':
-      ensure  => directory,
-      owner   => 'diamond',
-      group   => 'diamond',
-      mode    => '0644',
-      require => Package['diamond'],
     }
 
     if ($cassandra) {
@@ -93,11 +93,6 @@ class diamond (
       require => File['/etc/diamond/collectors'],
       source  => 'puppet:///modules/diamond/CassandraCollector.conf',
       notify  => Service['diamond'],
-    }
-  }
-  else {
-    file {'/etc/diamond/collectors/CassandraCollector.conf':
-      ensure => absent,
     }
   }
 }
