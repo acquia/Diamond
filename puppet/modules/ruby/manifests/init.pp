@@ -39,7 +39,7 @@ class ruby {
 
   rvm_gem {
     'aws-sdk':
-      ensure       => 'latest',
+      ensure       => '1.61.0',
       name         => 'aws-sdk',
       ruby_version => 'ruby-2.1.2',
       require      => [ Class['rvm'], Rvm_system_ruby['ruby-2.1.2'] ];
