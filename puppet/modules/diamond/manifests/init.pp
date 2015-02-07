@@ -1,5 +1,6 @@
 class diamond (
-  $cassandra = false
+  $cloudwatch_enabled = false,
+  $cassandra = false,
 ){
   require base::repos
   require diamond::packages
@@ -51,7 +52,7 @@ class diamond (
     require => Package['diamond'],
   }
 
-  if (str2bool($::cloudwatch_enabled)) {
+  if (str2bool($cloudwatch_enabled)) {
     # Cloudwatch contains config fragments for different services.
     concat {'/etc/diamond/handlers/cloudwatchHandler.conf':
       ensure => present,
