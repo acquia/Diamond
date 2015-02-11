@@ -37,6 +37,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
 
   spec.add_dependency 'fpm'
+  spec.add_dependency 'hiera-eyaml'
+  spec.add_dependency 'hiera-eyaml-gpg'
   spec.add_dependency 'multi_json'
   spec.add_dependency 'librarian-puppet'
   spec.add_dependency 'oj'
