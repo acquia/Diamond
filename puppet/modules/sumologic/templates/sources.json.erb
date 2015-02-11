@@ -1,0 +1,32 @@
+# @todo: loop though $paths and add to json
+{
+  "api.version": "v1",
+  "sources": [
+    {
+      "sourceType": "LocalFile",
+      "name": "<%= @hostname %> syslog",
+      "description": "<%= @hostname %> syslog",
+      "category": "syslog",
+      "pathExpression": "/var/log/syslog",
+      "timeZone": "UTC",
+      "automaticDateParsing": true,
+      "multilineProcessingEnabled": true,
+      "useAutolineMatching": true,
+      "forceTimeZone": false,
+      "defaultDateFormat": "dd/MMM/yyyy HH:mm:ss"
+    },
+    {
+      "sourceType": "LocalFile",
+      "name": "<%= @hostname %> authlog",
+      "description": "<%= @hostname %> authlog",
+      "category": "syslog",
+      "pathExpression": "/var/log/authlog",
+      "timeZone": "UTC",
+      "automaticDateParsing": true,
+      "multilineProcessingEnabled": true,
+      "useAutolineMatching": true,
+      "forceTimeZone": false,
+      "defaultDateFormat": "dd/MMM/yyyy HH:mm:ss"
+    }
+  ]
+}
