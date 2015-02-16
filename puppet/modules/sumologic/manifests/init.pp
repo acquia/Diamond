@@ -46,12 +46,10 @@ class sumologic::sumologic (
     require => Package['sumocollector'],
     owner   => 'sumo',
     group   => 'sumo',
-  } -> file_line {
-    path => "/opt/SumoCollector/config/wrapper.conf",
+  } -> file_line { "/opt/SumoCollector/config/wrapper.conf":
     match => "^wrapper.java.command=${JAVA_COMMAND_LOCATION}",
     line => "wrapper.java.command=/usr/bin/java",
-  } -> file_line {
-    path => "/opt/SumoCollector/config/wrapper.conf",
+  } -> file_line { "/opt/SumoCollector/config/wrapper.conf":
     match => "^wrapper.app.parameter.3=installerSources/selected.json",
     line => $sumologic_wrapper_parameters,
   }
