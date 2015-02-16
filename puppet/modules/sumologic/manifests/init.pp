@@ -42,7 +42,7 @@ class sumologic::sumologic (
     group   => 'sumo',
   }
 
-  file { "/opt/SumoCollector/config/wrapper.conf"
+  file { "/opt/SumoCollector/config/wrapper.conf":
     require => Package['sumocollector'],
     owner   => 'sumo',
     group   => 'sumo',
