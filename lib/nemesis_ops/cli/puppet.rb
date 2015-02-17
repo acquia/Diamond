@@ -118,7 +118,7 @@ module NemesisOps::Cli
         end
 
         #Find packages and delete from local-cache.
-        puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("*.deb")).select{|package| package =~ /nemesis-puppet.*\.deb/}
+        puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("*.deb")).select{|package| File.basename(package) =~ /nemesis-puppet.*\.deb/}
         FileUtils.rm(puppet_del_packages)
     end
   end
