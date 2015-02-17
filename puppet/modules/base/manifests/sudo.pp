@@ -12,5 +12,7 @@ class base::sudo {
     mode      => '0440',
     source    => 'puppet:///modules/base/sudoers',
     show_diff => false,
+    owner     => root,
+    group     => root,
   }
 }
