@@ -5,7 +5,7 @@ require 'aws-sdk'
 require 'json'
 
 module AcquiaFacts
-  def snakecase(str)
+  def self.snakecase(str)
     return str.downcase if str =~ /^[A-Z_]+$/
     str.gsub(/\B[A-Z]/, '_\&').squeeze("_") =~ /_*(.*)/
     $+.downcase
