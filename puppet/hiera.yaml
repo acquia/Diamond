@@ -5,4 +5,5 @@
   :datadir: "/etc/puppet/hiera/"
 :hierarchy:
   - "%{::server_type}"
+  - "%{module_name}"
   - common
