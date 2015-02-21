@@ -44,26 +44,25 @@ sudo -E su -c /vagrant/packages/build_scripts/build-all.sh
 echo "Finished building packages"
 __BUILDSCRIPTS__
 
-Vagrant.configure("2") do |config|
-  config.vm.box = "trusty64"
-  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+Vagrant.configure('2') do |config|
+  config.vm.box = 'trusty64'
+  config.vm.box_url = 'https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box'
   config.ssh.forward_agent = true
 
   config.vm.provider :virtualbox do |vbox|
-    vbox.customize ["modifyvm", :id, "--memory", "1024"]
-    vbox.customize ["modifyvm", :id, "--cpus", "2"]
+    vbox.customize ['modifyvm', :id, '--memory', '1024']
+    vbox.customize ['modifyvm', :id, '--cpus', '2']
   end
 
   # Setup the default bootstrap script for our ubuntu base box image
-  config.vm.provision "shell", inline: $bootstrap_script
+  config.vm.provision 'shell', inline: $bootstrap_script
 
   # Setup the custom docker image from our Dockerfile
-  config.vm.provision "docker" do |d|
-    d.build_image "/vagrant", args: "-t nemesis"
+  config.vm.provision 'docker' do |d|
+    d.build_image '/vagrant', args: '-t nemesis'
   end
 
   # Build all packaging scripts, result will be left in the ./dist directory
   # after vagrant up has been run this can be re-run with: vagrant --provision-with build-scripts
-  #config.vm.provision "build-scripts", type: "shell", inline: $build_scripts
-
+  # config.vm.provision "build-scripts", type: "shell", inline: $build_scripts
 end

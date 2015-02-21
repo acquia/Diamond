@@ -24,8 +24,8 @@ require 'nemesis'
 
 module NemesisOps::Cli
   module Common
-    CACHE_DIR = NemesisOps::PKG_DIR.join("cache")
-    REPO_DIR = NemesisOps::PKG_DIR.join("repo")
+    CACHE_DIR = NemesisOps::PKG_DIR.join('cache')
+    REPO_DIR = NemesisOps::PKG_DIR.join('repo')
 
     def s3_upload(bucket, path, acl = :private)
       s3 = Nemesis::Aws::Sdk::S3.new
@@ -98,7 +98,7 @@ module NemesisOps::Cli
       s3 = Nemesis::Aws::Sdk::S3.new
       packages = get_bucket_from_stack(stack, 'repo')
       repo = s3.buckets[packages]
-      debs = repo.objects.select{|o| o.key =~ /\.deb/}
+      debs = repo.objects.select { |o| o.key =~ /\.deb/ }
       debs.each do |deb|
         package = File.basename(deb.key)
         cache_path = CACHE_DIR.join(package)
@@ -117,13 +117,13 @@ module NemesisOps::Cli
       bootstrap
       result = `which aptly`
       if result.empty?
-        puts "You need to install aptly"
+        puts 'You need to install aptly'
         exit 1
       end
 
-      dist_dir = NemesisOps::BASE_PATH.join("dist")
+      dist_dir = NemesisOps::BASE_PATH.join('dist')
 
-      # Copy the dist_dir contents over to the CACHE_DIR 
+      # Copy the dist_dir contents over to the CACHE_DIR
       FileUtils.cp_r(Dir.glob(dist_dir.join('*')), CACHE_DIR)
 
       # Get the contents of the existing repo
@@ -143,7 +143,7 @@ module NemesisOps::Cli
       end
 
       # Add the GPG key to the repo
-      key_file = REPO_DIR.join("public", "pubkey.gpg")
+      key_file = REPO_DIR.join('public', 'pubkey.gpg')
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
   end

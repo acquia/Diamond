@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "nemesis_ops/version"
+require 'nemesis_ops/version'
 
 module NemesisOps
-  GPG_KEY = "23406CA7"
-  DEFAULT_OS = "trusty"
+  GPG_KEY = '23406CA7'
+  DEFAULT_OS = 'trusty'
 
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
-  PKG_DIR = BASE_PATH.join("packages")
+  PKG_DIR = BASE_PATH.join('packages')
 
   # List of file patterns to always exclude from S3 syncs
   EXCLUDE_PATTERNS = [
