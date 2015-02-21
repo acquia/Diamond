@@ -95,6 +95,13 @@ module NemesisOps::Cli
       end
     end
 
+    desc 'gpg-package KEY_NAME VERSION', 'Build the package for the eyaml gpg key'
+    def gpg_package(key_name, version)
+      puts key_name
+      keys = NemesisOps::Puppet.get_gpg_key_data(key_name)
+      NemesisOps::Puppet.create_gpg_key_package(keys, version)
+    end
+
     private
 
     def clean_repo(stack_name)

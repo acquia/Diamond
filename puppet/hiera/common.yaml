@@ -15,4 +15,4 @@
 classes:
   - base
 
-diamond::cloudwatch_enabled: "%{cloud_watch_enabled}"
+diamond::cloudwatch_enabled: "%{cloudwatch_enabled}"

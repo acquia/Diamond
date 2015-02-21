@@ -14,3 +14,20 @@
 ---
 classes:
   - graphite
+  - sumologic
+
+sumologic::paths:
+  console:
+    :path: '/opt/graphite/storage/log/carbon-daemons/writer/console.log'
+    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+  access:
+    :path: '/opt/graphite/storage/log/webapp/access.log'
+    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+  error:
+    :path: '/opt/graphite/storage/log/webapp/error.log'
+    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+  exception: 
+    :path: '/opt/graphite/storage/log/webapp/exception.log'
+    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+
+sumologic::category: 'platform_health'
