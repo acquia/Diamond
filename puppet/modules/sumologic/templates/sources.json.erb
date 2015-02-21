@@ -1,32 +1,54 @@
-# @todo: loop though $paths and add to json
+<%-
+require 'json'
+
+files = []
+
+files << {
+  "sourceType" => "LocalFile",
+  "name" => "#{@hostname} syslog",
+  "description" => "#{@hostname} syslog",
+  "category" => "syslog",
+  "pathExpression" => "/var/log/syslog",
+  "timeZone" => "UTC",
+  "automaticDateParsing" => true,
+  "multilineProcessingEnabled" => true,
+  "useAutolineMatching" => true,
+  "forceTimeZone" => false,
+  "defaultDateFormat" => "MMM dd HH:mm:ss"
+  }
+
+files << {
+  "sourceType" => "LocalFile",
+  "name" => "#{@hostname} authlog",
+  "description" => "#{@hostname} authlog",
+  "category" => "syslog",
+  "pathExpression" => "/var/log/authlog",
+  "timeZone" => "UTC",
+  "automaticDateParsing" => true,
+  "multilineProcessingEnabled" => true,
+  "useAutolineMatching" => true,
+  "forceTimeZone" => false,
+  "defaultDateFormat" => "MMM dd HH:mm:ss"
+  }
+
+  @paths.each do |name, info|
+    files << {
+      "sourceType" => "LocalFile",
+      "name" => "#{@hostname} #{@server_type} #{name}",
+      "description" => "#{@hostname} #{@server_type} #{name}",
+      "category" => "#{@category}",
+      "pathExpression" => "#{info[:path]}",
+      "timeZone" => "UTC",
+      "automaticDateParsing" => true,
+      "multilineProcessingEnabled" => true,
+      "useAutolineMatching" => true,
+      "forceTimeZone" => false,
+      "defaultDateFormat" => "#{info[:date_format]}"
+    }
+  end
+-%>
+
 {
   "api.version": "v1",
-  "sources": [
-    {
-      "sourceType": "LocalFile",
-      "name": "<%= @hostname %> syslog",
-      "description": "<%= @hostname %> syslog",
-      "category": "syslog",
-      "pathExpression": "/var/log/syslog",
-      "timeZone": "UTC",
-      "automaticDateParsing": true,
-      "multilineProcessingEnabled": true,
-      "useAutolineMatching": true,
-      "forceTimeZone": false,
-      "defaultDateFormat": "dd/MMM/yyyy HH:mm:ss"
-    },
-    {
-      "sourceType": "LocalFile",
-      "name": "<%= @hostname %> authlog",
-      "description": "<%= @hostname %> authlog",
-      "category": "syslog",
-      "pathExpression": "/var/log/authlog",
-      "timeZone": "UTC",
-      "automaticDateParsing": true,
-      "multilineProcessingEnabled": true,
-      "useAutolineMatching": true,
-      "forceTimeZone": false,
-      "defaultDateFormat": "dd/MMM/yyyy HH:mm:ss"
-    }
-  ]
+  "sources": <%= JSON.pretty_generate(files) %>
 }
