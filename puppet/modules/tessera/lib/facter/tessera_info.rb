@@ -11,7 +11,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
 
   Facter.add('graphite_cluster') do
     setcode do
-      graphite_stack.outputs.select{|s| s.key=="GraphiteELB"}.first.value
+      graphite_stack.outputs.select { |s| s.key == 'GraphiteELB' }.first.value
     end
   end
 
@@ -30,12 +30,12 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
   Facter.add('tessera_rds_endpoint_address') do
     setcode do
       begin
-        rds_db = cf.stack_resource(stack.stack_name,'TesseraRDSDB')
+        rds_db = cf.stack_resource(stack.stack_name, 'TesseraRDSDB')
         rds = AWS::RDS::DBInstance.new(rds_db.physical_resource_id)
         rds.endpoint_address
       rescue
         nil
-      end 
+      end
     end
   end
 
