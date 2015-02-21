@@ -18,23 +18,23 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'nemesis_ops/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "nemesis_ops"
+  spec.name          = 'nemesis_ops'
   spec.version       = NemesisOps::VERSION
-  spec.authors       = ["Dan Norris"]
-  spec.email         = ["daniel.norris@acquia.com"]
+  spec.authors       = ['Dan Norris']
+  spec.email         = ['daniel.norris@acquia.com']
   spec.summary       = %q{Tools for managing Nemesis stacks}
-  #spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
-  spec.license       = "Apache"
+  # spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.homepage      = ''
+  spec.license       = 'Apache'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.bindir        = 'bin'
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_development_dependency "bundler", "~> 1.7"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency 'bundler', '~> 1.7'
+  spec.add_development_dependency 'rake', '~> 10.0'
 
   spec.add_dependency 'fpm'
   spec.add_dependency 'multi_json'

@@ -16,8 +16,8 @@ module NemesisOps::Cli
   class Package < Thor
     include NemesisOps::Cli::Common
 
-    desc "upload STACK PACKAGE", "Add a package to the stack's package listing"
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
+    desc 'upload STACK PACKAGE', "Add a package to the stack's package listing"
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def upload(stack_name, package)
       path = Pathname.new(File.absolute_path(package))
       unless File.exists? path
@@ -29,18 +29,18 @@ module NemesisOps::Cli
       build_repo(stack_name, options[:gpg_key])
     end
 
-    desc "sync-repo STACK", "Get the packages from the repo and add them to your cache directory"
+    desc 'sync-repo STACK', 'Get the packages from the repo and add them to your cache directory'
     def sync_repo(stack)
       get_repo(stack)
     end
 
-    desc "construct-repo STACK", "Build the Apt repo"
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
+    desc 'construct-repo STACK', 'Build the Apt repo'
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def construct_repo(stack)
       build_repo(stack, options[:gpg_key])
     end
 
-    desc "upload-repo STACK", "Upload the Apt repo for the given stack"
+    desc 'upload-repo STACK', 'Upload the Apt repo for the given stack'
     def upload_repo(stack)
       package_repo = get_bucket_from_stack(stack, 'repo')
       s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)

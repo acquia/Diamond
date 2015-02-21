@@ -30,6 +30,5 @@ module NemesisOps::Cli
       template = NemesisOps::Ami.generate_template(options)
       say template.to_json
     end
-
   end
 end

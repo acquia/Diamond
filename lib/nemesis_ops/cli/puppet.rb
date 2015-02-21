@@ -17,21 +17,20 @@ module NemesisOps::Cli
   class Puppet < Thor
     include NemesisOps::Cli::Common
 
-    desc "build STACK", "Build the Nemesis Puppet deb"
-    method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => "After creating the package rebuild the repo"
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => "The GPG key used to sign the packages"
-    method_option :release, :aliases => '-r', :type => :boolean, :default => false, :desc => "Set this flag to build a release package"
-    method_option :release_version, :type => :string, :default => "", :desc => "Explicitly specify semantic version with format MAJOR.MINOR.PATCH for release build"
-    method_option :cleanup, :type => :boolean, :default => true, :desc => "Do not delete older versions when building a release package"
+    desc 'build STACK', 'Build the Nemesis Puppet deb'
+    method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => 'After creating the package rebuild the repo'
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
+    method_option :release, :aliases => '-r', :type => :boolean, :default => false, :desc => 'Set this flag to build a release package'
+    method_option :release_version, :type => :string, :default => '', :desc => 'Explicitly specify semantic version with format MAJOR.MINOR.PATCH for release build'
+    method_option :cleanup, :type => :boolean, :default => true, :desc => 'Do not delete older versions when building a release package'
     def build(stack_name = Nemesis::DEFAULT_BOOTSTRAP_REPO)
-
       options[:release] = true unless options[:release_version].empty?
       version = Semantic::Version.new(`git describe --abbrev=0 --tags`.strip)
       Nemesis::Log.info('Syncing package mirror')
       get_repo(stack_name)
 
       # Find highest version available
-      puppet_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("*.deb")).select{|package| package.match("nemesis-puppet_")}
+      puppet_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join('*.deb')).select { |package| package.match('nemesis-puppet_') }
       unless puppet_packages.empty?
         version = puppet_packages.reduce(version) do |a, e|
           rev = Semantic::Version.new(e.match(/nemesis-puppet_((\d+\.?)+)/)[1])
@@ -44,7 +43,7 @@ module NemesisOps::Cli
         version = version.increment!(:patch)
         Nemesis::Log.info("Bumping version to #{version.to_s}")
       else
-        version = Semantic::Version.new("#{version}+#{build_time.strftime("%s")}")
+        version = Semantic::Version.new("#{version}+#{build_time.strftime('%s')}")
       end
 
       clean_repo(stack_name) if options[:cleanup]
@@ -59,19 +58,19 @@ module NemesisOps::Cli
         dest = dir + '/puppet' + '/modules'
         FileUtils.mv(files, dest, verbose: true, force: true)
         FileUtils.rm_r(source)
-        cli = "fpm" \
-              " --force" \
+        cli = 'fpm' \
+              ' --force' \
               " -C #{dir + '/puppet'}" \
-              " -s dir" \
-              " -t deb" \
-              " -n nemesis-puppet"\
+              ' -s dir' \
+              ' -t deb' \
+              ' -n nemesis-puppet'\
               " -v #{version}" \
               " --vendor 'Acquia, Inc.'" \
-              " --depends puppet" \
+              ' --depends puppet' \
               " -m 'hosting-eng@acquia.com'" \
               " --description \"Acquia #{version} built on #{build_time.to_s}\" " \
-              " --prefix /etc/puppet/" \
-              " ."
+              ' --prefix /etc/puppet/' \
+              ' .'
 
         Nemesis::Log.info(cli)
         result = `#{cli}`
@@ -97,13 +96,14 @@ module NemesisOps::Cli
     end
 
     private
+
     def clean_repo(stack_name)
-        Nemesis::Log.info("Cleaning out s3/aptly/local-cache")
+        Nemesis::Log.info('Cleaning out s3/aptly/local-cache')
         s3 = Nemesis::Aws::Sdk::S3.new
         repo = s3.buckets[get_bucket_from_stack(stack_name, 'repo')]
 
         # Find deletable devel packages in the bucket
-        s3_del_candidates = repo.objects.select{|package| package.key =~ /nemesis-puppet.*\.deb/}
+        s3_del_candidates = repo.objects.select { |package| package.key =~ /nemesis-puppet.*\.deb/ }
 
         # Delete packages from bucket
         s3_del_candidates.map(&:delete)
@@ -111,14 +111,14 @@ module NemesisOps::Cli
         # Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
         if File.exists? REPO_DIR
           Dir.chdir(REPO_DIR) do |d|
-            aptly "db cleanup"
+            aptly 'db cleanup'
           end
         else
-          puts "Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?"
+          puts 'Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?'
         end
 
-        #Find packages and delete from local-cache.
-        puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join("*.deb")).select{|package| File.basename(package) =~ /nemesis-puppet.*\.deb/}
+        # Find packages and delete from local-cache.
+        puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join('*.deb')).select { |package| File.basename(package) =~ /nemesis-puppet.*\.deb/ }
         FileUtils.rm(puppet_del_packages)
     end
   end

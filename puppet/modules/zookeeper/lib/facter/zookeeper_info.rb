@@ -25,10 +25,10 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'z
       AWS::config.credentials[:secret_access_key]
     end
   end
-  
+
   Facter.add('zk_s3_prefix') do
     setcode do
-      "exhibitor"
+      'exhibitor'
     end
   end
 
