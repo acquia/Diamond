@@ -7,7 +7,7 @@ require 'json'
 module AcquiaFacts
   def self.snakecase(str)
     return str.downcase if str =~ /^[A-Z_]+$/
-    str.gsub(/\B[A-Z]/, '_\&').squeeze("_") =~ /_*(.*)/
+    str.gsub(/\B[A-Z]/, '_\&').squeeze('_') =~ /_*(.*)/
     $+.downcase
   end
 
@@ -40,4 +40,3 @@ if metadata
   metadata = JSON.load(metadata)
   AcquiaFacts.add_facts(metadata)
 end
-
