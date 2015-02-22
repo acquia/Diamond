@@ -55,7 +55,7 @@ class diamond (
   if (str2bool($cloudwatch_enabled)) {
     # Cloudwatch contains config fragments for different services.
     concat {'/etc/diamond/handlers/cloudwatchHandler.conf':
-      ensure => present,
+      ensure  => present,
       notify  => Service['diamond'],
       owner   => 'diamond',
       group   => 'diamond',
@@ -73,16 +73,16 @@ class diamond (
     if ($cassandra) {
       # Cassandra cloudwatch handler fragment.
       concat::fragment {'cloudwatchHandlerCassandra':
-        target  => '/etc/diamond/handlers/cloudwatchHandler.conf',
-        source  => 'puppet:///modules/diamond/cloudwatch_handlers/cassandra.conf',
-        order   => '03',
+        target => '/etc/diamond/handlers/cloudwatchHandler.conf',
+        source => 'puppet:///modules/diamond/cloudwatch_handlers/cassandra.conf',
+        order  => '03',
       }
     }
   }
   else {
     file {'/etc/diamond/handlers/cloudwatchHandler.conf':
       ensure => absent,
-      notify  => Service['diamond'],
+      notify => Service['diamond'],
     }
   }
 

@@ -6,7 +6,7 @@ class sumologic (
   require base
   include java
 
-  if $acquia_sumologic {
+  if $::acquia_sumologic {
     include sumologic::install
     Class['java'] -> Class['sumologic::install']
   }

@@ -1,7 +1,7 @@
 class sumologic::uninstall {
   file { 'sumo.conf':
-    path   => '/etc/sumologic',
     ensure => absent,
+    path   => '/etc/sumologic',
   }
 
   file { '/opt/SumoCollector/config/wrapper.conf':

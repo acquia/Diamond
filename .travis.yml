@@ -6,6 +6,7 @@ rvm:
 bundler_args: --without development
 script:
   - bundle exec rake validate
+  - bundle exec rake lint
   - rubocop -D
 notifications:
   email: false
