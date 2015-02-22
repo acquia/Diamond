@@ -1,5 +1,5 @@
 class tessera {
-  require base::repos 
+  require base::repos
   require tessera::apache
 
   package { 'tessera':

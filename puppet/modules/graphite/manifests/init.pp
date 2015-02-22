@@ -151,7 +151,7 @@ class graphite {
     ensure  => present,
     require => Package['graphite'],
     path    => '/etc/init.d/carbon-daemon',
-    mode => '0755',
+    mode    => '0755',
     source  => 'puppet:///modules/graphite/carbon-daemon.init',
   }
 

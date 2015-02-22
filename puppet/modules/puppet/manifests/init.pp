@@ -22,7 +22,7 @@ class puppet {
   }
 
   file { '/etc/puppet/puppet.conf':
-    ensure  => present,
+    ensure => present,
     source => 'puppet:///modules/puppet/puppet.conf',
   }
 }
