@@ -5,8 +5,8 @@ class sumologic::install {
   }
 
   user { 'sumo':
-    require => Group['sumo'],
     ensure  => present,
+    require => Group['sumo'],
     uid     => 544,
     gid     => 544,
     home    => '/opt/SumoCollector/',
@@ -16,8 +16,8 @@ class sumologic::install {
   }
 
   file { '/etc/sumologic':
-    path   => '/etc/sumologic',
     ensure => 'directory',
+    path   => '/etc/sumologic',
     mode   => '0644',
     owner  => 'sumo',
     group  => 'sumo',
@@ -48,14 +48,14 @@ class sumologic::install {
   }
 
   package { 'sumocollector':
-    require => [ User['sumo'], File['sumo.conf'], File['sources.json'], ],
     ensure  => 'latest',
+    require => [ User['sumo'], File['sumo.conf'], File['sources.json'], ],
     notify  => File['wrapper.conf'],
   }
 
   service { 'collector':
+    ensure  => running,
     require => [ Package['sumocollector'], File['wrapper.conf'], ],
     enable  => true,
-    ensure  => running,
   }
 }

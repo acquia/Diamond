@@ -7,12 +7,12 @@ class zookeeper{
   }
 
   package { 'zookeeper-exhibitor' :
-    ensure => latest,
+    ensure  => latest,
     require => [ Package['zookeeper'], ],
   }
 
   file { ['/opt/zookeeper', '/opt/zookeeper/transactions', '/opt/zookeeper/snapshots' ]:
-    ensure => directory,
+    ensure  => directory,
     require => [ Package['zookeeper'], ],
   }
 
@@ -24,13 +24,13 @@ class zookeeper{
   }
 
   file { '/opt/exhibitor/defaults.conf':
-    ensure => present,
-    content => template('zookeeper/defaults.conf.erb'), 
+    ensure  => present,
+    content => template('zookeeper/defaults.conf.erb'),
     require => [ Package['zookeeper-exhibitor'], ],
   }
   
   file { '/opt/exhibitor/credentials.properties':
-    ensure => present,
+    ensure  => present,
     content => template('zookeeper/credential.properties.erb'),
     require => [ Package['zookeeper-exhibitor'], ],
   }
@@ -50,7 +50,7 @@ class zookeeper{
   }
   
   service { 'exhibitor':
-    ensure => 'running',
+    ensure  => 'running',
     require => [ File['/etc/init.d/exhibitor'], File['/opt/exhibitor/realm'], File['/opt/exhibitor/web.xml'], File['/opt/exhibitor/defaults.conf'], File['/opt/exhibitor/credentials.properties'], ],
   }
 

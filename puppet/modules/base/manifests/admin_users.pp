@@ -2,48 +2,5 @@ class base::admin_users(
   $accounts = {}
 ){
 
-  define base::admin_users::create(
-    $ensure         = present,
-    $groups         = ['sudo'],
-    $key            = undef,
-    $shell          = '/bin/bash',
-    $type           = 'ssh-rsa',
-  ){
-
-    # To create an admin user you need to add information to hiera
-    #
-    # base::admin_users::accounts:
-    #   admin:
-    #     key: asdfkjhasdfjasdflkjhasdfj
-    #   pleb:
-    #     key: asdfasdfasdfasdf
-    #     type: ssh-dss
-    #     groups:
-    #       - www-data
-    #       - zookeeper
-    #     shell: /bin/csh
-    #   ubuntu:
-    #     ensure: absent
-    #
-
-    user { $title:
-      ensure          => $ensure,
-      name            => $title,
-      shell           => $shell,
-      managehome      => true,
-      groups          => $groups,
-    } 
-
-    if ($key != '') {
-      ssh_authorized_key { $title:
-        ensure  => $ensure,
-        name    => $title,
-        user    => $title,
-        type    => $type,
-        key     => $key,
-      }
-    }
-  }
-
   create_resources(base::admin_users::create, $accounts)
 }
