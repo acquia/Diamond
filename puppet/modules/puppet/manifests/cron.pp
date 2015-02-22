@@ -2,7 +2,7 @@ class puppet::cron {
 
   file { 'cron_script':
     path   => '/usr/local/bin/run_puppet',
-    mode   => 0755,
+    mode   => '0755',
     source => 'puppet:///modules/puppet/run_puppet',
   }
 
