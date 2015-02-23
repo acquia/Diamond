@@ -147,12 +147,12 @@ class graphite {
     require => [ Package['graphite'], File['writer'], ],
   }
 
-  file { 'carbon-daemon-init':
+  file { 'carbon-daemon-upstart':
     ensure  => present,
     require => Package['graphite'],
-    path    => '/etc/init.d/carbon-daemon',
-    mode    => '0755',
-    source  => 'puppet:///modules/graphite/carbon-daemon.init',
+    path    => '/etc/init/carbon-daemon.conf',
+    mode => '0644',
+    source  => 'puppet:///modules/graphite/carbon-daemon.conf',
   }
 
   file {'/opt/graphite/.graphite_access':
@@ -165,7 +165,7 @@ class graphite {
 
   service { 'carbon-daemon':
     ensure  => running,
-    require => [ File['carbon-daemon-init'], Package['graphite'], Exec['own-graphite'] ],
+    require => [ File['carbon-daemon-upstart'], Package['graphite'], Exec['own-graphite'] ],
   }
 
   exec { 'disable-default-site':
