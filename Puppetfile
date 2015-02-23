@@ -1,8 +1,4 @@
 forge "https://forgeapi.puppetlabs.com"
-mod 'maestrodev/rvm',
-  :git => 'git@github.com:maestrodev/puppet-rvm.git',
-  :ref => 'v1.6.6'
-
 mod 'puppetlabs/ntp',
 	:git => 'git@github.com:puppetlabs/puppetlabs-ntp.git',
   :ref => '3.1.2'
