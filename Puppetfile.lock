@@ -12,15 +12,6 @@ GIT
     stankevich-python (1.7.8)
 
 GIT
-  remote: git@github.com:maestrodev/puppet-rvm.git
-  ref: v1.6.6
-  sha: 317095e551528b7968ae9975e071a3a5bcb6985c
-  specs:
-    maestrodev-rvm (1.6.6)
-      puppetlabs-apache (>= 1.1.0)
-      puppetlabs-stdlib (>= 3.2.0)
-
-GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
   ref: master
   sha: e559e7b828091f5108e3c62804819fcbea1e7e11
@@ -53,7 +44,6 @@ GIT
     puppetlabs-stdlib (4.3.2)
 
 DEPENDENCIES
-  maestrodev-rvm (>= 0)
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)
