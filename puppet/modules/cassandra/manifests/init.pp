@@ -18,7 +18,7 @@ class cassandra {
     comment => 'Cassandra user',
   }
 
-  file { '/var/lib/cassandra':
+  file { '/mnt/lib/cassandra':
     ensure  => 'directory',
     owner   => 'cassandra',
     group   => 'cassandra',
@@ -26,7 +26,7 @@ class cassandra {
     require => [ User['cassandra'], ],
   }
 
-  file { '/var/log/cassandra':
+  file { '/mnt/log/cassandra':
     ensure  => 'directory',
     owner   => 'cassandra',
     group   => 'cassandra',
@@ -39,8 +39,8 @@ class cassandra {
     name    => 'cassandra',
     require => [
       User['cassandra'],
-      File['/var/lib/cassandra'],
-      File['/var/log/cassandra'],
+      File['/mnt/lib/cassandra'],
+      File['/mnt/log/cassandra'],
     ],
   }
 
