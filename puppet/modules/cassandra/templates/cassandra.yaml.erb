@@ -4,8 +4,6 @@ require "yaml"
 
 default_config_file = File.join(File.dirname(__FILE__), "..", "files", "cassandra.yaml")
 
-
-
 overrides = {
   "cluster_name" => Facter.value('cassandra_cluster_name'),
   "num_tokens" => 256,
@@ -13,6 +11,11 @@ overrides = {
   "authenticator" => "PasswordAuthenticator",
   "authorizer" => "CassandraAuthorizer",
   "partitioner" => "org.apache.cassandra.dht.Murmur3Partitioner",
+  "data_file_directories" => [
+    "/mnt/lib/cassandra/data",
+  ],
+  "commitlog_directory" => "/mnt/lib/cassandra/commitlog",
+  "saved_caches_directory" => "/mnt/lib/cassandra/saved_caches",
   "rpc_address" => "0.0.0.0",
   "seed_provider" => [
     {
