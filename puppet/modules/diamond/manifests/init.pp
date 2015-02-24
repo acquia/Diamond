@@ -27,6 +27,13 @@ class diamond (
     require => Package['diamond'],
   }
 
+  file {'/mnt/log/diamond':
+    ensure  => directory,
+    owner   => 'diamond',
+    group   => 'diamond',
+    require => [ User['diamond'], Group['diamond'] ],
+  }
+
   file {'/etc/diamond/diamond.conf':
     owner   => 'diamond',
     group   => 'diamond',
