@@ -7,7 +7,7 @@ s3_backup_bucket_name = Facter.value('cassandra_backup_location')
 # Default config file used by tablesnap init script, copy to /etc/default/tablesnap
 RUN=<%=(!s3_backup_bucket_name.nil?) ? 'yes' : 'no'%>
 
-DAEMON_OPTS="--recursive --auto-add --backup --threads 4 <%=s3_backup_bucket_name%> /var/lib/cassandra/data"
+DAEMON_OPTS="--recursive --auto-add --backup --threads 4 <%=s3_backup_bucket_name%> /mnt/lib/cassandra/data"
 
 # Log to syslog
 export TABLESNAP_SYSLOG=True
