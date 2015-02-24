@@ -6,4 +6,12 @@ class base {
   require base::sudo
   require diamond
   require puppet
+
+  file { '/mnt/log':
+    ensure => directory,
+  }
+
+  file { '/mnt/lib':
+    ensure => directory,
+  }
 }
