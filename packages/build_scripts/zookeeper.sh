@@ -21,7 +21,8 @@ set -ex
 
 NAME="zookeeper"
 VERSION="3.4.6"
-EXHIBITOR_VERSION="1.5.2"
+EXHIBITOR_VERSION="1.5.5"
+EXHIBITOR_BUILD_TYPE="git" # use 'git' to build the latest or leave blank to build from maven
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
@@ -78,8 +79,34 @@ rm -rf ${BUILDDIR}
 
 # Exhibitor
 cd ${BASEDIR}
+if [ "${EXHIBITOR_BUILD_TYPE}" == "git" ]; then
+
+git clone https://github.com/Netflix/exhibitor.git
+cd ${BASEDIR}/exhibitor
+cat <<- EOF >> ${BASEDIR}/exhibitor/exhibitor-standalone/build.gradle
+
+task fatJar(type: Jar) {
+   baseName = project.name + '-jar-with-dependencies'
+   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+   from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+   with jar
+   manifest {
+       attributes 'Main-Class': mainClassName
+       attributes 'Implementation-Version': project.version
+   }
+}
+
+EOF
+
+./gradlew assemble fatJar
+mkdir -p ${BASEDIR}/exhibitor/dist/opt/exhibitor/
+cp -a ${BASEDIR}/exhibitor/exhibitor-standalone/build/libs/exhibitor-standalone-jar-with-dependencies-*.jar ${BASEDIR}/exhibitor/dist/opt/exhibitor/exhibitor.jar
+
+else
+
 mkdir -p ${BASEDIR}/exhibitor
 cd ${BASEDIR}/exhibitor
+
 cat <<- EOF > ${BASEDIR}/exhibitor/pom.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -121,6 +148,9 @@ EOF
 mvn assembly:single
 mkdir -p ${BASEDIR}/exhibitor/dist/opt/exhibitor/
 cp -a ${BASEDIR}/exhibitor/target/exhibitor-1.0-jar-with-dependencies.jar ${BASEDIR}/exhibitor/dist/opt/exhibitor/exhibitor.jar
+
+fi
+
 cd ${BASEDIR}/exhibitor/dist
 fpm --force -t deb -s dir \
   -a all \
