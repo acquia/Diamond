@@ -47,8 +47,9 @@ module NemesisOps::Cli
     end
 
     desc 'remove STACK PACKAGE', 'Remove package from aptly and s3'
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def remove(stack, package)
-      remove_package(stack, package)
+      remove_package(stack, package, options[:gpg_key])
     end
   end
 end
