@@ -45,5 +45,10 @@ module NemesisOps::Cli
       package_repo = get_bucket_from_stack(stack, 'repo')
       s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)
     end
+
+    desc 'remove STACK PACKAGE', 'Remove package from aptly and s3'
+    def remove(stack, package)
+      remove_package(stack, package)
+    end
   end
 end
