@@ -147,7 +147,7 @@ module NemesisOps::Cli
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
 
-    def remove_package(stack, package)
+    def remove_package(stack, package, gpg_key)
       s3 = Nemesis::Aws::Sdk::S3.new
       repo = s3.buckets[get_bucket_from_stack(stack, 'repo')]
 
@@ -163,6 +163,7 @@ module NemesisOps::Cli
           # Remove package from aptly
           aptly "repo remove nemesis-testing #{package}"
           aptly 'db cleanup'
+          aptly "publish update --gpg-key=#{gpg_key} #{NemesisOps::DEFAULT_OS}"
         end
       else
         Nemesis::Log.info('Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?')
