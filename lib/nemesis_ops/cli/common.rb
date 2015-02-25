@@ -146,5 +146,31 @@ module NemesisOps::Cli
       key_file = REPO_DIR.join('public', 'pubkey.gpg')
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
+
+    def remove_package(stack, package)
+      s3 = Nemesis::Aws::Sdk::S3.new
+      repo = s3.buckets[get_bucket_from_stack(stack, 'repo')]
+
+      # Find deletable devel packages in the bucket
+      s3_del_candidates = repo.objects.select { |p| p.key =~ /#{package}_((\d+\.?)+).*\.deb/ }
+
+      # Delete packages from bucket
+      s3_del_candidates.map(&:delete)
+
+      # Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
+      if File.exists? REPO_DIR
+        Dir.chdir(REPO_DIR) do |d|
+          # Remove package from aptly
+          aptly "repo remove nemesis-testing #{package}"
+          aptly 'db cleanup'
+        end
+      else
+        Nemesis::Log.info('Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?')
+      end
+
+      # Find packages and delete from local-cache.
+      puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join('*.deb')).select { |p| File.basename(p) =~ /#{package}_((\d+\.?)+).*\.deb/ }
+      FileUtils.rm(puppet_del_packages)
+    end
   end
 end
