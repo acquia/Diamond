@@ -3,10 +3,10 @@ language: ruby
 sudo: false
 rvm:
   - 2.1.5
-bundler_args: --without development
 script:
   - bundle exec rake validate
   - bundle exec rake lint
-  - rubocop -D
+  - bundle exec rake rubocop
+  - bundle exec rake spec
 notifications:
   email: false

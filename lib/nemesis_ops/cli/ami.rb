@@ -20,8 +20,6 @@ require 'nemesis'
 
 module NemesisOps::Cli
   class Ami < Thor
-    include NemesisOps::Cli::Common
-
     desc 'template', 'Get a Packer-compatable template for building an AMI'
     method_option :repo, alias: '-r', type: 'string', default: nil, desc: 'Stack to write the AMI to'
     method_option :regions, type: :array, required: true, desc: 'A list of regions to copy the resulting AMI to'

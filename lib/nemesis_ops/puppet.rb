@@ -11,69 +11,123 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 require 'gpgme'
+require 'semantic'
 require 'tempfile'
+require 'yaml'
 
 module NemesisOps::Puppet
-  class GpgKeyNotFound < StandardError; end
+  require_relative 'puppet/module_credentials'
+  extend NemesisOps::Common
 
-  def self.gpg_struct
-    Struct.new(:pub_key, :private_key)
-  end
+  # Build a .deb package containing all of the Puppet modules in the project
+  # This also will pull in any encrypted credentials that should be placed on a
+  # server by encrypting eyaml files with a gpg key unique to this build
+  #
+  # @param stack_name [String] the name of the stack this package should be synced against
+  # @param options [Hash] options from the Thor command
+  def self.build(stack_name, options)
+    options[:release] = true unless options[:release_version].empty?
+    Nemesis::Log.info('Syncing package mirror')
+    get_repo(stack_name)
 
-  def self.get_gpg_key_data(key_name)
-    pub_key = GPGME::Key.find(:public, key_name)
-    if pub_key.empty?
-      fail GpgKeyNotFound, "Unable to find the key #{key_name}"
-    end
+    build_time = DateTime.now
+    version = get_package_version(build_time, release: options[:release])
+    Nemesis::Log.info("Bumping version to #{version.to_s}")
 
-    private_key = GPGME::Key.find(:secret, key_name)
-    if private_key.empty?
-      fail GpgKeyNotFound, "Unable to find the private key #{key_name}"
-    end
+    remove_package(stack_name, 'nemesis-puppet', options[:gpg_key]) if options[:cleanup]
 
-    pub_key = pub_key.first.export.to_s
-    # Workaround for GPGME not being able to export private keys
-    private_key = `gpg --export-secret-key --armor #{key_name}`
+    Nemesis::Log.info('Updating puppet 3rd party modules')
+    Nemesis::Log.info(`librarian-puppet install`)
 
-    gpg_struct.new(pub_key, private_key)
-  end
+    Dir.mktmpdir do |dir|
+      # Copy over third party and puppet modules
+      FileUtils.cp_r(NemesisOps::BASE_PATH + 'puppet', dir)
+      source = Pathname.new(dir) + 'puppet' + 'third_party'
+      files = Dir.glob(source + '*')
+      dest = dir + '/puppet' + '/modules'
+      FileUtils.mv(files, dest, verbose: true, force: true)
+      FileUtils.rm_r(source)
 
-  def self.create_gpg_key_package(data, version)
-    Dir.mktmpdir do |tmp|
-      pub_key_temp = Tempfile.new('key.gpg', binmode: true)
-      pub_key_temp.write(data.pub_key)
-      pub_key_temp.close
+      # Create a unique gpg key for this run
+      eyaml_gpg = Pathname.new(dir) + 'puppet/.gnupg'
+      eyaml_dir = Pathname.new(dir) + 'puppet/hiera'
+      FileUtils.mkdir_p(eyaml_gpg, :mode => 0700)
+      NemesisOps::Gpg.create_gpg_keyring(eyaml_gpg)
 
-      priv_key_temp = Tempfile.new('p_key.gpg')
-      priv_key_temp.write(data.private_key)
-      priv_key_temp.close
+      # Get any credential files that should be put on the server as eyaml
+      encrypted_credentials = NemesisOps::Puppet.encrypted_hiera_files(eyaml_gpg)
 
-      puts `GNUPGHOME=#{tmp} gpg --no-default-keyring --keyring=#{tmp}/pubring.gpg --secret-keyring=#{tmp}/secring.gpg --import #{pub_key_temp.path}`
-      puts `GNUPGHOME=#{tmp} gpg --no-default-keyring --keyring=#{tmp}/pubring.gpg --secret-keyring=#{tmp}/secring.gpg --allow-secret-key-import --import --armor #{priv_key_temp.path}`
+      unless encrypted_credentials.empty?
+        encrypted_credentials.each do |filename, data|
+          File.open(eyaml_dir + filename, 'w') { |f| f.print data }
+        end
+      end
 
-      pub_key_temp.unlink
-      priv_key_temp.unlink
-
-      build_time = DateTime.now
       cli = 'fpm' \
-            ' --force' \
-            " -C #{tmp}" \
-            ' -s dir' \
-            ' -t deb' \
-            ' -n nemesis-key'\
-            " -v #{version}" \
-            ' --vendor \'Acquia, Inc.\'' \
-            ' -m \'platform-health@acquia.com\'' \
-            " --description \"Acquia #{version} built on #{build_time.to_s}\" " \
-            ' --prefix /var/lib/puppet/.gnupg' \
-            ' .'
+        ' --force' \
+        " -C #{dir + '/puppet'}" \
+        ' -s dir' \
+        ' -t deb' \
+        ' -n nemesis-puppet'\
+        " -v #{version}" \
+        " --vendor 'Acquia, Inc.'" \
+        ' --depends puppet' \
+        " -m 'hosting-eng@acquia.com'" \
+        " --description \"Acquia #{version} built on #{build_time.to_s}\" " \
+        ' --prefix /etc/puppet/' \
+        ' .'
+
       Nemesis::Log.info(cli)
       result = `#{cli}`
       Nemesis::Log.info(result)
       # Really unsafe
       result = eval(result)
-      FileUtils.mv(result[:path], NemesisOps::Cli::Common::CACHE_DIR)
+      FileUtils.mv(result[:path], NemesisOps::Common::CACHE_DIR)
     end
+
+    build_repo(stack_name, options[:gpg_key]) if options[:build_repo]
+  end
+
+  # Generate a set of eyaml hiera files using data from the $SECURE directory
+  #
+  # @param key_path [String] the path to a temporary gpg keyring
+  # @return [Hash] eyaml files keyed by filename
+  def self.encrypted_hiera_files(key_path)
+    creds = NemesisOps::Puppet::ModuleCredentials.new
+    encrypted_creds = {}
+
+    key_id = NemesisOps::Gpg.gpg_key_id(key_path)
+    Dir.mktmpdir do |dir|
+      creds.creds.each do |key, data|
+        encrypted_creds[key + '.eyaml'] = Psych.dump(NemesisOps::Gpg.encrypt_hash(key_id, data, key_path: key_path))
+      end
+    end
+    encrypted_creds
+  end
+
+  # Get a package version to apply to this nemesis-puppet build
+  #
+  # @param build_time [DateTime] the time to apply to the build
+  # @param release [Boolean] whether or not this is a release build
+  # @return [String] the version to apply to the package
+  def self.get_package_version(build_time, release: false)
+    version = Semantic::Version.new(`git describe --abbrev=0 --tags`.strip)
+
+    # Find highest version available
+    puppet_packages = Dir.glob(NemesisOps::Common::CACHE_DIR.join('*.deb')).select { |package| package.match('nemesis-puppet_') }
+    unless puppet_packages.empty?
+      version = puppet_packages.reduce(version) do |a, e|
+        rev = Semantic::Version.new(e.match(/nemesis-puppet_((\d+\.?)+)/)[1])
+        a = rev > a ? rev : a
+      end
+    end
+    if release
+      version = version.increment!(:patch)
+    else
+      version = Semantic::Version.new("#{version}+#{build_time.strftime('%s')}")
+    end
+    version
   end
 end
