@@ -16,7 +16,7 @@ require 'nemesis'
 
 module NemesisOps
   module Ami
-    extend NemesisOps::Cli::Common
+    extend NemesisOps::Common
 
     # Create a script that Packer can use to install dependencies for an AMI
     #
@@ -40,7 +40,9 @@ module NemesisOps
       keys = Nemesis::Credentials.create.creds_for_machine('ec2.client')
       account_id = Nemesis::Credentials.create.creds_for_machine('ec2.account.id').password
       template = PackerGen::Templates::Aws::UbuntuServer.new(nil, 'm3.medium')
-      secure_path = File.dirname(Net::Netrc.rcname())
+
+      fail 'Cannot read from netrc' if Net::Netrc.rcname.nil?
+      secure_path = File.dirname(Net::Netrc.rcname)
 
       launch_region = options[:regions].shift
 
