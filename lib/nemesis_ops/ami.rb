@@ -22,10 +22,9 @@ module NemesisOps
     #
     # @return [String]
     def self.get_dependencies_for_packer
-      init = Nemesis::Aws::CloudFormation::Init.new
-      combined = init.steps['bootstrap'].deep_merge(init.steps['puppet'])
-      packages = combined['packages']['apt'].keys
-      gems = combined['packages']['rubygems'].keys
+      init = Nemesis::Aws::CloudFormation::Init.new(omit: [/puppet/])
+      packages = init.steps['bootstrap']['packages']['apt'].keys
+      gems = init.steps['bootstrap']['packages']['rubygems'].keys
       [
         "sudo -E apt-get install -y #{packages.join(' ')}",
         "sudo gem install --no-ri --no-rdoc #{gems.join(' ')}"
