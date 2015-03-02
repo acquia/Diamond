@@ -22,7 +22,7 @@ require 'zlib'
 
 require 'nemesis'
 
-module NemesisOps::Cli
+module NemesisOps
   module Common
     CACHE_DIR = NemesisOps::PKG_DIR.join('cache')
     REPO_DIR = NemesisOps::PKG_DIR.join('repo')
@@ -170,7 +170,7 @@ module NemesisOps::Cli
       end
 
       # Find packages and delete from local-cache.
-      puppet_del_packages = Dir.glob(NemesisOps::Cli::Common::CACHE_DIR.join('*.deb')).select { |p| File.basename(p) =~ /#{package}_((\d+\.?)+).*\.deb/ }
+      puppet_del_packages = Dir.glob(NemesisOps::Common::CACHE_DIR.join('*.deb')).select { |p| File.basename(p) =~ /#{package}_((\d+\.?)+).*\.deb/ }
       FileUtils.rm(puppet_del_packages)
     end
   end

@@ -32,10 +32,6 @@ Lint/UselessAssignment:
 Metrics/AbcSize:
   Max: 59
 
-# Offense count: 1
-Metrics/CyclomaticComplexity:
-  Max: 7
-
 # Offense count: 54
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
@@ -45,10 +41,6 @@ Metrics/LineLength:
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 50
-
-# Offense count: 1
-Metrics/PerceivedComplexity:
-  Max: 8
 
 # Offense count: 1
 Style/AccessorMethodName:
@@ -74,9 +66,8 @@ Style/ColonMethodCall:
 Style/Documentation:
   Enabled: false
 
-# Offense count: 1
-# Configuration parameters: Exclude.
-Style/FileName:
+# Removing this check because it's stupid and not in the style guide
+Style/EachWithObject:
   Enabled: false
 
 # Offense count: 4
@@ -100,44 +91,17 @@ Style/HashSyntax:
 Style/IfUnlessModifier:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: Width.
-Style/IndentationWidth:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MethodCallParentheses:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
 Style/Next:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
   Enabled: false
 
 # Offense count: 2
 Style/RegexpLiteral:
   MaxSlashes: 0
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/SpecialGlobalVars:
-  Enabled: false
-
 # Offense count: 2
 Style/UnlessElse:
-  Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/UnneededPercentQ:
   Enabled: false
 
 # Offense count: 1

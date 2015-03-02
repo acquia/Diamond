@@ -14,7 +14,7 @@
 
 module NemesisOps::Cli
   class Package < Thor
-    include NemesisOps::Cli::Common
+    include NemesisOps::Common
 
     desc 'add STACK PACKAGE', "Add a package to the stack's package listing"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
@@ -24,7 +24,7 @@ module NemesisOps::Cli
         Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
         exit 1
       end
-      cache_path = NemesisOps::Cli::Common::CACHE_DIR
+      cache_path = NemesisOps::Common::CACHE_DIR
       FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
       build_repo(stack_name, options[:gpg_key])
     end
