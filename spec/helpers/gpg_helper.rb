@@ -1,4 +1,4 @@
-# Copyright 2014 Acquia, Inc.
+# Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module NemesisOps
-  module Cli
-    autoload :Ami, 'nemesis_ops/cli/ami'
-    autoload :Package, 'nemesis_ops/cli/package'
-    autoload :Puppet, 'nemesis_ops/cli/puppet'
-    autoload :NemesisOpsApp, 'nemesis_ops/cli/nemesis_ops_app'
+module GpgHelper
+  def decrypt_string(dir, data)
+    cmd = "eyaml decrypt -n gpg -s '#{data}' --gpg-gnupghome #{dir}"
+    `#{cmd}`.chomp
   end
 end

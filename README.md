@@ -28,6 +28,10 @@ Dependencies needed to be installed and configured before working with the Nemes
 
 ## Setup
 
+You need to ensure that the environment variables $SECURE and $EC2_ACCOUNT are
+set to valid values. If you have already set up Nemesis or Fields then you
+should not need to do anything.
+
 Go back to the nemesis-puppet folder
 
     bundle install
