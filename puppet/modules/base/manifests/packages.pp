@@ -33,10 +33,6 @@ class base::packages {
     ensure => latest,
   }
 
-  package { 'nemesis-key':
-    ensure => latest,
-  }
-
   file { '/usr/bin/ack':
     ensure  => link,
     require => Package['ack-grep'],
