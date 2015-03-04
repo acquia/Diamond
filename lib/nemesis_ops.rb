@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require 'nemesis_ops/version'
+require 'pathname'
 
 module NemesisOps
   GPG_KEY = '23406CA7'
@@ -27,6 +28,7 @@ module NemesisOps
   ]
 
   # Generate an autoload statement by creating an appropriate symbol and path
+  # :nocov:
   def self.autoload_file(file)
     sym = nil
     file = File.basename(file, File.extname(file))
