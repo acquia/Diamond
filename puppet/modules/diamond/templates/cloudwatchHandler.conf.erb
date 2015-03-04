@@ -10,20 +10,23 @@ region = <%= @ec2_placement_availability_zone[0..-2] %>
 
 # Default handler conf.
 
-# Load Average metrics.
-[LoadAvg01]
-collector = loadavg
-metric = 01
-namespace = MachineLoad
-name = Avg01
-unit = None
+# Note that some of these metrics are not currently being sent to cloudwatch,
+# but remain here for historical record.
 
-[LoadAvg05]
-collector = loadavg
-metric = 05
-namespace = MachineLoad
-name = Avg05
-unit = None
+# Load Average metrics.
+#[LoadAvg01]
+#collector = loadavg
+#metric = 01
+#namespace = MachineLoad
+#name = Avg01
+#unit = None
+
+#[LoadAvg05]
+#collector = loadavg
+#metric = 05
+#namespace = MachineLoad
+#name = Avg05
+#unit = None
 
 [LoadAvg15]
 collector = loadavg
@@ -33,12 +36,12 @@ name = Avg15
 unit = None
 
 # Memory metrics.
-[MemTotal]
-collector = memory
-metric = MemTotal
-namespace = Memory
-name = MemTotal
-unit = None
+#[MemTotal]
+#collector = memory
+#metric = MemTotal
+#namespace = Memory
+#name = MemTotal
+#unit = None
 
 [MemFree]
 collector = memory
@@ -47,34 +50,34 @@ namespace = Memory
 name = MemFree
 unit = None
 
-[SwapTotal]
-collector = memory
-metric = SwapTotal
-namespace = Memory
-name = SwapTotal
-unit = None
+#[SwapTotal]
+#collector = memory
+#metric = SwapTotal
+#namespace = Memory
+#name = SwapTotal
+#unit = None
 
-[SwapFree]
-collector = memory
-metric = SwapFree
-namespace = Memory
-name = SwapFree
-unit = None
+#[SwapFree]
+#collector = memory
+#metric = SwapFree
+#namespace = Memory
+#name = SwapFree
+#unit = None
 
 # Disk space metrics.
-[DiskMntAvail]
-collector = diskspace
-metric = _mnt.byte_avail
-namespace = DiskSpace
-name = MntAvail
-unit = None
+#[DiskMntAvail]
+#collector = diskspace
+#metric = _mnt.byte_avail
+#namespace = DiskSpace
+#name = MntAvail
+#unit = None
 
-[DiskMntFree]
-collector = diskspace
-metric = _mnt.byte_free
-namespace = DiskSpace
-name = MntFree
-unit = None
+#[DiskMntFree]
+#collector = diskspace
+#metric = _mnt.byte_free
+#namespace = DiskSpace
+#name = MntFree
+#unit = None
 
 [DiskMntPercentFree]
 collector = diskspace
@@ -83,10 +86,10 @@ namespace = DiskSpace
 name = MntPercentFree
 unit = None
 
-[DiskMntUsed]
-collector = diskspace
-metric = _mnt.byte_used
-namespace = DiskSpace
-name = MntUsed
-unit = None
+#[DiskMntUsed]
+#collector = diskspace
+#metric = _mnt.byte_used
+#namespace = DiskSpace
+#name = MntUsed
+#unit = None
 

@@ -1,0 +1,25 @@
+{"alarms":
+  [
+    {
+      "metric_name": "MemFree",
+      "namespace": "Memory",
+      "statistic": "Minimum",
+      "threshold": 500000,
+      "comparison_operator": "LessThanThreshold"
+    },
+    {
+      "metric_name": "Avg15",
+      "namespace": "MachineLoad",
+      "statistic": "Maximum",
+      "threshold": 30,
+      "comparison_operator": "GreaterThanThreshold"
+    },
+    {
+      "metric_name": "MntPercentFree",
+      "namespace": "DiskSpace",
+      "statistic": "Minimum",
+      "threshold": 10,
+      "comparison_operator": "LessThanThreshold"
+    }
+  ]
+}

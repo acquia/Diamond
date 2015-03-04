@@ -7,5 +7,6 @@ class base {
   require base::sudo
   require diamond
   require puppet
+  require server_hooks
 
 }
