@@ -11,6 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-classes:
-  - base
+
+class HookOne < NemesisServer::Hook
+  def initialize
+    super
+    @version = '0.0.1'
+    @events = NemesisServer::HookManager::EVENT_INIT
+  end
+
+  def execute
+    0
+  end
+end
