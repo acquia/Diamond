@@ -22,7 +22,7 @@ set -ex
 
 DEB_VERSION="21x"
 # This needs to be kept in sync with the Cassandra module
-PACKAGE_VERSION='2.1.2'
+PACKAGE_VERSION='2.1.3'
 
 # Download and import the Cassandra GPG keys used to sign the release and deb mirror
 curl -s  https://dist.apache.org/repos/dist/release/cassandra/KEYS | gpg --import -
