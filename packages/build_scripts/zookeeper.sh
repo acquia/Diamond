@@ -22,7 +22,7 @@ set -ex
 NAME="zookeeper"
 VERSION="3.4.6"
 EXHIBITOR_VERSION="1.5.5"
-EXHIBITOR_BUILD_TYPE="git" # use 'git' to build the latest or leave blank to build from maven
+EXHIBITOR_BUILD_TYPE="" # use 'git' to build the latest or leave blank to build from maven
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
