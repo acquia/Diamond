@@ -79,11 +79,15 @@ MAX_SLICE_GAP = 80
   # Strip off the AZ and region # out of a region
   # ex. us-east-1a => us-east
   region = @ec2_placement_availability_zone[0..-4]
+
+  cassandra_cluster_size = @cassandra_nodes.split(',').size
+  replication_factor = 3
+  replication_factor = cassandra_cluster_size if cassandra_cluster_size < 3
 -%>
 KEYSPACE = graphite
 SERVERS = <%= @cassandra_nodes.split(',').map { |x| "#{x}:9160" }.join(',') %>
 REPLICATION_STRATEGY = NetworkTopologyStrategy
-STRATEGY_OPTIONS = {"<%= region %>" : "2"}
+STRATEGY_OPTIONS = {"<%= region %>" : "<%= replication_factor %>"}
 LOCAL_DC_NAME = <%= region %>
 USERNAME = cassandra
 PASSWORD = <%= @cassandra_cql_password %>
