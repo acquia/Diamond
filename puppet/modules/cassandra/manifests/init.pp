@@ -100,4 +100,9 @@ class cassandra {
     require    => [ Package['tablesnap'], File['/etc/default/tablesnap'], ],
   }
 
+  package {'python-dateutil':
+    ensure  => 'latest',
+    name    => 'python-dateutil',
+  }
+
 }
