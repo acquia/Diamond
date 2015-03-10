@@ -11,6 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-classes:
-  - base
+
+class HookTwo < NemesisServer::Hook
+  attr_accessor :exit_code
+
+  def initialize
+    super
+    @version = '0.0.1'
+    @events = NemesisServer::HookManager::EVENT_INIT
+    @exit_code = 1
+  end
+
+  def execute
+    @exit_code
+  end
+end
+
+NemesisServer::HookManager.register HookTwo.new

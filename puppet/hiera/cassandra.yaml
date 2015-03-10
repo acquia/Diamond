@@ -16,3 +16,4 @@ classes:
   - cassandra
 
 diamond::cassandra: true
+server_hooks::cloudwatch::cassandra: true
