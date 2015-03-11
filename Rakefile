@@ -30,6 +30,7 @@ PuppetLint::RakeTask.new :lint do |config|
     'class_inherits_from_params_class',
     'class_parameter_defaults',
     'documentation',
+    'variable_scope',
   ]
 end
 

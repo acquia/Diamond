@@ -1,0 +1,20 @@
+[jmx]
+username =
+password =
+port = 7199
+
+[kerberos_client_principals]
+
+[kerberos]
+
+[agents]
+
+[kerberos_hostnames]
+
+[kerberos_services]
+
+[cassandra]
+seed_hosts = <%= Facter.value('cassandra_seeds_list').join(",") %>
+username = cassandra
+password = <%= Facter.value('cassandra_cql_password') %>
+api_port = 9160

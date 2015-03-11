@@ -1,4 +1,4 @@
-# Copyright 2014 Acquia, Inc.
+# Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,23 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-require 'nemesis'
-require 'nemesis_ops'
-require 'pp'
-
-def ec2
-  @ec2 ||= Nemesis::Aws::Sdk::EC2.new
-end
-
-def s3
-  @s3 ||= Nemesis::Aws::Sdk::S3.new
-end
-
-def cf
-  @cf ||= Nemesis::Aws::Sdk::CloudFormation.new
-end
-
-def s3_repo_package_list(stack_name, os='trusty')
-  puts s3.buckets[stack_name].objects["dists/#{os}/main/binary-amd64/Packages"].read
-end
+---
+classes:
+  - cassandra::opscenter

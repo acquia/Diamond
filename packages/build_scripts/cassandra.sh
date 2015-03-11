@@ -24,16 +24,21 @@ DEB_VERSION="21x"
 # This needs to be kept in sync with the Cassandra module
 PACKAGE_VERSION='2.1.3'
 
-# Download and import the Cassandra GPG keys used to sign the release and deb mirror
-curl -s  https://dist.apache.org/repos/dist/release/cassandra/KEYS | gpg --import -
-gpg --export --armor | sudo apt-key add -
-
-# Add the Cassandra package mirror
+# Add the Cassandra deb repo and download and import the Cassandra GPG keys
 echo "deb http://www.apache.org/dist/cassandra/debian ${DEB_VERSION} main" > /etc/apt/sources.list.d/cassandra.list
+curl -L -s https://dist.apache.org/repos/dist/release/cassandra/KEYS | sudo apt-key add -
 
-# Update and download the cassandra deb package
+# Add the Datastax deb repo and download and import the Datastax GPG keys
+echo "deb http://debian.datastax.com/community stable main" > /etc/apt/sources.list.d/datastax.list
+curl -L -s https://debian.datastax.com/debian/repo_key | sudo apt-key add -
+
 apt-get update -y
+
+# Download the cassandra deb package
 apt-get download cassandra=$PACKAGE_VERSION
+
+# Download Datastax OPS center
+apt-get download opscenter datastax-agent
 
 # If in a VM copy then deb file over
 if [ -d "/dist/" ]; then

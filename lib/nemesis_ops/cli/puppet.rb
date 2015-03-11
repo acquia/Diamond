@@ -14,19 +14,19 @@
 
 module NemesisOps::Cli
   class Puppet < Thor
-    desc 'build STACK', 'Build the Nemesis Puppet deb'
+    desc 'build STACK_NAME', 'Build the Nemesis Puppet deb'
     method_option :build_repo, :aliases => '-b', :type => :boolean, :default => true, :desc => 'After creating the package rebuild the repo'
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     method_option :release, :aliases => '-r', :type => :boolean, :default => false, :desc => 'Set this flag to build a release package'
     method_option :release_version, :type => :string, :default => '', :desc => 'Explicitly specify semantic version with format MAJOR.MINOR.PATCH for release build'
     method_option :cleanup, :type => :boolean, :default => true, :desc => 'Do not delete older versions when building a release package'
-    def build(stack_name = Nemesis::DEFAULT_BOOTSTRAP_REPO)
+    def build(stack_name)
       NemesisOps::Puppet.build(stack_name, options)
     end
 
-    desc 'kick STACK', 'Trigger a Puppet run using the latest nemesis-puppet package'
-    def kick(stack)
-      cluster = Nemesis::Entities::Cluster.new(stack)
+    desc 'kick STACK_NAME', 'Trigger a Puppet run using the latest nemesis-puppet package'
+    def kick(stack_name)
+      cluster = Nemesis::Entities::Cluster.new(stack_name)
       cluster.ssh.parallel_exec('apt-get update && apt-get install -y nemesis-puppet')
       result = cluster.ssh.parallel_exec('cd /etc/puppet && puppet apply manifests/nodes.pp')
       result.each do |server_result|
