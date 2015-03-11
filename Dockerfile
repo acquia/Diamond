@@ -23,13 +23,13 @@ RUN apt-get update -y && apt-get dist-upgrade -y
 RUN apt-get install -y build-essential pkg-config git curl \
                        libtool libpcre3-dev libreadline-dev \
                        dh-make debhelper cdbs python-support \
-                       ruby ruby-dev \
+                       ruby ruby-dev zlib1g-dev \
                        python-virtualenv python-pip python-dev \
                        golang golang-go mercurial
 
 # Ruby Gems
 RUN echo 'gem: --no-rdoc --no-ri' >> /etc/gemrc && \
-      gem install aws-sdk fpm pry
+      gem install aws-sdk-v1 fpm pry
 
 # Add default known_hosts
 RUN mkdir -p $HOME/.ssh && \
