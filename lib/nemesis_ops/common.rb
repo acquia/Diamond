@@ -166,7 +166,8 @@ module NemesisOps
           aptly "publish update --gpg-key=#{gpg_key} #{NemesisOps::DEFAULT_OS}"
         end
       else
-        Nemesis::Log.info('Unable to clean Aptly repository. Have you run nemesis-ops package construct-repo?')
+        Nemesis::Log.error('Unable to clean Aptly repository. Have you run nemesis-ops package init?')
+        exit 1
       end
 
       # Find packages and delete from local-cache.

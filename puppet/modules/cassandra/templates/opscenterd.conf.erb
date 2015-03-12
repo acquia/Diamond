@@ -1,0 +1,29 @@
+[webserver]
+port = 80
+interface = 0.0.0.0
+
+[authentication]
+enabled=False
+passwd_file = /etc/opscenter/.passwd
+
+[jmx]
+port = 7199
+
+[cassandra]
+seed_hosts = <%= Facter.value('cassandra_seeds_list').join(",") %>
+username = cassandra
+password = <%= Facter.value('cassandra_cql_password') %>
+
+
+[cassandra_metrics]
+ignored_keyspaces = system, OpsCenter
+
+[logging]
+log_path = /mnt/log/opscenter/opscenter.log
+
+[webserver]
+log_path = /mnt/log/opscenter/http.log
+
+[repair_service]
+log_directory =  /mnt/log/opscenter/repair_service/
+persist_directory = /mnt/lib/opscenter/repair_service/
