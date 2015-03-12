@@ -16,7 +16,19 @@ module NemesisOps::Cli
   class Package < Thor
     include NemesisOps::Common
 
-    desc 'add STACK PACKAGE', "Add a package to the stack's package listing"
+    desc 'init STACK_NAME', 'Build the Apt repo'
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
+    def init(stack_name)
+      build_repo(stack_name, options[:gpg_key])
+    end
+
+    desc 'upload STACK_NAME', 'Upload the Apt repo for the given stack'
+    def upload(stack_name)
+      package_repo = get_bucket_from_stack(stack_name, 'repo')
+      s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)
+    end
+
+    desc 'add STACK_NAME PACKAGE', "Add a package to the stack's package listing"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def add(stack_name, package)
       path = Pathname.new(File.absolute_path(package))
@@ -29,27 +41,15 @@ module NemesisOps::Cli
       build_repo(stack_name, options[:gpg_key])
     end
 
-    desc 'sync-repo STACK', 'Get the packages from the repo and add them to your cache directory'
-    def sync_repo(stack)
-      get_repo(stack)
+    desc 'sync STACK_NAME', 'Get the packages from the repo and add them to your cache directory'
+    def sync(stack_name)
+      get_repo(stack_name)
     end
 
-    desc 'construct-repo STACK', 'Build the Apt repo'
+    desc 'remove STACK_NAME PACKAGE', 'Remove package from aptly and s3'
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
-    def construct_repo(stack)
-      build_repo(stack, options[:gpg_key])
-    end
-
-    desc 'upload-repo STACK', 'Upload the Apt repo for the given stack'
-    def upload_repo(stack)
-      package_repo = get_bucket_from_stack(stack, 'repo')
-      s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)
-    end
-
-    desc 'remove STACK PACKAGE', 'Remove package from aptly and s3'
-    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
-    def remove(stack, package)
-      remove_package(stack, package, options[:gpg_key])
+    def remove(stack_name, package)
+      remove_package(stack_name, package, options[:gpg_key])
     end
   end
 end

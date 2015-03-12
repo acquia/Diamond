@@ -5,7 +5,8 @@ Facter.add(:cassandra_seeds_list) do
   setcode do
     ec2 = AWS::EC2.new
 
-    if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'cassandra'
+    server_type = ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type']
+    if server_type == 'cassandra' || server_type == 'opscenter'
       cf = AWS::CloudFormation.new
       stack = cf.stack_resource(Facter.value('ec2_instance_id'))
       stack_name = stack.stack_name
