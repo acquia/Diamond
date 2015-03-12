@@ -9,7 +9,7 @@ class cassandra {
   # lint:ignore:disable_variable_scope
   exec {'check_cassandra_installed':
     command => '/bin/true',
-    onlyif  => "/usr/bin/test $(dpkg-query -W -f='${Version}\n' cassandra) == ${cassandra::cassandra_version}",
+    onlyif  => "/usr/bin/test $(dpkg-query -W -f='${Version}\n' cassandra) == ${::cassandra_version}",
   }
 
   file {'/usr/sbin/policy-rc.d':
