@@ -168,6 +168,16 @@ class graphite {
     require => [ File['carbon-daemon-upstart'], Package['graphite'], Exec['own-graphite'] ],
   }
 
+  package { 'logrotate':
+    ensure => latest,
+  }
+
+  file {'/etc/logrotate.d/carbon':
+    mode    => '0644',
+    source  => 'puppet:///modules/graphite/logrotate_conf',
+    require => Package['logrotate'],
+  }
+
   exec { 'disable-default-site':
     command => '/usr/sbin/a2dissite 000-default && service apache2 reload',
     onlyif  => '/usr/sbin/a2query -c 000-default',
