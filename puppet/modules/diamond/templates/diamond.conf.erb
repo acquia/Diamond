@@ -7,7 +7,17 @@
 [server]
 
 # Handlers for published metrics.
-handlers = diamond.handler.archive.ArchiveHandler, diamond.handler.cloudwatch.cloudwatchHandler
+<%
+    handlers = [
+      'diamond.handler.archive.ArchiveHandler',
+      'diamond.handler.cloudwatch.cloudwatchHandler'
+    ]
+
+    if @acquia_metric_endpoint
+      handlers << 'diamond.handler.graphite.GraphiteHandler'
+    end
+-%>
+handlers = <%= handlers.join(',') %>
 
 # User diamond will run as
 # Leave empty to use the current user
@@ -51,6 +61,12 @@ log_file = /mnt/log/diamond/archive.log
 
 # Number of days to keep archive log files
 days = 1
+
+<% if @acquia_metric_endpoint -%>
+[[GraphiteHandler]]
+host = <%= @acquia_metric_endpoint %>
+port = 2003
+<% end -%>
 
 ################################################################################
 ### Options for collectors
