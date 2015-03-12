@@ -28,7 +28,7 @@ class cassandra::opscenter {
     notify  => Service['opscenterd'],
   }
 
-  file { "/etc/opscenter/clusters/${cassandra::cassandra_cluster_name}.conf":
+  file { "/etc/opscenter/clusters/${::cassandra_cluster_name}.conf":
     ensure  => present,
     content => template('cassandra/opscenter_cluster_name.conf.erb'),
     require => [ Package['opscenter'], File['/etc/opscenter/clusters'], ],
