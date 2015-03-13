@@ -1,0 +1,14 @@
+<%
+require 'facter'
+require 'digest'
+
+password = Digest::SHA256.new.hexdigest(Facter.value('cassandra_cql_password'))
+-%>
+CREATE TABLE version(version_number TEXT PRIMARY KEY, migrated_at TEXT);
+CREATE TABLE user_groups(groupid INTEGER PRIMARY KEY, groupname TEXT,UNIQUE(groupname));
+CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, groupid INTEGER, UNIQUE(username), FOREIGN KEY (groupid) references user_groups(groupid));
+CREATE TABLE permissions(groupid INTEGER,permissions TEXT,clusterid TEXT,FOREIGN KEY (groupid) references user_groups(groupid));
+INSERT INTO permissions (groupid, permissions, clusterid) VALUES(1, '340282366920938463463374607431768211455', 'ALL_CLUSTER_PERMISSIONS');
+INSERT INTO user_groups (groupid, groupname) VALUES (1, 'admin');
+INSERT INTO users (username, password, groupid) VALUES ('admin', '<%= password %>', 1);
+INSERT INTO version (version_number, migrated_at) VALUES ('5.0.0', '1426214233.91588');

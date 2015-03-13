@@ -6,7 +6,6 @@ class cassandra {
 
   $cassandra_version = '2.1.3'
 
-  # lint:ignore:disable_variable_scope
   exec {'check_cassandra_installed':
     command => '/bin/true',
     onlyif  => "/usr/bin/test $(dpkg-query -W -f='${Version}\n' cassandra) == ${::cassandra_version}",
@@ -98,26 +97,10 @@ class cassandra {
     notify  => [ Service['cassandra'], ],
   }
 
-  #exec {'enable_jmx_authenticate':
-  #  command => "/bin/sed -i '/jmxremote.authenticate=false/s/false/true/' /etc/cassandra/cassandra-env.sh",
-  #  onlyif  => "/bin/grep 'jmxremote.authenticate=false' /etc/cassandra/cassandra-env.sh",
-  #  require => [ Package['cassandra'], ],
-  #  notify  => [ Service['cassandra'], ],
-  #}
-
-  #exec {'enable_jmx_password':
-  #  command => "/bin/sed -i '/jmxremote.password.file/s/^#//' /etc/cassandra/cassandra-env.sh",
-  #  onlyif  => "/bin/grep 'jmxremote.password.file' /etc/cassandra/cassandra-env.sh | /bin/grep -En '^#'",
-  #  require => [ Package['cassandra'], ],
-  #  notify  => [ Service['cassandra'], ],
-  #}
-
-  file {'/etc/cassandra/jmxremote.password':
-    owner   => 'cassandra',
-    group   => 'cassandra',
-    mode    => '0400',
-    content => template('cassandra/cassandra_jmxremote.password.erb'),
-    require => Package['cassandra'],
+  exec {'set_jmx_addr':
+    command => "/bin/sed -i '/java.rmi.server.hostname/s/^.*/JVM_OPTS=\"${JVM_OPTS} -Djava.rmi.server.hostname=${ec2_local_ipv4}\"/' /etc/cassandra/cassandra-env.sh",
+    unless  => "/bin/grep 'java.rmi.server.hostname' /etc/cassandra/cassandra-env.sh | /bin/grep -En '${ec2_local_ipv4}'",
+    require => [ Package['cassandra'], ],
     notify  => [ Service['cassandra'], ],
   }
 
