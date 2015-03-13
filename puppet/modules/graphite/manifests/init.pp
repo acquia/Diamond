@@ -168,10 +168,6 @@ class graphite {
     require => [ File['carbon-daemon-upstart'], Package['graphite'], Exec['own-graphite'] ],
   }
 
-  package { 'logrotate':
-    ensure => latest,
-  }
-
   file {'/etc/logrotate.d/carbon':
     mode    => '0644',
     source  => 'puppet:///modules/graphite/logrotate_conf',
