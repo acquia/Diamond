@@ -128,6 +128,12 @@ enabled = True
 [[VMStatCollector]]
 enabled = True
 
+<% if @server_type == 'zookeeper' -%>
+[[ZookeeperCollector]]
+enabled = True
+hosts = localhost:2181
+<% end -%>
+
 ################################################################################
 ### Options for logging
 # for more information on file format syntax:
