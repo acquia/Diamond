@@ -21,10 +21,17 @@ class graphite {
     require     => Package['graphite'],
   }
 
+  file { [ '/mnt/log/graphite', '/mnt/log/graphite/webapp' ]:
+    ensure  => directory,
+    group   => 'www-data',
+    owner   => 'www-data',
+    require => Package['graphite'],
+  }
+
   exec { 'syncdb':
     command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/bin/django-admin.py syncdb --noinput --settings=graphite.settings"',
     onlyif  => 'bash -c "test ! -f /opt/graphite/storage/graphite.db"',
-    require => Package['graphite'],
+    require => [ Package['graphite'], File['/mnt/log/graphite/webapp'], ],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
   }
 
@@ -35,8 +42,13 @@ class graphite {
 
   exec { 'collectstatic':
     command => 'bash -c "PYTHONPATH=/opt/graphite/webapp /opt/graphite/bin/python /opt/graphite/bin/django-admin.py collectstatic --noinput --verbosity=0 --settings=graphite.settings"',
-    require => Package['graphite'],
+    require => [ Package['graphite'], File['/mnt/log/graphite/webapp'], ],
     path    => '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
+  }
+
+  exec { 'own-graphite-logs':
+    command => '/bin/chown -R www-data:www-data /mnt/log/graphite',
+    require => [ Exec['syncdb'], Exec['collectstatic'], ],
   }
 
   file { 'writer':
