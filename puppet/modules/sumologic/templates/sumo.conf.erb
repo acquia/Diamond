@@ -1,0 +1,14 @@
+<%
+cred_key = @acquia_sumologic.gsub('-', '_')
+username = @credentials[cred_key]["username"]
+password = @credentials[cred_key]["password"]
+-%>
+rpmRunAs=sumo
+rpmAutoStart=false
+name=<%= @hostname %>
+accessid=<%= username %>
+accesskey=<%= password %>
+sources=/etc/sumologic/sources.json
+override=true
+ephemeral=true
+clobber=true

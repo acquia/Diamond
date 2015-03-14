@@ -24,9 +24,11 @@ class sumologic::install {
   }
 
   file { 'sumo.conf':
-    path   => '/etc/sumo.conf',
-    source => 'puppet:///modules/sumologic/sumo.conf',
-    mode   => '0700',
+    path    => '/etc/sumo.conf',
+    content => template('sumologic/sumo.conf.erb'),
+    mode    => '0700',
+    owner   => 'sumo',
+    group   => 'sumo',
   }
 
   file { 'sources.json':
