@@ -1,5 +1,6 @@
 class base {
   require ::ntp
+  require ::logrotate::base
   require base::admin_users
   require base::packages
   require base::repos
