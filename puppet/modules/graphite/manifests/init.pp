@@ -180,10 +180,19 @@ class graphite {
     require => [ File['carbon-daemon-upstart'], Package['graphite'], Exec['own-graphite'] ],
   }
 
-  file {'/etc/logrotate.d/carbon':
-    mode    => '0644',
-    source  => 'puppet:///modules/graphite/logrotate_conf',
-    require => Package['logrotate'],
+  logrotate::rule { 'carbon-upstart':
+    path          => '/mnt/log/carbon-daemon/carbon-upstart.log',
+    rotate        => 5,
+    size          => '250M',
+    compress      => true,
+    delaycompress => true,
+    dateext       => true,
+    missingok     => true,
+    ifempty       => false,
+    create        => true,
+    create_mode   => '0644',
+    create_owner  => 'root',
+    create_group  => 'root',
   }
 
   exec { 'disable-default-site':

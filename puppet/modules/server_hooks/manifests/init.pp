@@ -55,14 +55,19 @@ class server_hooks {
     mode   => '0644',
   }
 
-  package { 'logrotate':
-    ensure => latest,
-  }
-
-  file {'/etc/logrotate.d/nemesis':
-    mode    => '0644',
-    source  => 'puppet:///modules/server_hooks/logrotate_conf',
-    require => Package['logrotate'],
+  logrotate::rule { 'nemesis':
+    path          => '/var/log/nemesis/server_hooks.log',
+    rotate        => 5,
+    size          => '100k',
+    compress      => true,
+    delaycompress => true,
+    dateext       => true,
+    missingok     => true,
+    ifempty       => false,
+    create        => true,
+    create_mode   => '0644',
+    create_owner  => 'root',
+    create_group  => 'root',
   }
 
   file {'/var/lock/nemesis':
