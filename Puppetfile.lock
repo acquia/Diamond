@@ -43,10 +43,18 @@ GIT
   specs:
     puppetlabs-stdlib (4.3.2)
 
+GIT
+  remote: git@github.com:rodjek/puppet-logrotate.git
+  ref: 1.1.1
+  sha: 320689601747b29fbdf19994489d0993b908fffb
+  specs:
+    rodjek-logrotate (1.1.1)
+
 DEPENDENCIES
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)
   puppetlabs-stdlib (>= 0)
+  rodjek-logrotate (>= 0)
   stankevich-python (>= 0)
 
