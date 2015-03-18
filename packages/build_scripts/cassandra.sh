@@ -15,14 +15,13 @@
 # limitations under the License.
 #
 #
-# Script to download the latest Apache Cassandra debian package. Latest stable version
-# in the 21x repo is 2.1.0
+# Script to download the latest Apache Cassandra debian package.
 #
 set -ex
 
-DEB_VERSION="21x"
+DEB_VERSION="20x"
 # This needs to be kept in sync with the Cassandra module
-PACKAGE_VERSION='2.1.3'
+PACKAGE_VERSION='2.0.13'
 
 # Add the Cassandra deb repo and download and import the Cassandra GPG keys
 echo "deb http://www.apache.org/dist/cassandra/debian ${DEB_VERSION} main" > /etc/apt/sources.list.d/cassandra.list

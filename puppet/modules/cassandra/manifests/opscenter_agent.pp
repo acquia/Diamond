@@ -18,6 +18,9 @@ class cassandra::opscenter_agent {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => [ User['cassandra'], Package['datastax-agent'], File['/var/lib/datastax-agent/conf/address.yaml'], ],
+    require    => [
+      Service['cassandra'],
+      Package['datastax-agent'],
+      File['/var/lib/datastax-agent/conf/address.yaml'], ],
   }
 }
