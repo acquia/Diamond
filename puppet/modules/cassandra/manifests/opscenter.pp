@@ -5,17 +5,6 @@ class cassandra::opscenter {
   # When changing this the opscenter_passwd.db.erb template needs to also be updated to include the new version
   $opscenter_version = '5.1.0'
 
-  exec {'check_opscenter_installed':
-    command => '/bin/true',
-    onlyif  => "/usr/bin/test $(dpkg-query -W -f='${Version}\n' opscenter) == ${::opscenter_version}",
-  }
-
-  file {'/usr/sbin/policy-rc.d':
-    source  => 'puppet:///modules/cassandra/policy-rc.d',
-    mode    => '0775',
-    require => Exec['check_opscenter_installed'],
-  }
-
   file { '/mnt/log/opscenter':
     ensure => 'directory',
     mode   => '0755',
@@ -27,16 +16,7 @@ class cassandra::opscenter {
   }
 
   package { 'opscenter':
-    ensure  => 'latest',
-  } -> exec {'daemon_auto_start_enabled':
-    command => '/bin/rm -f /usr/sbin/policy-rc.d',
-    onlyif  => '/usr/bin/test -f /usr/sbin/policy-rc.d',
-  }
-
-  file { '/etc/opscenter/clusters':
-    ensure  => 'directory',
-    mode    => '0755',
-    require => [ Package['opscenter'], ],
+    ensure  => $opscenter_version,
   }
 
   file { '/etc/opscenter/opscenterd.conf':
@@ -44,6 +24,12 @@ class cassandra::opscenter {
     content => template('cassandra/opscenterd.conf.erb'),
     require => Package['opscenter'],
     notify  => Service['opscenterd'],
+  }
+
+  file { '/etc/opscenter/clusters':
+    ensure  => 'directory',
+    mode    => '0755',
+    require => [ Package['opscenter'], ],
   }
 
   file {"/etc/opscenter/clusters/${::cassandra_cluster_name}.conf":
@@ -55,14 +41,18 @@ class cassandra::opscenter {
 
   package {'sqlite':
     ensure  => 'latest',
-  } -> file {'/etc/opscenter/passwd.sql':
+  }
+
+  file {'/etc/opscenter/passwd.sql':
     ensure  => present,
     content => template('cassandra/opscenterd_passwd.db.erb'),
     require => Package['opscenter'],
-  } -> exec {'create_sql_db':
+  }
+
+  exec {'create_sql_db':
     cwd     => '/etc/opscenter',
     command => '/usr/bin/sqlite3 < /etc/opscenter/passwd.sql',
-    creates => '/etc/opscenter/passwd.db',
+    require  => [ Package['opscenterd'], Package['sqlite'], File['/etc/opscenter/passwd.sql'], ],
     notify  => Service['opscenterd'],
   }
 

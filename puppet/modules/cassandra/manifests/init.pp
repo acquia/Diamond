@@ -4,7 +4,7 @@ class cassandra {
   include cassandra::tablesnap
   include cassandra::opscenter_agent
 
-  $cassandra_version = '2.1.3'
+  $cassandra_version = '2.0.13'
 
   exec {'check_cassandra_installed':
     command => '/bin/true',

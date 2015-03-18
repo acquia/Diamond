@@ -11,4 +11,7 @@ class base {
   require puppet
   require server_hooks
 
+  exec {'puppet_templatedir_deprecated':
+    command => "/bin/sed -i '/^templatedir/s/^templatedir.*//' /etc/puppet/puppet.conf",
+  }
 }
