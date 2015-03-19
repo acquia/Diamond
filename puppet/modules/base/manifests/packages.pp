@@ -5,6 +5,7 @@ class base::packages {
     'ack-grep',
     'ethtool',
     'htop',
+    'lvm2',
     'pv',
     'screen',
     'strace',

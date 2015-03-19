@@ -29,6 +29,14 @@ GIT
       puppetlabs-stdlib (>= 2.2.1)
 
 GIT
+  remote: git@github.com:puppetlabs/puppetlabs-lvm.git
+  ref: master
+  sha: 08c4a3e6442e072eac0756d41f0e7cc108a5ee5d
+  specs:
+    puppetlabs-puppetlabs-lvm (0.4.0)
+      puppetlabs-stdlib (>= 4.1.0)
+
+GIT
   remote: git@github.com:puppetlabs/puppetlabs-ntp.git
   ref: 3.1.2
   sha: 14ff94e9a09f12caf5477f3a1840351e18cf1089
@@ -54,6 +62,7 @@ DEPENDENCIES
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)
+  puppetlabs-puppetlabs-lvm (>= 0)
   puppetlabs-stdlib (>= 0)
   rodjek-logrotate (>= 0)
   stankevich-python (>= 0)
