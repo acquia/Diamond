@@ -10,9 +10,4 @@ class base {
   require diamond
   require puppet
   require server_hooks
-
-  exec {'puppet_templatedir_deprecated':
-    command => "/bin/sed -i '/^templatedir/s/^templatedir.*//' /etc/puppet/puppet.conf",
-    onlyif  => "/bin/grep templatedir /etc/puppet/puppet.conf"
-  }
 }
