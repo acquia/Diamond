@@ -18,6 +18,9 @@ mod 'stankevich/python',
 mod 'puppetlabs/apache',
   :git => 'git@github.com:puppetlabs/puppetlabs-apache.git'
 
+mod 'puppetlabs/puppetlabs-lvm',
+  :git => 'git@github.com:puppetlabs/puppetlabs-lvm.git'
+
 mod 'rodjek/logrotate',
   :git => 'git@github.com:rodjek/puppet-logrotate.git',
   :ref => '1.1.1'
