@@ -15,5 +15,6 @@
 classes:
   - cassandra
 
+base::instance_store::block_device: /dev/xvdb
 diamond::cassandra: true
 server_hooks::cloudwatch::cassandra: true
