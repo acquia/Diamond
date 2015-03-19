@@ -16,7 +16,6 @@ classes:
   - graphite
   - sumologic
 
-base::instance_store::block_device: /dev/xvdb
 sumologic::paths:
   console:
     :path: '/opt/graphite/storage/log/carbon-daemons/writer/console.log'
