@@ -8,4 +8,13 @@ class base::setup {
   file { '/mnt/lib':
     ensure => directory,
   }
+
+  file { '/vol/':
+    ensure => directory,
+  }
+
+  file { '/vol/ephemeral0':
+    ensure => link,
+    target => '/mnt/',
+  }
 }
