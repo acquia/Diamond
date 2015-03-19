@@ -51,7 +51,7 @@ class cassandra::opscenter {
 
   exec {'create_sql_db':
     cwd     => '/etc/opscenter',
-    command => '/usr/bin/sqlite3 < /etc/opscenter/passwd.sql',
+    command => '/usr/bin/sqlite3 passwd.db < /etc/opscenter/passwd.sql',
     require  => [ Package['opscenter'], Package['sqlite'], File['/etc/opscenter/passwd.sql'], ],
     notify  => Service['opscenterd'],
   }

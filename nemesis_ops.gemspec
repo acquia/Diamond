@@ -39,13 +39,15 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.2.0'
   spec.add_development_dependency 'simplecov', '~> 0.9.2'
 
+  spec.add_dependency 'multi_json'
+  spec.add_dependency 'oj'
+  spec.add_dependency 'semantic'
+  spec.add_dependency 'thor'
+
+  # Depenencies that are called only via system calls within nemesis-ops
   spec.add_dependency 'fpm'
   spec.add_dependency 'hiera-eyaml'
   spec.add_dependency 'hiera-eyaml-gpg'
-  spec.add_dependency 'multi_json'
   spec.add_dependency 'librarian-puppet'
-  spec.add_dependency 'oj'
   spec.add_dependency 'puppet'
-  spec.add_dependency 'semantic'
-  spec.add_dependency 'thor'
 end
