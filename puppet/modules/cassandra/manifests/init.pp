@@ -1,6 +1,4 @@
 class cassandra {
-  require base
-  require java
   include cassandra::tablesnap
   include cassandra::opscenter_agent
 
@@ -66,6 +64,8 @@ class cassandra {
     require => [
       File['/usr/sbin/policy-rc.d'],
       User['cassandra'],
+      File['/var/log/cassandra'],
+      File['/var/lib/cassandra'],
     ],
   } -> exec {'daemon_auto_start_enabled':
     command => '/bin/rm -f /usr/sbin/policy-rc.d',

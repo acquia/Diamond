@@ -12,8 +12,6 @@ class base::instance_store (
   $mount_path   = '/mnt',
   $ephemeral_path = '/vol',
 ){
-  require base::packages
-
   if $::needs_blockdevices_mounted {
 
     if $::ec2_instance_type != 'c3.large' and $::ec2_instance_type != 'c3.xlarge' {
@@ -34,7 +32,7 @@ class base::instance_store (
       ephemeral_volumes($::blockdevices, $ephemeral_path)
     )
 
-    # Defines a simple 1 VG, n PVs, n LVs scheme set to use all available space
+    # Define a simple 1 VG, n PVs, n LVs scheme set to use all available space
     class { 'lvm':
       volume_groups => {
         'instancevg' => {
@@ -43,6 +41,10 @@ class base::instance_store (
         }
       }
     }
+    # Declare LVM as being contained by this class
+    # Ensures that LVM resources are applied in the right order in the base
+    # module
+    contain 'lvm'
 
     if $::supports_trim {
       cron { 'ssd_trim':

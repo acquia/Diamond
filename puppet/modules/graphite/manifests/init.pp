@@ -1,5 +1,4 @@
 class graphite {
-  require base::repos
   require graphite::apache
 
   $version = '0.1.7-0~trusty'
