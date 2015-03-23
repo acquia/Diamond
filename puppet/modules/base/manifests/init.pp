@@ -1,13 +1,14 @@
 class base {
-  require ::ntp
-  require ::logrotate::base
-  require base::admin_users
-  require base::instance_store
-  require base::packages
-  require base::repos
-  require base::setup
-  require base::sudo
-  require diamond
-  require puppet
-  require server_hooks
+  include base::admin_users
+  include base::sudo
+
+  contain base::repos
+  contain base::packages
+  contain base::instance_store
+  contain base::setup
+
+  Class['base::repos'] ->
+  Class['base::packages'] ->
+  Class['base::instance_store'] ->
+  Class['base::setup']
 }
