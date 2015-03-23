@@ -12,15 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
+require 'forwardable'
 
-gem 'nemesis', :git => 'git@github.com:acquia/nemesis.git'
+module NemesisOps::PackerGen
+  class PackerSection
+    extend Forwardable
+    def_delegators :@data, :[], :[]=
 
-group :development, :test do
-  gem 'rake',                    require: false
-  gem 'puppetlabs_spec_helper',  require: false
-  gem 'puppet-lint',             require: false
-  gem 'rubocop',                 require: false
-  gem 'faker',                   require: false
+    attr_reader :key, :data
+    def initialize(key)
+      @key = key
+      @data = {}
+      @ordering_key = 0
+    end
+
+    def add(data)
+      @data[@ordering_key] = data
+      @ordering_key += 1
+    end
+
+    def data_to_arr
+      @data.map { |_, value| value }
+    end
+
+    def to_h
+      { @key => data_to_arr }
+    end
+  end
 end

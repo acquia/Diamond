@@ -14,6 +14,7 @@
 
 require 'nemesis_ops/version'
 require 'pathname'
+require 'require_all'
 
 module NemesisOps
   GPG_KEY = '23406CA7'
@@ -44,4 +45,6 @@ module NemesisOps
   Dir.glob("#{File.absolute_path(File.dirname(__FILE__))}/nemesis_ops/*.rb").each do |f|
     NemesisOps.autoload_file f
   end
+
+  require_all "#{File.dirname(__FILE__)}/nemesis_ops/packer_gen"
 end

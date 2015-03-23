@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'oj'
+  spec.add_dependency 'require_all'
   spec.add_dependency 'semantic'
   spec.add_dependency 'thor'
 
