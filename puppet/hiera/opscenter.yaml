@@ -13,4 +13,4 @@
 # limitations under the License.
 ---
 classes:
-  - cassandra::opscenter
+  - roles::opscenter

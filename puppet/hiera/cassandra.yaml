@@ -13,7 +13,7 @@
 # limitations under the License.
 ---
 classes:
-  - cassandra
+  - roles::cassandra
 
 diamond::cassandra: true
 server_hooks::cloudwatch::cassandra: true

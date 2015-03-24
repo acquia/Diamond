@@ -1,6 +1,4 @@
 class base::packages {
-  require base::repos
-
   $common_packages = [
     'ack-grep',
     'ethtool',

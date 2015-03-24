@@ -1,7 +1,4 @@
 class zookeeper{
-  require base::repos
-  require java
-  
   package { 'zookeeper' :
     ensure => latest,
   }
@@ -28,7 +25,7 @@ class zookeeper{
     content => template('zookeeper/defaults.conf.erb'),
     require => [ Package['zookeeper-exhibitor'], ],
   }
-  
+
   file { '/opt/exhibitor/credentials.properties':
     ensure  => present,
     content => template('zookeeper/credential.properties.erb'),
@@ -48,7 +45,7 @@ class zookeeper{
     mode    => '0755',
     require => [ Package['zookeeper-exhibitor'], ],
   }
-  
+
   service { 'exhibitor':
     ensure  => 'running',
     require => [ File['/etc/init.d/exhibitor'], File['/opt/exhibitor/realm'], File['/opt/exhibitor/web.xml'], File['/opt/exhibitor/defaults.conf'], File['/opt/exhibitor/credentials.properties'], ],

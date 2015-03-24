@@ -1,5 +1,4 @@
 class tessera {
-  require base::repos
   require tessera::apache
 
   package { 'tessera':
@@ -12,13 +11,13 @@ class tessera {
     ensure => 'latest',
     before => [Exec['initialize-mysql'], ],
   }
-    
+
   file { '/opt/tessera/etc/config.py':
     ensure  => present,
     content => template('tessera/config.py.erb'),
     require => [ Package['tessera'], ],
   }
-  
+
   file { [ '/opt', '/opt/tessera', '/opt/tessera/etc', '/opt/tessera/etc/log' ]:
     ensure => directory,
     before => File ['/opt/tessera/etc/config.py'],

@@ -1,6 +1,4 @@
 class cassandra::opscenter_agent {
-  require java
-
   package {'datastax-agent':
     ensure  => 'latest',
     require => [ Service['cassandra'], ],
