@@ -13,8 +13,7 @@
 # limitations under the License.
 ---
 classes:
-  - graphite
-  - sumologic
+  - roles::graphite
 
 sumologic::paths:
   console:
@@ -26,7 +25,7 @@ sumologic::paths:
   error:
     :path: '/opt/graphite/storage/log/webapp/error.log'
     :date_format: 'dd/MMM/yyyy HH:mm:ss'
-  exception: 
+  exception:
     :path: '/opt/graphite/storage/log/webapp/exception.log'
     :date_format: 'dd/MMM/yyyy HH:mm:ss'
 

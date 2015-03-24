@@ -1,6 +1,4 @@
 class base::setup {
-  require base::instance_store
-
   file { '/mnt/log':
     ensure => directory,
   }

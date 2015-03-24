@@ -3,7 +3,6 @@ class sumologic (
   $paths = undef,
   $category = undef,
 ){
-  require base
   include java
 
   if $::acquia_sumologic {

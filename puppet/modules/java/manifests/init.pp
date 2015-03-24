@@ -1,6 +1,4 @@
 class java {
-  require base
-
   package { 'openjdk-7-jre-headless':
     ensure => present,
   }
