@@ -36,7 +36,7 @@ function docker_run() {
   # Set STDIN open, pseudo-TTY
   params="-it"
   # Delete container on exit
-  params=" --rm"
+  params+=" --rm"
   # Allow all ports
   params+=" -P"
   # Add the name as a tag
