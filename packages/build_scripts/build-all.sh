@@ -33,8 +33,12 @@ function docker_run() {
   SCRIPT=$1
   DEBUG=$2
 
+  # Set STDIN open, pseudo-TTY
+  params="-it"
+  # Delete container on exit
+  params=" --rm"
   # Allow all ports
-  params="-i -P"
+  params+=" -P"
   # Add the name as a tag
   params+=" --name $(basename ${SCRIPT} .sh)"
   # Add the shared volume as the dist dir
@@ -42,7 +46,7 @@ function docker_run() {
   # Add ssh forwarding
   params+=" -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent"
   # Add the default docker image to run in
-  params+=" -t nemesis"
+  params+=" nemesis"
   # If not in debug run the build script, otherwise drop into the shell
   if [[ "$DEBUG" == "0" ]]; then
     params+=" /bin/bash -C /build/${SCRIPT}"
