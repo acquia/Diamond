@@ -1,10 +1,10 @@
 require 'facter'
-require 'aws-sdk'
+require 'nemesis_aws_client'
 
-ec2 = AWS::EC2.new
+ec2 = NemesisAwsClient::EC2.new
 
 if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'graphite'
-  cf = AWS::CloudFormation.new
+  cf = NemesisAwsClient::CloudFormation.new
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
   cassandra_stack_name = stack.stack.parameters['CassandraStack']
 
@@ -17,7 +17,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'g
         ['Seed', 'Node'].each do |type|
           if cf.stacks[cassandra_stack_name].resources.map(&:logical_resource_id).include?("Cassandra#{type}sAutoScalingGroup")
             seed_autoscaling_group = cf.stacks[cassandra_stack_name].resources["Cassandra#{type}sAutoScalingGroup"].physical_resource_id
-            autoscaling_group = AWS::AutoScaling::Group.new(seed_autoscaling_group)
+            autoscaling_group = NemesisAwsClient::AutoScaling::Group.new(seed_autoscaling_group)
             autoscaling_group.auto_scaling_instances.each { |i| cassandra_cluster << ec2.instances[i.id].ip_address }
           end
         end
