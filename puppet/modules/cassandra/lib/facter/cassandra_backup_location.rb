@@ -1,10 +1,10 @@
 require 'facter'
-require 'aws-sdk'
+require 'nemesis_aws_client'
 
 Facter.add(:cassandra_backup_location) do
   setcode do
-    ec2 = AWS::EC2.new
-    cf = AWS::CloudFormation.new
+    ec2 = NemesisAwsClient::EC2.new
+    cf = NemesisAwsClient::CloudFormation.new
 
     if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'cassandra'
       stack = cf.stack_resource(Facter.value('ec2_instance_id'))
