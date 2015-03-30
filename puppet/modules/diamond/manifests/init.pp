@@ -1,7 +1,6 @@
 class diamond (
   $cassandra = false,
 ){
-  require base::repos
   require diamond::packages
 
   group { 'diamond':

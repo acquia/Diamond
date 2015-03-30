@@ -1,7 +1,8 @@
 class graphite {
   require graphite::apache
+  include graphite::rollup
 
-  $version = '0.1.7-0~trusty'
+  $version = '0.1.8-0~trusty'
 
   package { 'libcairo2':
     ensure => 'latest',
@@ -71,6 +72,7 @@ class graphite {
   graphite::config { 'rewrite-rules.conf': }
   graphite::config { 'storage-rules.conf': }
   graphite::config { 'writer.conf': }
+
 
   file { '/opt/graphite/conf/graphite.wsgi':
     ensure  => present,
@@ -171,7 +173,7 @@ class graphite {
     require => Package['graphite'],
     owner   => 'www-data',
     group   => 'www-data',
-    content => template('graphite/graphite_access.erb')
+    content => template('graphite/graphite_access.erb'),
   }
 
   service { 'carbon-daemon':
@@ -199,5 +201,4 @@ class graphite {
     onlyif  => '/usr/sbin/a2query -c 000-default',
     require => Package['graphite'],
   }
-
 }

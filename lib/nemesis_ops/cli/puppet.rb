@@ -26,7 +26,7 @@ module NemesisOps::Cli
 
     desc 'kick STACK_NAME SERVER_TYPE', 'Trigger a Puppet run using the latest nemesis-puppet package'
     method_option :parallel, :type => :boolean, :default => false, :desc => 'Run commands in parallel'
-    def kick(stack_name, server_type=nil)
+    def kick(stack_name, server_type = nil)
       cluster = Nemesis::Entities::Cluster.new(stack_name, nil)
 
       if cluster.servers.size == 0
