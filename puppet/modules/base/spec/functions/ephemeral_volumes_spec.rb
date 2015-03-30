@@ -8,6 +8,15 @@ describe 'the ephemeral_volumes function' do
   end
 
   it 'should generate a set of logical groups' do
-    expect(scope.function_ephemeral_volumes(['xvda,xvdb,xvdc', '/vol'])).to eq({'ephemeral1' => {'mountpath' => '/vol/ephemeral1', 'fs_type' => 'ext4', 'size' => nil, 'options' => 'defaults,nobootwait'}})
+    expect(scope.function_ephemeral_volumes(['xvda,xvdb,xvdc', '/vol'])).to eq(
+      {
+        'ephemeral1' => {
+          'mountpath' => '/vol/ephemeral1',
+          'fs_type' => 'ext4',
+          'size' => nil,
+          'options' => 'defaults,nobootwait',
+        }
+      }
+    )
   end
 end

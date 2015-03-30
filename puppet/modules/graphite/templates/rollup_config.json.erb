@@ -1,0 +1,8 @@
+{
+  "zookeeper_coordination": true,
+  "acl_password": "<%= @zookeeper_acl %>",
+  "zk_servers": [<%= @zookeeper_private_ips.split(',') %>],
+  "cassandra_servers": [<%= @cassandra_nodes.split(',') %>],
+  "cassandra_username": "cassandra",
+  "cassandra_password": "<%= @cassandra_cql_password %>"
+}
