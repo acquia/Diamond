@@ -1,8 +1,8 @@
 # Expose all metadata passed to the instance as facts prefixed with 'acquia_'
 # Also store a copy of the Acquia metadata as 'acquia_metadata'
 require 'facter'
-require 'aws-sdk'
 require 'json'
+require 'nemesis_aws_client'
 
 module AcquiaFacts
   def self.snakecase(str)
@@ -30,8 +30,8 @@ module AcquiaFacts
   end
 end
 
-ec2 = AWS::EC2.new
-cf = AWS::CloudFormation.new
+ec2 = NemesisAwsClient::EC2.new
+cf = NemesisAwsClient::CloudFormation.new
 
 tags = ec2.instances[Facter.value('ec2_instance_id')].tags.to_h
 stack = cf.stacks[tags['aws:cloudformation:stack-name']]

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'aws-sdk'
+require 'nemesis_aws_client'
 require 'net/http'
 
 # rubocop:disable ClassLength
@@ -25,7 +25,7 @@ class CloudwatchAlarms < NemesisServer::Hook
   #
   # @param topic_name [String] the name given to a topic.
   def locate_topic_arn(topic_name)
-    client = AWS::SNS::Client.new
+    client = NemesisAwsClient::SNS::Client.new
     complete = false
     topic_arn = ''
     response = client.list_topics
@@ -55,7 +55,7 @@ class CloudwatchAlarms < NemesisServer::Hook
   # @param metric_name [String] The name of the metric.
   def alarm_exists?(namespace, metric_name)
     alarm = false
-    client = AWS::CloudWatch::Client.new
+    client = NemesisAwsClient::CloudWatch::Client.new
     dimensions = get_alarm_dimensions
     response = client.describe_alarms_for_metric(
       {
@@ -72,7 +72,7 @@ class CloudwatchAlarms < NemesisServer::Hook
 
   # Locates all alarms associated with this instance.
   def get_all_alarms
-    client = AWS::CloudWatch::Client.new
+    client = NemesisAwsClient::CloudWatch::Client.new
     response = client.describe_alarms(
       {
         :alarm_name_prefix => create_alarm_name_prefix
@@ -173,7 +173,7 @@ class CloudwatchAlarms < NemesisServer::Hook
     end
 
     unless alarm_names.empty?
-      client = AWS::CloudWatch::Client.new
+      client = NemesisAwsClient::CloudWatch::Client.new
       response = client.delete_alarms(
         {
           :alarm_names => alarm_names
@@ -195,7 +195,7 @@ class CloudwatchAlarms < NemesisServer::Hook
     @instance_id = Net::HTTP.get(URI.parse(metadata_endpoint + 'instance-id'))
 
     # Locate and track the current stack name.
-    ec2 = AWS::EC2.new
+    ec2 = NemesisAwsClient::EC2.new
     tags = ec2.instances[@instance_id].tags.to_h
     @stack_name = tags['aws:cloudformation:stack-name']
   end
