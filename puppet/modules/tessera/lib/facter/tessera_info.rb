@@ -1,10 +1,10 @@
 require 'facter'
-require 'aws-sdk'
+require 'nemesis_aws_client'
 
-ec2 = AWS::EC2.new
+ec2 = NemesisAwsClient::EC2.new
 
 if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'tessera'
-  cf = AWS::CloudFormation.new
+  cf = NemesisAwsClient::CloudFormation.new
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
   params = stack.stack.parameters
   graphite_stack = cf.stacks[params['GraphiteStack']]
@@ -31,7 +31,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
     setcode do
       begin
         rds_db = cf.stack_resource(stack.stack_name, 'TesseraRDSDB')
-        rds = AWS::RDS::DBInstance.new(rds_db.physical_resource_id)
+        rds = NemesisAwsClient::RDS::DBInstance.new(rds_db.physical_resource_id)
         rds.endpoint_address
       rescue
         nil
