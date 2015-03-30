@@ -1,7 +1,6 @@
 <%
-cred_key = @acquia_sumologic.gsub('-', '_')
-username = @credentials[cred_key]["username"]
-password = @credentials[cred_key]["password"]
+username = @credentials['username']
+password = @credentials['password']
 -%>
 rpmRunAs=sumo
 rpmAutoStart=false
