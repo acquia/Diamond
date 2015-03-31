@@ -7,4 +7,5 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   apt-get install -y nemesis-puppet
 fi
 
+export RUBYLIB=/etc/puppet/lib:$RUBYLIB
 cd /etc/puppet && puppet apply manifests/nodes.pp --logdest /var/log/puppet.log
