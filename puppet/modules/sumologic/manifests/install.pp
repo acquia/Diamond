@@ -40,24 +40,14 @@ class sumologic::install {
     group   => 'sumo',
   }
 
-  file { 'wrapper.conf':
-    ensure  => present,
-    require => Package['sumocollector'],
-    path    => '/opt/SumoCollector/config/wrapper.conf',
-    owner   => 'sumo',
-    group   => 'sumo',
-    content => template('sumologic/wrapper.conf.erb'),
-  }
-
   package { 'sumocollector':
     ensure  => 'latest',
     require => [ User['sumo'], File['sumo.conf'], File['sources.json'], ],
-    notify  => File['wrapper.conf'],
   }
 
   service { 'collector':
     ensure  => running,
-    require => [ Package['sumocollector'], File['wrapper.conf'], ],
+    require => Package['sumocollector'],
     enable  => true,
   }
 }
