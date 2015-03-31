@@ -1,6 +1,6 @@
 class graphite::rollup {
 
-  file { 'rollup_config.json':
+  file { 'rollup_config':
     ensure  => present,
     owner   => 'www-data',
     group   => 'www-data',
