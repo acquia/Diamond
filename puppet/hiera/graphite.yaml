@@ -18,15 +18,18 @@ classes:
 sumologic::paths:
   console:
     :path: '/mnt/log/carbon-daemon/console.log'
-    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+    :date_format: 'dd/MM/yyyy HH:mm:ss'
   access:
     :path: '/mnt/log/graphite/webapp/access.log'
-    :date_format: 'dd/MMM/yyyy HH:mm:ss'
+    :date_format: 'dd/MMM/yyyy:HH:mm:ss'
   error:
     :path: '/mnt/log/graphite/webapp/error.log'
     :date_format: 'dd/MMM/yyyy HH:mm:ss'
   exception:
     :path: '/mnt/log/graphite/webapp/exception.log'
     :date_format: 'dd/MMM/yyyy HH:mm:ss'
+  rollups:
+    :path: '/mnt/log/cassandra-rollup.log'
+    :date_format: 'MMM DD HH:mm:ss'
 
 sumologic::category: 'platform_health'
