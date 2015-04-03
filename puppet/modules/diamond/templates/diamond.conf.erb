@@ -103,6 +103,8 @@ port = 2003
 # path_prefix = servers
 # path_suffix =
 
+path_prefix = stack.<%= @cluster_name %>.<%= @server_type %>
+
 # Path Prefix for Virtual Machines
 # If the host supports virtual machines, collectors may report per
 # VM metrics. Following OpenStack nomenclature, the prefix for
