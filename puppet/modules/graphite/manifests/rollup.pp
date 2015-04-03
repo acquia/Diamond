@@ -6,14 +6,16 @@ class graphite::rollup {
     group   => 'www-data',
     path    => '/opt/graphite/rollup.json',
     content => template('graphite/rollup_config.json.erb'),
+    require => Package['graphite'],
   }
 
   file { 'rollup_upstart':
-    ensure => present,
-    path   => '/etc/init/rollup.conf',
-    source => 'puppet:///modules/graphite/rollup.conf',
-    owner  => 'root',
-    group  => 'root',
+    ensure  => present,
+    path    => '/etc/init/rollup.conf',
+    source  => 'puppet:///modules/graphite/rollup.conf',
+    owner   => 'root',
+    group   => 'root',
+    require => Package['graphite'],
   }
 
   file { 'rollup_log':
