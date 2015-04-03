@@ -19,12 +19,14 @@
 #
 set -ex
 
-NAME="sumologic"
+NAME="sumocollector"
 
 BASEDIR=/tmp/${NAME}
 rm -rf ${BASEDIR}
 mkdir -p ${BASEDIR}
 
+
+cd ${BASEDIR}
 curl -sSL -OJ https://collectors.sumologic.com/rest/download/deb/64
 
 # If we're in a VM, let's copy the deb file over
