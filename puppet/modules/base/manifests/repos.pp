@@ -30,7 +30,7 @@ class base::repos {
   }
 
   apt::source { 'docker':
-    require     => Apt::key['docker_key'],
+    require     => Apt::Key['docker_key'],
     location    => 'http://get.docker.io/ubuntu',
     release     => 'docker',
     repos       => 'main',
