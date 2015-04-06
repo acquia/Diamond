@@ -24,19 +24,5 @@ class base::repos {
     }
   }
 
-  apt::key { 'docker_key':
-    key_source => 'https://get.docker.io/gpg',
-    key        => 'A88D21E9',
-  }
-
-  apt::source { 'docker':
-    require     => Apt::Key['docker_key'],
-    location    => 'http://get.docker.io/ubuntu',
-    release     => 'docker',
-    repos       => 'main',
-    key         => 'A88D21E9',
-    include_src => false,
-  }
-
   apt::ppa { 'ppa:webupd8team/java': }
 }

@@ -3,13 +3,25 @@ FORGE
   specs:
     puppetlabs-concat (1.1.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    stahnma-epel (1.0.2)
 
 GIT
   remote: git://github.com/stankevich/puppet-python.git
-  ref: 1.7.8
-  sha: b559134e30bfe8c02d01410644104b6cf1c1cfc3
+  ref: 1.9.1
+  sha: cf744a4120990d798597ee11b61c471976fa847a
   specs:
-    stankevich-python (1.7.8)
+    stankevich-python (1.8.0)
+      puppetlabs-stdlib (>= 4.0.0)
+
+GIT
+  remote: git@github.com:garethr/garethr-docker.git
+  ref: v3.5.0
+  sha: b4a14b74c6aefe783b22b1dc7d3d62497abc9b45
+  specs:
+    garethr-garethr-docker (3.5.0)
+      puppetlabs-apt (>= 1.1.0)
+      puppetlabs-stdlib (>= 4.1.0)
+      stahnma-epel (>= 0.0.6)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
@@ -22,10 +34,10 @@ GIT
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apt.git
-  ref: 1.6.0
-  sha: 6a95ab6156e4fb4ad339b2a6476a98aa9605c32f
+  ref: 1.8.0
+  sha: 47c6f338eda98ed849531d92b63c5e33103f76e4
   specs:
-    puppetlabs-apt (1.6.0)
+    puppetlabs-apt (1.8.0)
       puppetlabs-stdlib (>= 2.2.1)
 
 GIT
@@ -46,10 +58,10 @@ GIT
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-stdlib.git
-  ref: 4.3.2
-  sha: da11903285aca54ac399d66cb453f5a8db3ac355
+  ref: 4.5.1
+  sha: 7a91f209908f78d305e4de56ccc2f42b2b5953af
   specs:
-    puppetlabs-stdlib (4.3.2)
+    puppetlabs-stdlib (4.5.1)
 
 GIT
   remote: git@github.com:rodjek/puppet-logrotate.git
@@ -59,6 +71,7 @@ GIT
     rodjek-logrotate (1.1.1)
 
 DEPENDENCIES
+  garethr-garethr-docker (>= 0)
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)
