@@ -14,7 +14,6 @@
 
 require 'multi_json'
 require 'oj'
-require 'packer_gen'
 
 require 'nemesis'
 

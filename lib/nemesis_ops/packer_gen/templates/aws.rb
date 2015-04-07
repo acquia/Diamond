@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-source 'https://rubygems.org'
-gemspec
-
-gem 'nemesis', :git => 'git@github.com:acquia/nemesis.git'
-
-group :development, :test do
-  gem 'rake',                    require: false
-  gem 'puppetlabs_spec_helper',  require: false
-  gem 'puppet-lint',             require: false
-  gem 'rubocop',                 require: false
-  gem 'faker',                   require: false
+module NemesisOps::PackerGen
+  module Templates
+    module Aws
+      # Require any available templates
+      Dir.glob("#{File.absolute_path(File.dirname(__FILE__))}/aws/*.rb").each do |f|
+        require f
+      end
+    end
+  end
 end
