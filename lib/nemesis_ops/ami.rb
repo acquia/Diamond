@@ -12,24 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'nemesis'
-
 module NemesisOps
   module Ami
     extend NemesisOps::Common
-
-    # Create a script that Packer can use to install dependencies for an AMI
-    #
-    # @return [String]
-    def self.get_dependencies_for_packer
-      init = Nemesis::Aws::CloudFormation::Init.new(omit: [/puppet/])
-      packages = init.steps['bootstrap']['packages']['apt'].keys
-      gems = init.steps['bootstrap']['packages']['rubygems'].keys
-      [
-        "sudo -E apt-get install -y #{packages.join(' ')}",
-        "sudo gem install --no-ri --no-rdoc #{gems.join(' ')}"
-      ]
-    end
 
     # Generate a complete Packer template for building an AMI
     #
@@ -56,13 +41,6 @@ module NemesisOps
       template.builders[0][:s3_bucket] = File.join(get_bucket_from_stack(options[:repo], 'repo'), 'images') if options[:repo]
       template.builders[0][:tags] = { options[:tag] => nil }
       template.builders[0][:ami_regions] = options[:regions] unless options[:regions].empty?
-
-      template.provisioners.add(
-        {
-          type: 'shell',
-          inline: NemesisOps::Ami.get_dependencies_for_packer
-        }
-      )
       template
     end
   end

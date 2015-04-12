@@ -20,6 +20,7 @@ require 'pathname'
 require 'tmpdir'
 require 'zlib'
 
+# @todo: remove nemesis dependency
 require 'nemesis'
 
 module NemesisOps
