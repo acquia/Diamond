@@ -12,22 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'nemesis'
 require 'nemesis_ops'
 require 'pp'
-
-def ec2
-  @ec2 ||= Nemesis::Aws::Sdk::EC2.new
-end
-
-def s3
-  @s3 ||= Nemesis::Aws::Sdk::S3.new
-end
-
-def cf
-  @cf ||= Nemesis::Aws::Sdk::CloudFormation.new
-end
-
-def s3_repo_package_list(stack_name, os='trusty')
-  puts s3.buckets[stack_name].objects["dists/#{os}/main/binary-amd64/Packages"].read
-end

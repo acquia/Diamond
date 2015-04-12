@@ -26,12 +26,12 @@ module NemesisOps::PackerGen
 
         def get_aws_tools
           script = [
-            'VERSION=1.5.6',
+            "VERSION=#{NemesisOps::AWS_TOOLS_VERSION}",
             'export DEBIAN_FRONTEND=noninteractive',
             'export UCF_FORCE_CONFFNEW=true',
             '. /etc/lsb-release',
             # Install Puppet
-            'wget -q http://apt.puppetlabs.com/pubkey.gpg -O puppet.gpg',
+            'wget -q --no-dns-cache --retry-connrefused --waitretry=5 --read-timeout=15 --timeout=15 --tries=10 http://apt.puppetlabs.com/pubkey.gpg -O puppet.gpg',
             'sudo apt-key add puppet.gpg',
             'echo \'deb http://apt.puppetlabs.com ${DISTRIB_CODENAME} main\' | sudo tee -a /etc/apt/sources.list.d/puppet.list',
             'sudo apt-get update',
@@ -42,15 +42,12 @@ module NemesisOps::PackerGen
             'sudo -E apt-get -y install python-setuptools python-pip',
             'sudo apt-get -y autoremove',
             'sudo rm -f /var/cache/apt/archives/*deb',
-            'wget http://s3.amazonaws.com/ec2-downloads/ec2-ami-tools-${VERSION}.zip',
+            'wget -q --no-dns-cache --retry-connrefused --waitretry=5 --read-timeout=15 --timeout=15 --tries=10 http://s3.amazonaws.com/ec2-downloads/ec2-ami-tools-${VERSION}.zip',
             'unzip ec2-ami-tools-${VERSION}.zip',
             'sudo cp -r ec2-ami-tools-${VERSION}/* /usr/local',
             # Fix stupid build by Canonical
             'sudo sed -i \'s/console=hvc0/console=ttyS0 xen_emul_unplug=unnecessary/\' /boot/grub/menu.lst',
             'sudo sed -i \'s/LABEL=UEFI.*//\' /etc/fstab',
-            # Install cfn-init
-            'curl --retry 5 -O https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
-            'sudo pip install aws-cfn-bootstrap-latest.tar.gz',
             # Cleanup
             'rm -r ~/*',
           ]

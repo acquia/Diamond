@@ -15,8 +15,6 @@
 require 'multi_json'
 require 'oj'
 
-require 'nemesis'
-
 module NemesisOps::Cli
   class Ami < Thor
     desc 'template', 'Get a Packer-compatable template for building an AMI'
