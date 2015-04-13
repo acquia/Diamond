@@ -30,13 +30,8 @@ module NemesisOps::PackerGen
             'export DEBIAN_FRONTEND=noninteractive',
             'export UCF_FORCE_CONFFNEW=true',
             '. /etc/lsb-release',
-            # Install Puppet
-            'wget -q --no-dns-cache --retry-connrefused --waitretry=5 --read-timeout=15 --timeout=15 --tries=10 http://apt.puppetlabs.com/pubkey.gpg -O puppet.gpg',
-            'sudo apt-key add puppet.gpg',
-            'echo \'deb http://apt.puppetlabs.com ${DISTRIB_CODENAME} main\' | sudo tee -a /etc/apt/sources.list.d/puppet.list',
-            'sudo apt-get update',
-            'sudo -E apt-get -y install puppet',
             # Configure instance to be an AMI
+            'sudo apt-get update',
             'sudo -E apt-get -y -o Dpkg::Options::=\'--force-confdef\' -o Dpkg::Options::=\'--force-confnew\' dist-upgrade',
             'sudo -E apt-get install -y unzip ruby gdisk kpartx mount dmsetup grub',
             'sudo -E apt-get -y install python-setuptools python-pip',
@@ -45,11 +40,10 @@ module NemesisOps::PackerGen
             'wget -q --no-dns-cache --retry-connrefused --waitretry=5 --read-timeout=15 --timeout=15 --tries=10 http://s3.amazonaws.com/ec2-downloads/ec2-ami-tools-${VERSION}.zip',
             'unzip ec2-ami-tools-${VERSION}.zip',
             'sudo cp -r ec2-ami-tools-${VERSION}/* /usr/local',
+            'rm -f ec2-ami-tools-${VERSION}.zip',
             # Fix stupid build by Canonical
             'sudo sed -i \'s/console=hvc0/console=ttyS0 xen_emul_unplug=unnecessary/\' /boot/grub/menu.lst',
             'sudo sed -i \'s/LABEL=UEFI.*//\' /etc/fstab',
-            # Cleanup
-            'rm -r ~/*',
           ]
 
           { type: 'shell', inline: script }
