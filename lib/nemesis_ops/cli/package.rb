@@ -31,14 +31,7 @@ module NemesisOps::Cli
     desc 'add STACK_NAME PACKAGE', "Add a package to the stack's package listing"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def add(stack_name, package)
-      path = Pathname.new(File.absolute_path(package))
-      unless File.exists? path
-        Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
-        exit 1
-      end
-      cache_path = NemesisOps::Common::CACHE_DIR
-      FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
-      build_repo(stack_name, options[:gpg_key])
+      add_package(stack_name, package, gpg_key)
     end
 
     desc 'sync STACK_NAME', 'Get the packages from the repo and add them to your cache directory'
@@ -50,6 +43,14 @@ module NemesisOps::Cli
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def remove(stack_name, package)
       remove_package(stack_name, package, options[:gpg_key])
+    end
+
+    desc 'replace STACK_NAME PACKAGE_PATH', 'Re-add a package to aptly'
+    method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
+    def replace(stack_name, package_path)
+      package_name = File.basename(package_path)[/[-a-zA-Z]+/]
+      remove_package(stack_name, package_name, options[:gpg_key])
+      add_package(stack_name, package_path, options[:gpg_key])
     end
   end
 end
