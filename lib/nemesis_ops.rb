@@ -19,7 +19,8 @@ require 'require_all'
 module NemesisOps
   GPG_KEY = '23406CA7'
   DEFAULT_OS = 'trusty'
-  AWS_TOOLS_VERSION='1.5.6'
+  DEFAULT_AMI = 'ami-9aaa1cf2'
+  AWS_TOOLS_VERSION = '1.5.6'
 
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
   PKG_DIR = BASE_PATH.join('packages')
