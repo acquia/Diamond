@@ -16,9 +16,9 @@ require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'rubocop/rake_task'
 
-task :lint => :rubocop
 task :test => :spec
-task :all => [:rubocop, :spec]
+task :all => [:validate, :lint, :rubocop, :spec]
+task :default => [:rubocop, :spec]
 
 # This is to get around https://github.com/rodjek/puppet-lint/issues/331
 Rake::Task[:lint].clear

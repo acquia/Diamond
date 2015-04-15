@@ -29,3 +29,4 @@ packages/db/*
 Gemfile.lock
 puppet/third_party/*
 .tmp/*
+ec2_amazon-instance.pem

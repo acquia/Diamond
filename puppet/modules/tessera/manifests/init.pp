@@ -18,9 +18,9 @@ class tessera {
     require => [ Package['tessera'], ],
   }
 
-  file { [ '/opt', '/opt/tessera', '/opt/tessera/etc', '/opt/tessera/etc/log' ]:
-    ensure => directory,
-    before => File ['/opt/tessera/etc/config.py'],
+  file { ['/opt', '/opt/tessera', '/opt/tessera/etc', '/opt/tessera/etc/log']:
+    ensure => 'directory',
+    before => File['/opt/tessera/etc/config.py'],
   }
 
   file { '/opt/tessera/etc/tessera.wsgi':

@@ -23,7 +23,7 @@ module NemesisOps::Cli
     end
 
     desc 'ami SUBCOMMANDS ...ARGS', 'manage all things related to AMIs'
-    subcommand 'ami,', Ami
+    subcommand 'ami', Ami
 
     desc 'package SUBCOMMANDS ...ARGS', 'manage all things related to packages'
     subcommand 'package', Package

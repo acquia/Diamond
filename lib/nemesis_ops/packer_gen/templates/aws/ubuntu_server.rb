@@ -16,9 +16,10 @@ module NemesisOps::PackerGen::Templates::Aws
   class UbuntuServer < NemesisOps::PackerGen::PackerTemplate
     include NemesisOps::PackerGen::Templates::Aws::AwsTemplate
 
-    def initialize(config = nil, server_type = 'm3.medium')
+    def initialize(config = nil, server_type = 'm3.medium', source_ami = NemesisOps::DEFAULT_AMI)
       super(config)
       @server_type = server_type
+      @source_ami = source_ami
       scripts
       builder
     end
@@ -33,7 +34,7 @@ module NemesisOps::PackerGen::Templates::Aws
         ssh_username: 'ubuntu',
         x509_upload_path: '/tmp',
         ami_virtualization_type: 'hvm',
-        source_ami: 'ami-9aaa1cf2',
+        source_ami: @source_ami,
         region: 'us-east-1',
         ami_name: "#{self.class.name.split('::').last}_{{ timestamp }}",
         instance_type: @server_type,

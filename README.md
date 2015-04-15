@@ -1,12 +1,15 @@
 # Nemesis Package Manager
-[![Build Status](https://magnum.travis-ci.com/acquia/nemesis-puppet.svg?token=fuZxkY8h1TVDnxYTXZSB&branch=master)](https://magnum.travis-ci.com/acquia/nemesis-puppet)  
+[![Build Status](https://magnum.travis-ci.com/acquia/nemesis-puppet.svg?token=fuZxkY8h1TVDnxYTXZSB&branch=master)](https://magnum.travis-ci.com/acquia/nemesis-puppet)
 APT Packages manager and Puppet manifests used with Nemesis
 
 
 ## Dependencies
-Dependencies needed to be installed and configured before working with the Nemesis Package Manager:
+Dependencies needed to be installed and configured before working with the
+Nemesis Package Manager:
 
-  * Setup GPG key for signing packages. If you generate a new key, you need to use the `nemesis-ops --gpg-key` flag to use that generated key. If no key is provided then the default key used is 23406CA7.
+  * Setup GPG key for signing packages. If you generate a new key, you
+    need to use the `nemesis-ops --gpg-key` flag to use that generated key.
+    If no key is provided then the default key used is 23406CA7.
 
     * Mac: brew install gpg
 
@@ -70,11 +73,18 @@ Passing in a list of regions stores the AMI in the first region in the list and
 copies it to the other regions once the build is complete.
 
     nemesis-ops ami template --repo ${stack_name} \
-      --tag ${tag} \
-      --regions=<list_of_regions> 
-      <path_to_yaml_file> > /tmp/ami.json
+      --tag <tag> \
+      --regions=<list_of_regions> \
+      --build
 
-    packer build /tmp/ami.json
+To just generate the ami template output run the following, note: if the file
+path in not passed in then the template will just be printed to stdout
+
+    nemesis-ops ami template --repo ${stack_name} \
+      --tag <tag> \
+      --regions=<list_of_regions> \
+      /path/desired-output-file.json
+
 
 
 ## License
