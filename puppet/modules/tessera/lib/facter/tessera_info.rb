@@ -11,7 +11,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 't
 
   Facter.add('graphite_cluster') do
     setcode do
-      graphite_stack.outputs.select { |s| s.key == 'GraphiteELB' }.first.value
+      graphite_stack.outputs.find { |s| s.key == 'GraphiteELB' }.value
     end
   end
 

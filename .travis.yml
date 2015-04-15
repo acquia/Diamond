@@ -4,9 +4,6 @@ sudo: false
 rvm:
   - 2.1.5
 script:
-  - bundle exec rake validate
-  - bundle exec rake lint
-  - bundle exec rake rubocop
-  - bundle exec rake spec
+  - bundle exec rake all
 notifications:
   email: false
