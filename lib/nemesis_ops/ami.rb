@@ -39,8 +39,9 @@ module NemesisOps
       template.builders[0][:x509_cert_path] = "#{secure_path}/cert.pem"
       template.builders[0][:x509_key_path] = "#{secure_path}/pk.pem"
       template.builders[0][:s3_bucket] = File.join(get_bucket_from_stack(options[:repo], 'repo'), 'images') if options[:repo]
-      template.builders[0][:tags] = { options[:tag] => nil }
+      template.builders[0][:tags] = { options[:tag] => nil, 'nemesis' => nil, options[:repo] => nil }
       template.builders[0][:ami_regions] = options[:regions] unless options[:regions].empty?
+      template.builders[0][:source_ami] = options[:ami] if options[:ami]
       template
     end
   end
