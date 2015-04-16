@@ -51,5 +51,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hiera-eyaml'
   spec.add_dependency 'hiera-eyaml-gpg'
   spec.add_dependency 'librarian-puppet'
-  spec.add_dependency 'puppet'
+  spec.add_dependency 'puppet', '~> 3.7.5'
 end
