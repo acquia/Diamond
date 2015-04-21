@@ -148,6 +148,17 @@ module NemesisOps
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
 
+    def add_package(stack_name, package_path, gpg_key)
+      path = Pathname.new(File.absolute_path(package_path))
+      unless File.exists? path
+        Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
+        exit 1
+      end
+      cache_path = NemesisOps::Common::CACHE_DIR
+      FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
+      build_repo(stack_name, options[:gpg_key])
+    end
+
     def remove_package(stack, package, gpg_key)
       s3 = Nemesis::Aws::Sdk::S3.new
       repo = s3.buckets[get_bucket_from_stack(stack, 'repo')]
