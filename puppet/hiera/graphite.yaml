@@ -15,6 +15,20 @@
 classes:
   - roles::graphite
 
+limits::fragment:
+  "www-data/-/memlock":
+    value: 'unlimited'
+    file: '/etc/security/limits.d/graphite.conf'
+  "www-data/-/nofile":
+    value: '100000'
+    file: '/etc/security/limits.d/graphite.conf'
+  "www-data/-/as":
+    value: 'unlimited'
+    file: '/etc/security/limits.d/graphite.conf'
+  "www-data/-/nproc":
+    value: '8096'
+    file: '/etc/security/limits.d/graphite.conf'
+
 sumologic::paths:
   console:
     :path: '/mnt/log/carbon-daemon/console.log'

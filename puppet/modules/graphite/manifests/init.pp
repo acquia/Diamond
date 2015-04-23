@@ -140,6 +140,10 @@ class graphite {
     ],
   }
 
+  # Raise limits for the www-data user to avoid some problems
+  $limits = hiera('limits::fragment', {})
+  create_resources('limits::fragment', $limits)
+
   # Add in the location stanzas
   concat::fragment { 'graphite_fragment':
     target  => '05-graphite.conf',
