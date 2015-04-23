@@ -41,6 +41,13 @@ GIT
       puppetlabs-stdlib (>= 2.2.1)
 
 GIT
+  remote: git@github.com:puppetlabs/puppetlabs-limits.git
+  ref: master
+  sha: dbd7c66a8f7261e94e7d92177d72457b0d1582e6
+  specs:
+    puppetlabs-puppetlabs-limits (0.0.1)
+
+GIT
   remote: git@github.com:puppetlabs/puppetlabs-lvm.git
   ref: master
   sha: 08c4a3e6442e072eac0756d41f0e7cc108a5ee5d
@@ -75,6 +82,7 @@ DEPENDENCIES
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)
+  puppetlabs-puppetlabs-limits (>= 0)
   puppetlabs-puppetlabs-lvm (>= 0)
   puppetlabs-stdlib (>= 0)
   rodjek-logrotate (>= 0)
