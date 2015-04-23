@@ -24,6 +24,9 @@ module NemesisOps
 
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
   PKG_DIR = BASE_PATH.join('packages')
+  DIST_DIR = BASE_PATH.join('dist')
+  PKG_CACHE_DIR = DIST_DIR.join('cache')
+  PKG_REPO_DIR = DIST_DIR.join('repo')
 
   # List of file patterns to always exclude from S3 syncs
   EXCLUDE_PATTERNS = [
