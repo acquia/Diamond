@@ -36,6 +36,7 @@ overrides = {
   "incremental_backups" => true,
   "concurrent_compactors" => Facter.value('processors')['count'],
   "endpoint_snitch" => "Ec2MultiRegionSnitch",
+  "tombstone_warn_threshold" => 20000,
 }
 
 config = {}

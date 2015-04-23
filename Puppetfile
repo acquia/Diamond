@@ -14,6 +14,9 @@ mod 'puppetlabs/apt',
 mod 'puppetlabs/puppetlabs-lvm',
   :git => 'git@github.com:puppetlabs/puppetlabs-lvm.git'
 
+mod 'puppetlabs/puppetlabs-limits',
+  :git => 'git@github.com:puppetlabs/puppetlabs-limits.git'
+
 mod 'puppetlabs/ntp',
   :git => 'git@github.com:puppetlabs/puppetlabs-ntp.git',
   :ref => '3.1.2'
