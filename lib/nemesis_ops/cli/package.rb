@@ -25,7 +25,7 @@ module NemesisOps::Cli
     desc 'upload STACK_NAME', 'Upload the Apt repo for the given stack'
     def upload(stack_name)
       package_repo = get_bucket_from_stack(stack_name, 'repo')
-      s3_upload(package_repo, NemesisOps::BASE_PATH + 'packages/repo/public', :public_read)
+      s3_upload(package_repo, NemesisOps::PKG_REPO_DIR.join(stack_name, 'public'), :public_read)
     end
 
     desc 'add STACK_NAME PACKAGE', "Add a package to the stack's package listing"

@@ -42,9 +42,9 @@ module NemesisOps::Cli
 
     desc 'build OPTIONS', 'Generate and build an AMI'
     common_ami_template_options
-    method_option :repo, aliases: '-r', type: :string, required: true, desc: 'Stack to write the AMI to'
     method_option :debug, aliases: '-d', type: :boolean, required: false, default: false, desc: 'Debug the AMI build'
-    def build
+    def build(repo)
+      options[:repo] = repo
       template = NemesisOps::Ami.generate_template(options)
       build_ami(template, options[:tag], options[:debug])
     end

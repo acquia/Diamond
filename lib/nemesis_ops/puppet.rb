@@ -13,12 +13,13 @@
 # limitations under the License.
 
 require 'gpgme'
-require 'semantic'
 require 'tempfile'
 require 'yaml'
 
 module NemesisOps::Puppet
   require_relative 'puppet/module_credentials'
+  require_relative 'puppet/version'
+
   extend NemesisOps::Common
 
   # Build a .deb package containing all of the Puppet modules in the project
@@ -33,7 +34,7 @@ module NemesisOps::Puppet
     get_repo(stack_name)
 
     build_time = DateTime.now
-    version = get_package_version(build_time, release: options[:release])
+    version = get_package_version(stack_name, build_time, release: options[:release])
     Nemesis::Log.info("Bumping version to #{version.to_s}")
 
     remove_package(stack_name, 'nemesis-puppet', options[:gpg_key]) if options[:cleanup]
@@ -43,7 +44,7 @@ module NemesisOps::Puppet
 
     Dir.mktmpdir do |dir|
       # Copy over third party and puppet modules
-      FileUtils.cp_r(NemesisOps::BASE_PATH + 'puppet', dir)
+      FileUtils.cp_r(NemesisOps::BASE_PATH.join('puppet'), dir)
       source = Pathname.new(dir) + 'puppet' + 'third_party'
       files = Dir.glob(source + '*')
       dest = dir + '/puppet' + '/modules'
@@ -84,7 +85,7 @@ module NemesisOps::Puppet
       Nemesis::Log.info(result)
       # Really unsafe
       result = eval(result)
-      FileUtils.mv(result[:path], NemesisOps::Common::CACHE_DIR)
+      FileUtils.mv(result[:path], NemesisOps::PKG_CACHE_DIR.join(stack_name))
     end
 
     build_repo(stack_name, options[:gpg_key]) if options[:build_repo]
@@ -109,24 +110,25 @@ module NemesisOps::Puppet
 
   # Get a package version to apply to this nemesis-puppet build
   #
+  # @param stack_name [String] name of the stack
   # @param build_time [DateTime] the time to apply to the build
   # @param release [Boolean] whether or not this is a release build
   # @return [String] the version to apply to the package
-  def self.get_package_version(build_time, release: false)
-    version = Semantic::Version.new(`git describe --abbrev=0 --tags`.strip)
+  def self.get_package_version(stack_name, build_time, release: false)
+    version = NemesisOps::Puppet::Version.new(`git describe --abbrev=0 --tags`.strip)
 
     # Find highest version available
-    puppet_packages = Dir.glob(NemesisOps::Common::CACHE_DIR.join('*.deb')).select { |package| package.match('nemesis-puppet_') }
+    puppet_packages = Dir.glob(NemesisOps::PKG_CACHE_DIR.join(stack_name, '*.deb')).select { |package| package.match('nemesis-puppet_') }
     unless puppet_packages.empty?
       version = puppet_packages.reduce(version) do |a, e|
-        rev = Semantic::Version.new(e.match(/nemesis-puppet_((\d+\.?)+)/)[1])
+        rev = NemesisOps::Puppet::Version.new(e.match(/nemesis-puppet_((\d+\.?)+)/)[1])
         a = rev > a ? rev : a
       end
     end
     if release
       version = version.increment!(:patch)
     else
-      version = Semantic::Version.new("#{version}+#{build_time.strftime('%s')}")
+      version = NemesisOps::Puppet::Version.new("#{version}+#{build_time.strftime('%s')}")
     end
     version
   end
