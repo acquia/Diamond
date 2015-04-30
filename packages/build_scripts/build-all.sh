@@ -27,11 +27,12 @@ set -e
 START_TIME=$(date +%s%N)
 OS=$(lsb_release -is)
 BUILD_SCRIPT_DIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
-RELEASE_DIR=/vagrant/dist
+BASE_RELEASE_DIR=/vagrant
 
 function docker_run() {
   SCRIPT=$1
-  DEBUG=$2
+  OUTPUT_DIR=$2
+  DEBUG=$3
 
   # Set STDIN open, pseudo-TTY
   params="-it"
@@ -42,7 +43,7 @@ function docker_run() {
   # Add the name as a tag
   params+=" --name $(basename ${SCRIPT} .sh)"
   # Add the shared volume as the dist dir
-  params+=" -v ${RELEASE_DIR}:/dist -v ${BUILD_SCRIPT_DIR}:/build"
+  params+=" -v ${OUTPUT_DIR}:/dist -v ${BUILD_SCRIPT_DIR}:/build"
   # Add ssh forwarding
   params+=" -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent"
   # Add the default docker image to run in
@@ -54,21 +55,27 @@ function docker_run() {
   	params+=" /bin/bash"
   fi
 
+  echo "Starting Docker container with: docker run $params"
+  echo
+
   docker run $params
 }
 
 regex="*.sh"
 debug=0
 
-usage() { echo "Usage: $0 [-b <regex>] [-d]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-b <regex>] [-r <dist dir>] [-d]" 1>&2; exit 1; }
 
-while getopts "hdb:" o; do
+while getopts "hdb:r:" o; do
   case "${o}" in
     d)
 	  debug=1
       ;;
     b)
       regex=${OPTARG}
+      ;;
+    r)
+      BASE_RELEASE_DIR=${OPTARG}
       ;;
     *)
       usage
@@ -82,7 +89,13 @@ if [ "$OS" != "Ubuntu" ]; then
   exit 1
 fi
 
-mkdir -p ${RELEASE_DIR}
+if [ ! -d '/vagrant' ]; then
+  if [ ! id -u 'vagrant' > /dev/null 2>&1 ]; then
+    echo "Default dist dir assumes you are running in vagrant. Run in vagrant or specify a relaese dir with -r <dir>"
+  fi
+fi
+
+mkdir -p ${BASE_RELEASE_DIR}/dist/packages
 
 cd ${BUILD_SCRIPT_DIR}
 for x in ${regex}; do
@@ -90,7 +103,7 @@ for x in ${regex}; do
     echo
     echo "Building ${x}"
     echo
-    docker_run $x $debug
+    docker_run $x "${BASE_RELEASE_DIR}/dist/packages" $debug
     echo
   fi
 done

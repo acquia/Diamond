@@ -26,6 +26,7 @@ module NemesisOps::Cli
       # Optional
       method_option :ami, aliases: '-a', type: :string, required: false, default: NemesisOps::DEFAULT_AMI, desc: "AMI to use as the base AMI, Default: #{NemesisOps::DEFAULT_AMI}"
       method_option :regions, type: :array, required: false, default: ['us-east-1'], desc: 'A list of regions to copy the resulting AMI to'
+      method_option :instance_type, type: :string, required: false, default: NemesisOps::DEFAULT_INSTANCE_TYPE, desc: "Instance type to use. Default: #{NemesisOps::DEFAULT_INSTANCE_TYPE}"
     end
 
     desc 'gen OPTIONS', 'Get a Packer-compatable template for building an AMI'
@@ -42,9 +43,9 @@ module NemesisOps::Cli
 
     desc 'build OPTIONS', 'Generate and build an AMI'
     common_ami_template_options
-    method_option :repo, aliases: '-r', type: :string, required: true, desc: 'Stack to write the AMI to'
     method_option :debug, aliases: '-d', type: :boolean, required: false, default: false, desc: 'Debug the AMI build'
-    def build
+    def build(repo)
+      options[:repo] = repo
       template = NemesisOps::Ami.generate_template(options)
       build_ami(template, options[:tag], options[:debug])
     end

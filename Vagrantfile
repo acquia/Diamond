@@ -64,5 +64,5 @@ Vagrant.configure('2') do |config|
 
   # Build all packaging scripts, result will be left in the ./dist directory
   # after vagrant up has been run this can be re-run with: vagrant --provision-with build-scripts
-  # config.vm.provision "build-scripts", type: "shell", inline: $build_scripts
+  config.vm.provision "build-scripts", type: "shell", inline: $build_scripts
 end
