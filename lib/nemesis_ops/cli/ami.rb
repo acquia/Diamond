@@ -26,6 +26,7 @@ module NemesisOps::Cli
       # Optional
       method_option :ami, aliases: '-a', type: :string, required: false, default: NemesisOps::DEFAULT_AMI, desc: "AMI to use as the base AMI, Default: #{NemesisOps::DEFAULT_AMI}"
       method_option :regions, type: :array, required: false, default: ['us-east-1'], desc: 'A list of regions to copy the resulting AMI to'
+      method_option :instance_type, type: :string, required: false, default: NemesisOps::DEFAULT_INSTANCE_TYPE, desc: "Instance type to use. Default: #{NemesisOps::DEFAULT_INSTANCE_TYPE}"
     end
 
     desc 'gen OPTIONS', 'Get a Packer-compatable template for building an AMI'
