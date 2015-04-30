@@ -24,7 +24,8 @@ module NemesisOps
     def self.generate_template(options)
       keys = Nemesis::Credentials.create.creds_for_machine('ec2.client')
       account_id = Nemesis::Credentials.create.creds_for_machine('ec2.account.id').password
-      template = PackerGen::Templates::Aws::UbuntuServer.new(nil, 'm3.medium')
+      instance_type = options[:instance_type] ||= NemesisOps::INSTANCE_TYPE
+      template = PackerGen::Templates::Aws::UbuntuServer.new(nil, instance_type)
 
       fail 'Cannot read from netrc' if Net::Netrc.rcname.nil?
       secure_path = File.dirname(Net::Netrc.rcname)
