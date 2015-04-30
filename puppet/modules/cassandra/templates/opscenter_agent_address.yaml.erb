@@ -1,6 +1,0 @@
-stomp_interface: <%= Facter.value('cassandra_opscenter_address') %>
-use_ssl: 0
-hosts: ['<%= Facter.value('ec2_public_ipv4') %>']
-local_interface: <%= Facter.value('ec2_public_ipv4') %>
-cassandra_user: cassandra
-cassandra_pass: <%= Facter.value('cassandra_cql_password') %>
