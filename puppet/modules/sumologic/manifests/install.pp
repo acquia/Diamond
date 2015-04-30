@@ -38,6 +38,7 @@ class sumologic::install {
     mode    => '0644',
     owner   => 'sumo',
     group   => 'sumo',
+    notify  => Service['collector'],
   }
 
   package { 'sumocollector':
