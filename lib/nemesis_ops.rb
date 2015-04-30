@@ -19,11 +19,15 @@ require 'require_all'
 module NemesisOps
   GPG_KEY = '23406CA7'
   DEFAULT_OS = 'trusty'
-  DEFAULT_AMI = 'ami-9aaa1cf2'
+  DEFAULT_AMI = 'ami-f63b3e9e' # 64-bit hvm
+  DEFAULT_INSTANCE_TYPE = 'm3.medium'
   AWS_TOOLS_VERSION = '1.5.6'
 
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
   PKG_DIR = BASE_PATH.join('packages')
+  DIST_DIR = BASE_PATH.join('dist')
+  PKG_CACHE_DIR = DIST_DIR.join('cache')
+  PKG_REPO_DIR = DIST_DIR.join('repo')
 
   # List of file patterns to always exclude from S3 syncs
   EXCLUDE_PATTERNS = [

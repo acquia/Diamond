@@ -26,6 +26,7 @@ module NemesisOps::Cli
 
     desc 'kick STACK_NAME SERVER_TYPE', 'Trigger a Puppet run using the latest nemesis-puppet package'
     method_option :parallel, :type => :boolean, :default => false, :desc => 'Run commands in parallel'
+    method_option :debug, :type => :boolean, :default => false, :desc => 'Output debug information'
     def kick(stack_name, server_type = nil)
       cluster = Nemesis::Entities::Cluster.new(stack_name, nil)
 
@@ -36,16 +37,14 @@ module NemesisOps::Cli
 
       if options[:parallel]
         cluster.ssh.parallel_exec('apt-get update && apt-get install -y nemesis-puppet')
-        result = cluster.ssh.parallel_exec('cd /etc/puppet && puppet apply manifests/nodes.pp')
-        result.each do |server_result|
-          Nemesis::Log.info(server_result.first)
-        end
+        result = cluster.ssh.parallel_exec('/usr/local/bin/run_puppet')
+        result.each { |server_result| Nemesis::Log.info(server_result.first) }  if options[:debug]
       else
         cluster.servers.each do |server|
           Nemesis::Log.info("Updating server #{server.ip_address}")
           server.exec('apt-get update && apt-get install -y nemesis-puppet')
-          result = server.exec('cd /etc/puppet && puppet apply manifests/nodes.pp')
-          Nemesis::Log.info(result)
+          result = server.exec('/usr/local/bin/run_puppet')
+          Nemesis::Log.info(result) if options[:debug]
         end
       end
     end

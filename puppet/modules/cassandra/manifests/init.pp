@@ -1,6 +1,5 @@
 class cassandra {
   include cassandra::tablesnap
-  include cassandra::opscenter_agent
 
   $cassandra_version = '2.0.13'
 

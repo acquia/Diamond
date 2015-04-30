@@ -25,8 +25,6 @@ require 'nemesis'
 
 module NemesisOps
   module Common
-    CACHE_DIR = NemesisOps::PKG_DIR.join('cache')
-    REPO_DIR = NemesisOps::PKG_DIR.join('repo')
 
     def s3_upload(bucket, path, acl = :private)
       s3 = Nemesis::Aws::Sdk::S3.new
@@ -83,29 +81,30 @@ module NemesisOps
       cf.stacks[stack].resources[logical_name].physical_resource_id
     end
 
-    def bootstrap
-      FileUtils.mkdir_p([CACHE_DIR, REPO_DIR])
+    def bootstrap(stack)
+      [NemesisOps::PKG_CACHE_DIR, NemesisOps::PKG_REPO_DIR].each { |dir| FileUtils.mkdir_p(dir.join(stack)) }
     end
 
     def aptly(cmd)
-      bootstrap
       command = "aptly --config=#{NemesisOps::PKG_DIR}/aptly.conf #{cmd}"
       Nemesis::Log.info(command)
       `#{command}`
     end
 
     def get_repo(stack)
-      FileUtils.mkdir_p(CACHE_DIR)
+      bootstrap(stack)
+      stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
+
       s3 = Nemesis::Aws::Sdk::S3.new
       packages = get_bucket_from_stack(stack, 'repo')
       repo = s3.buckets[packages]
       debs = repo.objects.select { |o| o.key =~ /\.deb/ }
       debs.each do |deb|
         package = File.basename(deb.key)
-        cache_path = CACHE_DIR.join(package)
-        if needs_update?(cache_path, deb)
+        cache_package = stack_cache_dir.join(package)
+        if needs_update?(cache_package, deb)
           Nemesis::Log.info("Downloading #{package}")
-          File.open(cache_path, 'wb') do |file|
+          File.open(cache_package, 'wb') do |file|
             deb.read do |chunk|
               file.write(chunk)
             end
@@ -115,27 +114,30 @@ module NemesisOps
     end
 
     def build_repo(stack, gpg_key)
-      bootstrap
       result = `which aptly`
       if result.empty?
-        puts 'You need to install aptly'
+        puts 'Required dependency missing: aptly'
         exit 1
       end
 
-      dist_dir = NemesisOps::BASE_PATH.join('dist')
+      bootstrap(stack)
+      dist_pkg_dir = NemesisOps::DIST_DIR.join('packages')
+      stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
+      stack_repo_dir = NemesisOps::PKG_REPO_DIR.join(stack)
 
-      # Copy the dist_dir contents over to the CACHE_DIR
-      FileUtils.cp_r(Dir.glob(dist_dir.join('*')), CACHE_DIR)
+      # Copy the deb files in the dist package dir over to the stack_cache_dir
+      FileUtils.cp_r(Dir.glob(dist_pkg_dir.join('*')), stack_cache_dir)
 
       # Get the contents of the existing repo
       get_repo(stack)
 
       # Build the repo w/ Aptly
-      Dir.chdir(REPO_DIR) do |d|
+
+      Dir.chdir(stack_repo_dir) do |d|
         unless File.directory?('db') && File.directory?('pool')
           aptly "repo create --distribution=#{NemesisOps::DEFAULT_OS} --architectures=amd64 nemesis-testing"
         end
-        aptly "repo add --force-replace=true nemesis-testing #{CACHE_DIR}"
+        aptly "repo add --force-replace=true nemesis-testing #{stack_cache_dir}"
         unless File.directory?('public')
           aptly "publish repo --gpg-key=#{gpg_key} nemesis-testing"
         else
@@ -144,19 +146,19 @@ module NemesisOps
       end
 
       # Add the GPG key to the repo
-      key_file = REPO_DIR.join('public', 'pubkey.gpg')
+      key_file = stack_repo_dir.join('public', 'pubkey.gpg')
       `gpg --armor --yes --output #{key_file} --export #{gpg_key}`
     end
 
-    def add_package(stack_name, package_path, gpg_key)
+    def add_package(stack, package_path, gpg_key)
       path = Pathname.new(File.absolute_path(package_path))
       unless File.exists? path
         Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
         exit 1
       end
-      cache_path = NemesisOps::Common::CACHE_DIR
-      FileUtils.cp(path, cache_path) unless File.exists?(cache_path + File.basename(path))
-      build_repo(stack_name, options[:gpg_key])
+      stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
+      FileUtils.cp(path, cache_path) unless File.exists?(stack_cache_dir + File.basename(path))
+      build_repo(stack, options[:gpg_key])
     end
 
     def remove_package(stack, package, gpg_key)
@@ -170,8 +172,9 @@ module NemesisOps
       s3_del_candidates.map(&:delete)
 
       # Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
-      if File.exists? REPO_DIR
-        Dir.chdir(REPO_DIR) do |d|
+      stack_repo_dir = NemesisOps::PKG_REPO_DIR.join(stack)
+      if File.exists?(stack_repo_dir)
+        Dir.chdir(stack_repo_dir) do |d|
           # Remove package from aptly
           aptly "repo remove nemesis-testing #{package}"
           aptly 'db cleanup'
@@ -183,7 +186,8 @@ module NemesisOps
       end
 
       # Find packages and delete from local-cache.
-      puppet_del_packages = Dir.glob(NemesisOps::Common::CACHE_DIR.join('*.deb')).select { |p| File.basename(p) =~ /#{package}_((\d+\.?)+).*\.deb/ }
+      stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
+      puppet_del_packages = Dir.glob(stack_cache_dir.join('*.deb')).select { |p| File.basename(p) =~ /#{package}_((\d+\.?)+).*\.deb/ }
       FileUtils.rm(puppet_del_packages)
     end
   end

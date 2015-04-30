@@ -7,11 +7,20 @@ APT Packages manager and Puppet manifests used with Nemesis
 Dependencies needed to be installed and configured before working with the
 Nemesis Package Manager:
 
+  * Install dependencies
+    - Common Dependencies: aptly gnu-tar gpg
+      * Mac: brew install aptly gnu-tar gpg
+
+    - Install Virtualbox
+      * https://www.virtualbox.org/wiki/Downloads
+    - Install Vagrant
+      * https://www.vagrantup.com/downloads.html
+    - Install Packer
+      * Mac: brew tap homebrew/binary && brew install packer
+
   * Setup GPG key for signing packages. If you generate a new key, you
     need to use the `nemesis-ops --gpg-key` flag to use that generated key.
     If no key is provided then the default key used is 23406CA7.
-
-    * Mac: brew install gpg
 
     ````
     gpg --gen-key
@@ -19,15 +28,9 @@ Nemesis Package Manager:
     ````
 
   * Setup AWS credentials and ssh keys
-  * Install Vagrant
-    * https://www.vagrantup.com/downloads.html
-  * Install dependencies
-    -  aptly gnu-tar
-        * Mac: brew install aptly gnu-tar
-  * Nemesis gem installed or available in RUBYPATH
+  * Install the Nemesis gem or add to your RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
-  * Packer
-    * Mac: brew tap homebrew/binary && brew install packer
+
 
 ## Setup
 
@@ -38,7 +41,6 @@ should not need to do anything.
 Go back to the nemesis-puppet folder
 
     bundle install
-    export stack_name='nemesis'
 
 
 ## Building the packages
@@ -47,8 +49,32 @@ building all packages. Vagrant launches a base ubuntu host and Docker
 containers are used to isolate each script. The resulting package from each
 script is left in the ./dist directory.
 
+NOTE: Currently builds using local Docker on OS X do not work due to and issue
+with [boot2docker](https://github.com/docker/docker/issues/6396). A work around
+is to ssh to the boot2docker image and then run the container directly from there.
+Your home directory will be available as /Users within the container
+
+    boot2docker ssh -A
+    docker run -it --rm -v /Users:/Users -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent ubuntu /bin/bash
+
+Ubuntu systems do not have this problem, so using vagrant is the current solution
+in place
+
     vagrant up
     vagrant ssh -c sudo -E su -c /vagrant/packages/build_scripts/build-all.sh
+
+
+## Creating the apt mirror
+
+    nemesis bootstrap ${stack_name}
+    nemesis-ops package init
+    nemesis-ops puppet build ${stack_name}
+    nemesis-ops package upload ${stack_name}
+
+
+## Updating a specific package
+
+    nemesis-ops package add ${stack_name} path/to/*.deb
 
 
 ## Building the nemesis-puppet package
@@ -56,35 +82,24 @@ script is left in the ./dist directory.
     nemesis-ops puppet build ${stack_name}
 
 
-## Creating the apt mirror
-
-    nemesis bootstrap ${stack_name}
-    nemesis-ops package construct-repo ${stack_name}
-    nemesis-ops package upload-repo ${stack_name}
-
-
-## Updating a specific package
-
-    nemesis-ops package add ${stack_name} packages/cache/*.deb
-
 ## Building an AMI
 Run the following commands to generate an AMI in the region specified above.
 Passing in a list of regions stores the AMI in the first region in the list and
 copies it to the other regions once the build is complete.
 
-    nemesis-ops ami template --repo ${stack_name} \
+    nemesis-ops ami build ${stack_name} \
       --tag <tag> \
-      --regions=<list_of_regions> \
-      --build
+      --regions=<list of regions> \
+      --ami <existing ami id>
 
 To just generate the ami template output run the following, note: if the file
 path in not passed in then the template will just be printed to stdout
 
-    nemesis-ops ami template --repo ${stack_name} \
+    nemesis-ops ami gen \
       --tag <tag> \
-      --regions=<list_of_regions> \
+      --regions=<list of regions> \
+      --ami <existing ami id> \
       /path/desired-output-file.json
-
 
 
 ## License
