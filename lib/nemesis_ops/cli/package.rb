@@ -31,7 +31,7 @@ module NemesisOps::Cli
     desc 'add STACK_NAME PACKAGE', "Add a package to the stack's package listing"
     method_option :gpg_key, :type => :string, :default => NemesisOps::GPG_KEY, :desc => 'The GPG key used to sign the packages'
     def add(stack_name, package)
-      add_package(stack_name, package, gpg_key)
+      add_package(stack_name, package, options[:gpg_key])
     end
 
     desc 'sync STACK_NAME', 'Get the packages from the repo and add them to your cache directory'
