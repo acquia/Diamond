@@ -25,7 +25,6 @@ require 'nemesis'
 
 module NemesisOps
   module Common
-
     def s3_upload(bucket, path, acl = :private)
       s3 = Nemesis::Aws::Sdk::S3.new
       repo = s3.buckets[bucket]
@@ -158,7 +157,7 @@ module NemesisOps
       end
       stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
       FileUtils.cp(path, cache_path) unless File.exists?(stack_cache_dir + File.basename(path))
-      build_repo(stack, options[:gpg_key])
+      build_repo(stack, gpg_key)
     end
 
     def remove_package(stack, package, gpg_key)
