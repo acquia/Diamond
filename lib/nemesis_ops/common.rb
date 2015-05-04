@@ -156,7 +156,7 @@ module NemesisOps
         exit 1
       end
       stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
-      FileUtils.cp(path, cache_path) unless File.exists?(stack_cache_dir + File.basename(path))
+      FileUtils.cp(path, stack_cache_dir) unless File.exists?(stack_cache_dir + File.basename(path))
       build_repo(stack, gpg_key)
     end
 
