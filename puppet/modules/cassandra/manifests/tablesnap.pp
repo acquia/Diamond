@@ -4,7 +4,7 @@ class cassandra::tablesnap {
   }
 
   package {'tablesnap':
-    ensure  => 'latest',
+    ensure  => '0.6.2-1~trusty',
     name    => 'tablesnap',
     require => [ Package['python-dateutil'], Service['cassandra'], ],
   }
