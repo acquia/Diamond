@@ -3,6 +3,11 @@ class cassandra {
 
   $cassandra_version = '2.0.13'
 
+  # Specify additional options to pass to the JVM for tuning Cassandra
+  # All options should be passed as if they were on the command line
+  # @todo: Decide if this actually should be stack metadata
+  $custom_jvm_opts = []
+
   exec {'check_cassandra_installed':
     command => '/bin/true',
     onlyif  => "/usr/bin/test $(dpkg-query -W -f='${Version}\n' cassandra) == ${::cassandra_version}",
@@ -22,9 +27,7 @@ class cassandra {
     ensure  => present,
     shell   => '/bin/false',
     comment => 'Cassandra user',
-    require => [
-      Group['cassandra'],
-    ],
+    require => Group['cassandra'],
   }
 
   file {'/mnt/lib/cassandra':
@@ -46,7 +49,7 @@ class cassandra {
     target  => '/mnt/lib/cassandra',
     owner   => 'cassandra',
     group   => 'cassandra',
-    require => [ File['/mnt/lib/cassandra'], ],
+    require => File['/mnt/lib/cassandra'],
   }
 
   file { '/var/log/cassandra':
@@ -54,7 +57,7 @@ class cassandra {
     target  => '/mnt/log/cassandra',
     owner   => 'cassandra',
     group   => 'cassandra',
-    require => [ File['/mnt/log/cassandra'], ],
+    require => File['/mnt/log/cassandra'],
   }
 
   package {'cassandra':
@@ -75,7 +78,7 @@ class cassandra {
     ensure  => link,
     target  => '/usr/share/java/jna.jar',
     require => Package['cassandra'],
-    notify  => [ Service['cassandra'], ],
+    notify  => Service['cassandra'],
   }
 
   file {'/etc/cassandra/cassandra.yaml':
@@ -84,7 +87,7 @@ class cassandra {
     mode    => '0644',
     content => template('cassandra/cassandra.yaml.erb'),
     require => Package['cassandra'],
-    notify  => [ Service['cassandra'], ],
+    notify  => Service['cassandra'],
   }
 
   file {'/etc/default/cassandra':
@@ -93,14 +96,17 @@ class cassandra {
     mode    => '0644',
     content => template('cassandra/cassandra_default.erb'),
     require => Package['cassandra'],
-    notify  => [ Service['cassandra'], ],
+    notify  => Service['cassandra'],
   }
 
-  exec {'set_jmx_addr':
-    command => "/bin/sed -i '/java.rmi.server.hostname/s/^.*/JVM_OPTS=\"${JVM_OPTS} -Djava.rmi.server.hostname=${ec2_local_ipv4}\"/' /etc/cassandra/cassandra-env.sh",
-    unless  => "/bin/grep 'java.rmi.server.hostname' /etc/cassandra/cassandra-env.sh | /bin/grep -En '${ec2_local_ipv4}'",
-    require => [ Package['cassandra'], ],
-    notify  => [ Service['cassandra'], ],
+  # NOTE: This needs to be kept up to date whenver we switch Cassandra versions
+  file {'/etc/cassandra/cassandra-env.sh':
+    content => template('cassandra/cassandra-env.sh.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => Package['cassandra'],
+    notify  => Service['cassandra'],
   }
 
   service {'cassandra':
@@ -108,9 +114,7 @@ class cassandra {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => [
-      Package['cassandra'],
-    ],
+    require    => Package['cassandra'],
   }
 
 }
