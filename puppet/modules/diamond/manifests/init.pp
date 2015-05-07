@@ -16,7 +16,7 @@ class diamond (
   }
 
   package { 'diamond':
-    ensure  => latest,
+    ensure  => '3.1.1~acquia1',
     require => User['diamond'],
   }
 
