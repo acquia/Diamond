@@ -2,7 +2,7 @@ class tessera {
   require tessera::apache
 
   package { 'tessera':
-    ensure  => 'latest',
+    ensure  => '0.6.2-1~trusty',
     notify  => Exec['own-tessera'],
     require => [ Package['apache2'], ],
   }

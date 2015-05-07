@@ -25,8 +25,8 @@
 set -ex
 
 NAME="tessera"
-VERSION="0.1.0"
-DEB_BUILD_VERSION="2"
+VERSION="0.6.2"
+DEB_BUILD_VERSION="1"
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
@@ -36,7 +36,7 @@ BASEDIR=/opt/tessera
 apt-get update -y
 apt-get install -y git python-virtualenv python-pip python-dev npm nodejs-legacy libmysqlclient-dev
 
-git clone git@github.com:urbanairship/tessera.git $BASEDIR
+git clone git@github.com:urbanairship/tessera.git -b v${VERSION} $BASEDIR
 cd $BASEDIR
 virtualenv $BASEDIR
 source ${BASEDIR}/bin/activate
