@@ -20,6 +20,8 @@
 set -ex
 
 NAME="diamond"
+VERSION=3.1.1
+BUILD_VERSION=acquia1
 
 BASEDIR=/tmp/${NAME}
 rm -rf ${BASEDIR}
@@ -27,12 +29,14 @@ mkdir -p ${BASEDIR}
 
 apt-get update -y
 apt-get install -y build-essential
-apt-get install -y dh-make debhelper cdbs python-support
+apt-get install -y dh-make debhelper devscripts cdbs python-support
 
 git clone git@github.com:acquia/Diamond.git ${BASEDIR}
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}
+dch -v ${VERSION}~${BUILD_VERSION} -u low --maintmaint \
+  "Acquia package builder <engineering@acquia.com> $(date -R)"
 dpkg-buildpackage -b -d -tc -uc
 
 # If we're in a VM, let's copy the deb file over
