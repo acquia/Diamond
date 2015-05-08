@@ -29,7 +29,7 @@ class server_hooks {
     group   => 'root',
     mode    => '0644',
     require => File['/etc/nemesis/scripts/nemesis_server_hooks.rb'],
-    content => "1 * * * *  root /usr/bin/env ruby /etc/nemesis/scripts/nemesis_server_hooks_exec.rb\n";
+    content => "1 * * * * root RUBYLIB=/etc/puppet/lib/ /usr/bin/env ruby /etc/nemesis/scripts/nemesis_server_hooks_exec.rb\n";
   }
 
   file {'/etc/nemesis/server_hooks':
