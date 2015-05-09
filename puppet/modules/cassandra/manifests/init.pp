@@ -117,4 +117,12 @@ class cassandra {
     require    => Package['cassandra'],
   }
 
+  cron { 'weekly_repair':
+    require => Package['cassandra'],
+    weekday => fqdn_rand(7),
+    hour    => fqdn_rand(24),
+    command => '/usr/bin/nodetool repair --parallel -par',
+    ensure  => present,
+  }
+
 }
