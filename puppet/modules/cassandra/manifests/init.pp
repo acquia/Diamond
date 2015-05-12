@@ -60,6 +60,15 @@ class cassandra {
     require => File['/mnt/log/cassandra'],
   }
 
+  file {'/etc/cassandra/log4j-server.properties':
+    owner   => 'cassandra',
+    group   => 'cassandra',
+    mode    => '0644',
+    source  => 'puppet:///modules/cassandra/log4j-server.properties',
+    require => Package['cassandra'],
+    notify  => Service['cassandra'],
+  }
+
   package {'cassandra':
     ensure  => $cassandra_version,
     name    => 'cassandra',
