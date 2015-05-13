@@ -19,13 +19,15 @@ class CustomHook < NemesisServer::Hook
   # Implements NemesisServer::Hooks::execute.
   def execute
     # Execute your custom code here, note the logger is provided for you.
+    exit_code = 0
+    # exit_code = some_operation()
     @log.info "Something to note"
-    "my output"
+    exit_code
   end
 end 
 
 # Don't forget to register your hook.
-NemesisServer::HookManager.register HookTwo.new
+NemesisServer::HookManager.register CustomHook.new
 ```
 
 ## Events

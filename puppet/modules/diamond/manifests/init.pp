@@ -2,6 +2,7 @@ class diamond (
   $cassandra = false,
 ){
   require diamond::packages
+  require server_hooks
 
   group { 'diamond':
     ensure => present,
@@ -101,4 +102,11 @@ class diamond (
       notify  => Service['diamond'],
     }
   }
+
+  file {'/etc/nemesis/server_hooks/diamond_rotate.rb':
+    mode    => '0644',
+    require => File['/etc/nemesis/server_hooks'],
+    source  => 'puppet:///modules/diamond/diamond_rotate.rb',
+  }
+
 }
