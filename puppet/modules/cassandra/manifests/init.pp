@@ -127,11 +127,11 @@ class cassandra {
   }
 
   cron { 'weekly_repair':
+    ensure  => present,
     require => Package['cassandra'],
     weekday => fqdn_rand(7),
     hour    => fqdn_rand(24),
     command => '/usr/bin/nodetool repair --parallel -par',
-    ensure  => present,
   }
 
 }

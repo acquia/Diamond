@@ -13,6 +13,7 @@
 # limitations under the License.
 
 require_relative 'ubuntu_server'
+
 module NemesisOps::PackerGen::Templates::Aws
   class EcsServer < NemesisOps::PackerGen::Templates::Aws::UbuntuServer
     def initialize(config, server_type = 'm3.medium')
