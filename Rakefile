@@ -37,7 +37,7 @@ end
 desc 'Run Rubocop on code we have written'
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['lib/**/*.rb', 'puppet/modules/**/*.rb', 'puppet/lib/**/*.rb']
-  task.options = ['-D', '--force-exclusion']
+  task.options = ['-D', '--force-exclusion', '-c', "#{File.expand_path(File.dirname(__FILE__))}/.rubocop.yml"]
 end
 
 desc 'Run tests with code coverage'

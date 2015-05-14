@@ -18,9 +18,9 @@ gemspec
 gem 'nemesis', :git => 'git@github.com:acquia/nemesis.git'
 
 group :development, :test do
-  gem 'rake',                    require: false
-  gem 'puppetlabs_spec_helper',  require: false
-  gem 'puppet-lint',             require: false
-  gem 'rubocop',                 require: false
-  gem 'faker',                   require: false
+  gem 'rake', '~> 10.0',                   require: false
+  gem 'puppetlabs_spec_helper', '0.10.3',  require: false
+  gem 'puppet-lint', '1.1.0',              require: false
+  gem 'rubocop', '0.31.0',                 require: false
+  gem 'faker', '1.4.3',                    require: false
 end

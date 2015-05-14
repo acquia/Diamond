@@ -47,6 +47,11 @@ Metrics/LineLength:
 Metrics/MethodLength:
   Max: 50
 
+# Offense count: 7
+# Configuration parameters: CountComments.
+Metrics/ModuleLength:
+  Max: 161
+
 # Offense count: 1
 Style/AccessorMethodName:
   Enabled: false
@@ -101,10 +106,6 @@ Style/IfUnlessModifier:
 Style/Next:
   Enabled: false
 
-# Offense count: 2
-Style/RegexpLiteral:
-  MaxSlashes: 0
-
 # We like trailing commas
 Style/TrailingComma:
   Enabled: false
@@ -116,4 +117,4 @@ Style/UnlessElse:
 # Cop supports --auto-correct.
 # Configuration parameters: WordRegex.
 Style/WordArray:
-  MinSize: 2
+  Enabled: false
