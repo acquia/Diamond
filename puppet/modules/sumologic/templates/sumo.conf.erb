@@ -1,8 +1,10 @@
 rpmRunAs=sumo
 rpmAutoStart=false
 name=<%= @hostname %>
+<%- if @credentials -%>
 accessid=<%= @credentials['username'] %>
 accesskey=<%= @credentials['password'] %>
+<%- end -%>
 sources=/etc/sumologic/sources.json
 override=true
 ephemeral=true
