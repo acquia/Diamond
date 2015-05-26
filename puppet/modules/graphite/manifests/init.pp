@@ -2,7 +2,7 @@ class graphite {
   require graphite::apache
   include graphite::rollup
 
-  $version = '0.2.3-0~trusty'
+  $version = '0.3.0-0~trusty'
 
   package { 'libcairo2':
     ensure => 'latest',
