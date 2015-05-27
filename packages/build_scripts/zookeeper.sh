@@ -21,8 +21,9 @@ set -ex
 
 NAME="zookeeper"
 VERSION="3.4.6"
-EXHIBITOR_VERSION="1.5.5"
-EXHIBITOR_BUILD_TYPE="" # use 'git' to build the latest or leave blank to build from maven
+EXHIBITOR_VERSION="1.5.2"
+EXHIBITOR_BRANCH="1.5.2"
+EXHIBITOR_BUILD_TYPE="" # use 'git' to build the latest with gradle or leave blank to build from maven
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
@@ -67,7 +68,7 @@ fpm --force -t deb -s dir \
   --vendor "Acquia, Inc." \
   --provides "${NAME}" \
   -n "${NAME}" \
-  -v ${VERSION}~${OS} \
+  -v ${VERSION} \
   -m "hosting-eng@acquia.com" \
   --description "Acquia zookeeper ${VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   .
@@ -83,6 +84,7 @@ if [ "${EXHIBITOR_BUILD_TYPE}" == "git" ]; then
 
 git clone https://github.com/Netflix/exhibitor.git
 cd ${BASEDIR}/exhibitor
+git checkout ${EXHIBITOR_BRANCH}
 cat <<- EOF >> ${BASEDIR}/exhibitor/exhibitor-standalone/build.gradle
 
 task fatJar(type: Jar) {
@@ -158,7 +160,7 @@ fpm --force -t deb -s dir \
   --vendor "Acquia, Inc." \
   --provides "${NAME}-exhibitor" \
   -n "${NAME}-exhibitor" \
-  -v ${EXHIBITOR_VERSION}~${OS} \
+  -v ${EXHIBITOR_VERSION} \
   -m "hosting-eng@acquia.com" \
   --description "Acquia zookeeper-exhibitor ${EXHIBITOR_VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   .

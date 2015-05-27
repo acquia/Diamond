@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Check to see if nemesis-puppet package needs to be updated
 apt-get update
 VERSION_COUNT=$(apt-cache policy nemesis-puppet |  awk '/Installed|Candidate/{print $2}' | sort -u | wc -l)
 
@@ -7,5 +8,6 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   apt-get install -y nemesis-puppet
 fi
 
+# Run puppet
 export RUBYLIB=/etc/puppet/lib:$RUBYLIB
 cd /etc/puppet && puppet apply manifests/nodes.pp --logdest /var/log/puppet.log

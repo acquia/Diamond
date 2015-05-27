@@ -29,6 +29,7 @@ PuppetLint::RakeTask.new :lint do |config|
     '80chars',
     'class_inherits_from_params_class',
     'class_parameter_defaults',
+    'only_variable_string',
     'documentation',
     'variable_scope',
   ]
