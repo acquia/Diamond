@@ -15,15 +15,14 @@
 # limitations under the License.
 #
 #
-# Package Apache Zookeeper
+# Package Apache Zookeeper and Netflix Exhibitor
 #
 set -ex
 
 NAME="zookeeper"
 VERSION="3.4.6"
-EXHIBITOR_VERSION="1.5.2"
-EXHIBITOR_BRANCH="1.5.2"
-EXHIBITOR_BUILD_TYPE="" # use 'git' to build the latest with gradle or leave blank to build from maven
+EXHIBITOR_VERSION="1.5.5"
+EXHIBITOR_BRANCH="v1.5.5-6-g3b0132b"
 
 OS=$(lsb_release -cs)
 ARCH=$(uname -m)
@@ -34,14 +33,13 @@ mkdir -p ${BASEDIR}
 
 apt-get update -y
 apt-get install -y build-essential software-properties-common python-software-properties
-apt-get install -y dh-make debhelper cdbs python-support python-dev python-setuptools autoconf libcppunit-dev libtool
 
 echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
 add-apt-repository -y ppa:webupd8team/java
 apt-get update -y
 apt-get install -y oracle-java7-installer ant maven
 
-# To build from dist
+# Build current stable Zookeeper version from Apache dist
 curl -o ${BASEDIR}/zookeeper-${VERSION}.tar.gz http://www.apache.org/dist/zookeeper/zookeeper-${VERSION}/zookeeper-${VERSION}.tar.gz
 cd ${BASEDIR}
 tar -xvzf ${BASEDIR}/zookeeper-${VERSION}.tar.gz
@@ -78,80 +76,14 @@ mv ${BUILDDIR}/${NAME}*.deb ${BASEDIR}/zookeeper/build/
 cd ${BASEDIR}
 rm -rf ${BUILDDIR}
 
-# Exhibitor
+# Build the current Exhibitor version
 cd ${BASEDIR}
-if [ "${EXHIBITOR_BUILD_TYPE}" == "git" ]; then
-
 git clone https://github.com/Netflix/exhibitor.git
 cd ${BASEDIR}/exhibitor
 git checkout ${EXHIBITOR_BRANCH}
-cat <<- EOF >> ${BASEDIR}/exhibitor/exhibitor-standalone/build.gradle
-
-task fatJar(type: Jar) {
-   baseName = project.name + '-jar-with-dependencies'
-   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-   from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
-   with jar
-   manifest {
-       attributes 'Main-Class': mainClassName
-       attributes 'Implementation-Version': project.version
-   }
-}
-
-EOF
-
-./gradlew assemble fatJar
+mvn package -f exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/pom.xml
 mkdir -p ${BASEDIR}/exhibitor/dist/opt/exhibitor/
-cp -a ${BASEDIR}/exhibitor/exhibitor-standalone/build/libs/exhibitor-standalone-jar-with-dependencies-*.jar ${BASEDIR}/exhibitor/dist/opt/exhibitor/exhibitor.jar
-
-else
-
-mkdir -p ${BASEDIR}/exhibitor
-cd ${BASEDIR}/exhibitor
-
-cat <<- EOF > ${BASEDIR}/exhibitor/pom.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>exhibitor</groupId>
-    <artifactId>exhibitor</artifactId>
-    <version>1.0</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.netflix.exhibitor</groupId>
-            <artifactId>exhibitor-standalone</artifactId>
-            <version>${EXHIBITOR_VERSION}</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.netflix.exhibitor.application.ExhibitorMain</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-
-EOF
-
-mvn assembly:single
-mkdir -p ${BASEDIR}/exhibitor/dist/opt/exhibitor/
-cp -a ${BASEDIR}/exhibitor/target/exhibitor-1.0-jar-with-dependencies.jar ${BASEDIR}/exhibitor/dist/opt/exhibitor/exhibitor.jar
-
-fi
+cp -a ${BASEDIR}/exhibitor/exhibitor-standalone/src/main/resources/buildscripts/standalone/maven/target/exhibitor-*.jar ${BASEDIR}/exhibitor/dist/opt/exhibitor/exhibitor.jar
 
 cd ${BASEDIR}/exhibitor/dist
 fpm --force -t deb -s dir \
