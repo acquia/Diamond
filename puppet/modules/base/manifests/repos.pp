@@ -18,7 +18,7 @@ class base::repos {
       location    => "http://${::custom_repo}.s3.amazonaws.com",
       release     => $::lsbdistcodename,
       repos       => 'main',
-      key         => '23406CA7',
+      key         => 'C62E9B8A0B2E58728DF30F8AD9AF42A123406CA7',
       key_server  => 'pgp.mit.edu',
       include_src => false,
     }

@@ -31,7 +31,7 @@ apt-get update -y
 apt-get install -y build-essential
 apt-get install -y dh-make debhelper devscripts cdbs python-support
 
-git clone git@github.com:acquia/Diamond.git ${BASEDIR}
+git clone https://github.com/acquia/Diamond.git ${BASEDIR}
 
 # Build the binary and setup the install package paths
 cd ${BASEDIR}

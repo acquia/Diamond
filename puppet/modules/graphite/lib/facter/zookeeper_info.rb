@@ -26,11 +26,5 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'g
         private_ips.join(',')
       end
     end
-
-    Facter.add('zookeeper_acl') do
-      setcode do
-        zk_stack.parameters['ZookeeperAclPassword']
-      end
-    end
   end
 end

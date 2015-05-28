@@ -1,10 +1,14 @@
 class zookeeper{
+
+  $zookeeper_version = '3.4.6'
+  $exhibitor_version = '1.5.2'
+
   package { 'zookeeper' :
-    ensure => latest,
+    ensure => $zookeeper_version,
   }
 
   package { 'zookeeper-exhibitor' :
-    ensure  => latest,
+    ensure  => $exhibitor_version,
     require => [ Package['zookeeper'], ],
   }
 

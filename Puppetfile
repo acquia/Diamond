@@ -32,3 +32,6 @@ mod 'rodjek/logrotate',
 mod 'stankevich/python',
   :git => 'git://github.com/stankevich/puppet-python.git',
   :ref => '1.9.1'
+
+mod 'deric/puppet-mesos',
+  :git => 'https://github.com/deric/puppet-mesos'
