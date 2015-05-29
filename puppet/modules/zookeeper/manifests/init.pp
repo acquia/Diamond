@@ -1,7 +1,7 @@
 class zookeeper{
 
   $zookeeper_version = '3.4.6'
-  $exhibitor_version = '1.5.2'
+  $exhibitor_version = '1.5.5'
 
   package { 'zookeeper' :
     ensure => $zookeeper_version,
