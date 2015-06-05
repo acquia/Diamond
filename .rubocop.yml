@@ -118,3 +118,7 @@ Style/UnlessElse:
 # Configuration parameters: WordRegex.
 Style/WordArray:
   Enabled: false
+
+# Yet another thing we disagree with vs. the style guide
+Style/NumericLiterals:
+  Enabled: false
