@@ -6,8 +6,10 @@ class java (
   apt::ppa { 'ppa:openjdk-r/ppa': }
 
   package { "openjdk-${java::version}-jre-headless":
-    ensure => present,
+    ensure  => present,
+    require => Apt::Ppa['ppa:openjdk-r/ppa'],
   }
+
   file { '/tmp/java.preseed':
     content => template('java/java.preseed.erb'),
     mode    => '0600',
