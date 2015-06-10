@@ -16,4 +16,5 @@ classes:
   - roles::cassandra
 
 diamond::cassandra: true
+java::version: 7
 server_hooks::cloudwatch::cassandra: true
