@@ -1,28 +1,32 @@
-class java {
+class java (
+  $version = 8,
+){
   apt::ppa { 'ppa:webupd8team/java': }
 
-  package { 'openjdk-7-jre-headless':
+  apt::ppa { 'ppa:openjdk-r/ppa': }
+
+  package { "openjdk-${java::version}-jre-headless":
     ensure => present,
   }
-
   file { '/tmp/java.preseed':
-    source => 'puppet:///modules/java/java.preseed',
-    mode   => '0600',
+    content => template('java/java.preseed.erb'),
+    mode    => '0600',
   }
 
-  package { 'oracle-jdk7-installer':
+  package { "oracle-java${java::version}-installer":
     ensure       => installed,
     responsefile => '/tmp/java.preseed',
     require      => [
       File['/tmp/java.preseed'],
-      Package['openjdk-7-jre-headless'],
+      Package["openjdk-${java::version}-jre-headless"],
       Apt::Ppa['ppa:webupd8team/java'],
+      Apt::Ppa['ppa:openjdk-r/ppa'],
     ],
   }
 
-  package { 'oracle-java7-set-default':
+  package { "oracle-java${java::version}-set-default":
     ensure  => installed,
-    require => [ Package['oracle-jdk7-installer'], ],
+    require => [ Package["oracle-java${java::version}-installer"], ],
   }
 
   package{'libjna-java':
