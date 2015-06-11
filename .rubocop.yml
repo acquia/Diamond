@@ -56,6 +56,9 @@ Metrics/ModuleLength:
 Style/AccessorMethodName:
   Enabled: false
 
+Style/BlockDelimiters:
+  Enabled: false
+
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.

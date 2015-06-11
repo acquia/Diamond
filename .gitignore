@@ -27,3 +27,6 @@ Gemfile.lock
 puppet/third_party/*
 .tmp/*
 ec2_amazon-instance.pem
+spec/fixtures/modules/*
+puppet/modules/*/.librarian/*
+puppet/modules/*/Puppetfile.lock

@@ -12,16 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos {
-
-  $mesos_repo = 'mesosphere'
-  $mesos_version = '0.22.0-1.0.ubuntu1404'
+class acquia_mesos (
+  $mesos_repo = 'mesosphere',
+  $mesos_version = '0.22.0-1.0.ubuntu1404',
+) {
 
   file {'/var/lib/mesos':
     ensure  => 'link',
     force   => true,
     target  => '/mnt/lib/mesos',
     require => File['/mnt/lib/mesos'],
+  }
+
+  file {'/mnt/tmp':
+    ensure => 'directory',
+    mode   => '0755',
+  }
+
+  file {'/mnt/tmp/mesos':
+    ensure  => 'directory',
+    mode    => '0755',
+    require => File['/mnt/tmp'],
   }
 
   class{'::mesos':
@@ -31,46 +42,18 @@ class acquia_mesos {
     conf_dir       => '/etc/mesos',
     manage_zk_file => true,
     zookeeper      => $mesos_zookeeper_connection_string,
+    master_port    => '5050',
     ulimit         => '8192',
     use_syslog     => false,
   }
 
   if $mesos_master {
-    class {'::mesos::master':
-      enable         => true,
-      work_dir       => '/mnt/lib/mesos',
-      zookeeper      => $mesos_zookeeper_connection_string,
-      listen_address => $ec2_local_ipv4,
-      options        => {
-        'quorum' => "${mesos_quorum}",
-      },
-      force_provider => 'upstart',
-    }
+    include acquia_mesos::master
   } else {
-    class {'::mesos::slave':
-      enable         => true,
-      work_dir       => '/mnt/lib/mesos',
-      zookeeper      => $mesos_zookeeper_connection_string,
-      listen_address => $ec2_local_ipv4,
-      options        => {
-        'containerizers' => 'docker,mesos',
-        'hostname'       => $hostname,
-      },
-      resources      => {
-        'cpus'  => "${processorcount}",
-        'mem'   => "${mesos_slave_memorysize_mb}",
-        'disk'  => "${mesos_slave_disk_space}",
-        'ports' => '[2000-65535]',
-      },
-      attributes     => {
-        'host' => $hostname,
-        'rack' => $ec2_placement_availability_zone,
-      },
-      force_provider => 'upstart',
-    }
+    include acquia_mesos::slave
   }
 
-  logrotate::rule { 'mesos_logrotate':
+  logrotate::rule { 'mesos':
     path          => '/var/log/mesos/*.log',
     rotate        => 7,
     rotate_every  => 'day',

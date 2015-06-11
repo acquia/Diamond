@@ -23,25 +23,35 @@ describe 'base::instance_store' do
 
   describe 'by default' do
     it { should compile.with_all_deps }
+    it { should contain_class('base::instance_store') }
     it { should contain_physical_volume('/dev/xvdb') }
-    it { should contain_physical_volume('/dev/xvdc') }
-    it do
-      should contain_volume_group('instancevg').with(
+    it { should_not contain_physical_volume('/dev/xvdc') }
+    it {
+      should contain_lvm__volume_group('instancevg').with(
         {
           ensure: 'present',
-          physical_volumes: ['/dev/xvdb', '/dev/xvdc'],
+          physical_volumes: ['/dev/xvdb'],
         }
       )
-    end
+    }
 
-    it do
-      should contain_logical_volume('islv').with(
+    it {
+      should contain_lvm__logical_volume('islv').with(
         {
           volume_group: 'instancevg',
           size: nil,
         }
       )
-    end
+    }
+
+    it {
+      should contain_lvm__logical_volume('ephemeral1').with(
+        {
+          volume_group: 'instancevg',
+          size: nil,
+        }
+      )
+    }
 
     it { should contain_mount('/mnt') }
     it { should contain_cron('ssd_trim') }
