@@ -7,6 +7,10 @@ class base::setup {
     ensure => directory,
   }
 
+  file { '/mnt/tmp':
+    ensure => directory,
+  }
+
   file { '/vol/':
     ensure => directory,
   }

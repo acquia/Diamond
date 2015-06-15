@@ -22,6 +22,12 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'm
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
   stack_name = stack.stack_name
 
+  # Return the name of the nemsos cluster
+  Facter.add(:mesos_cluster_name) do
+    setcode do
+      stack_name
+    end
+  end
   # Fact to check and see if this node is a Mesos master or not
   Facter.add(:mesos_master) do
     setcode do

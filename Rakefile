@@ -35,6 +35,22 @@ PuppetLint::RakeTask.new :lint do |config|
   ]
 end
 
+Rake::Task[:spec].enhance do
+  Rake::Task['spec_modules'].invoke
+end
+
+desc 'Run all modules/* rake tasks'
+task :spec_modules do
+  modules = Dir.glob('puppet/modules/*')
+  modules.each do |mod|
+    next unless File.exists?("#{mod}/Rakefile")
+    puts "Running rake for #{mod}"
+    Dir.chdir(mod) do
+      sh 'rake'
+    end
+  end
+end
+
 desc 'Run Rubocop on code we have written'
 RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['lib/**/*.rb', 'puppet/modules/**/*.rb', 'puppet/lib/**/*.rb']
