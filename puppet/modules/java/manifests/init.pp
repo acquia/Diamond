@@ -1,13 +1,13 @@
 class java (
   $version = 8,
 ){
+  include apt
   apt::ppa { 'ppa:webupd8team/java': }
-
   apt::ppa { 'ppa:openjdk-r/ppa': }
 
   package { "openjdk-${java::version}-jre-headless":
     ensure  => present,
-    require => Apt::Ppa['ppa:openjdk-r/ppa'],
+    require => Class['apt::update'],
   }
 
   file { '/tmp/java.preseed':
@@ -28,7 +28,7 @@ class java (
 
   package { "oracle-java${java::version}-set-default":
     ensure  => installed,
-    require => [ Package["oracle-java${java::version}-installer"], ],
+    require => Package["oracle-java${java::version}-installer"],
   }
 
   package{'libjna-java':

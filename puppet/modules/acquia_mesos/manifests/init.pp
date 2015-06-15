@@ -16,6 +16,7 @@ class acquia_mesos (
   $mesos_repo = 'mesosphere',
   $mesos_version = '0.22.0-1.0.ubuntu1404',
 ) {
+  include apt
 
   file {'/var/lib/mesos':
     ensure  => 'link',
@@ -24,10 +25,13 @@ class acquia_mesos (
     require => File['/mnt/lib/mesos'],
   }
 
-  file {'/mnt/tmp':
-    ensure => 'directory',
-    mode   => '0755',
-  }
+  ensure_resource('file', '/mnt/tmp',
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
+
 
   file {'/mnt/tmp/mesos':
     ensure  => 'directory',
@@ -35,22 +39,36 @@ class acquia_mesos (
     require => File['/mnt/tmp'],
   }
 
-  class{'::mesos':
-    version        => $mesos_version,
-    repo           => $mesos_repo,
-    log_dir        => '/var/log/mesos',
-    conf_dir       => '/etc/mesos',
-    manage_zk_file => true,
-    zookeeper      => $mesos_zookeeper_connection_string,
-    master_port    => '5050',
-    ulimit         => '8192',
-    use_syslog     => false,
+  $distro = downcase($::operatingsystem)
+  apt::source { 'mesosphere':
+    location => "http://repos.mesosphere.io/${distro}",
+    release  => $::lsbdistcodename,
+    repos    => 'main',
+    key      => '81026D0004C44CF7EF55ADF8DF7D54CBE56151BF',
   }
 
+  class{'::mesos':
+    version        => $mesos_version,
+    conf_dir       => '/etc/mesos',
+    log_dir        => '/var/log/mesos',
+    manage_zk_file => true,
+    zookeeper      => $mesos_zookeeper_connection_string,
+    master_port    => 5050,
+    ulimit         => 8192,
+    use_syslog     => false,
+    require        => Apt::Source['mesosphere'],
+  }
+
+  # NOTE: This is a giant hack around the Apt and Mesos classes not playing
+  # well together. Apt::Source should force the Mesos package install to wait
+  # on apt-get update. This doesn't seem to be the case in 2.1.0 of the Apt
+  # module
+  Class['apt::update'] -> Class['mesos::install']
+
   if $mesos_master {
-    include acquia_mesos::master
+    contain acquia_mesos::master
   } else {
-    include acquia_mesos::slave
+    contain acquia_mesos::slave
   }
 
   logrotate::rule { 'mesos':

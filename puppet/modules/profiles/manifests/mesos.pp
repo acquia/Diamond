@@ -15,6 +15,9 @@
 class profiles::mesos {
   contain profiles::java
   include ::acquia_mesos
+  include aurora
 
-  Class['profiles::java'] -> Class['::acquia_mesos']
+  Class['profiles::java'] ->
+  Class['::acquia_mesos'] ->
+  Class['aurora']
 }

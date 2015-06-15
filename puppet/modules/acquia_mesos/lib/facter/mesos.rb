@@ -58,19 +58,27 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'm
   end
 
   # Return the list of zookeeper private ips
+  zookeeper_stack_name = stack.stack.parameters['ZookeeperStack']
+  node_list = ''
+  if zookeeper_stack_name
+    if cf.stacks[zookeeper_stack_name].resources.map(&:logical_resource_id).include?('ZookeeperAutoScalingGroup')
+      zk_nodes = []
+      zk_autoscaling_group = cf.stacks[zookeeper_stack_name].resources['ZookeeperAutoScalingGroup'].physical_resource_id
+      autoscaling_group = AWS::AutoScaling::Group.new(zk_autoscaling_group)
+      autoscaling_group.auto_scaling_instances.each { |i| zk_nodes << ec2.instances[i.id].private_ip_address }
+      node_list = zk_nodes.map { |x| "#{x}:2181" }.join(',')
+    end
+  end
+
   Facter.add(:mesos_zookeeper_connection_string) do
-    zookeeper_stack_name = stack.stack.parameters['ZookeeperStack']
-    if zookeeper_stack_name
-      if cf.stacks[zookeeper_stack_name].resources.map(&:logical_resource_id).include?('ZookeeperAutoScalingGroup')
-        setcode do
-          zk_nodes = []
-          zk_autoscaling_group = cf.stacks[zookeeper_stack_name].resources['ZookeeperAutoScalingGroup'].physical_resource_id
-          autoscaling_group = AWS::AutoScaling::Group.new(zk_autoscaling_group)
-          autoscaling_group.auto_scaling_instances.each { |i| zk_nodes << ec2.instances[i.id].private_ip_address }
-          node_list = zk_nodes.map { |x| "#{x}:2181" }.join(',')
-          "zk://#{node_list}/mesos"
-        end
-      end
+    setcode do
+      "zk://#{node_list}/mesos"
+    end
+  end
+
+  Facter.add(:aurora_zookeeper_connection_string) do
+    setcode do
+      node_list
     end
   end
 
