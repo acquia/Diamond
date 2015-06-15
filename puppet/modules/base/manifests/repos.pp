@@ -1,7 +1,5 @@
 class base::repos {
-  class {'apt':
-    purge_sources_list_d => false,
-  }
+  class {'apt': }
 
   # Automatic daily security updates
   class {'apt::unattended_upgrades':
