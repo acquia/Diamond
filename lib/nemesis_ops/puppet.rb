@@ -35,7 +35,7 @@ module NemesisOps::Puppet
 
     build_time = DateTime.now
     version = get_package_version(stack_name, build_time, release: options[:release])
-    Nemesis::Log.info("Bumping version to #{version.to_s}")
+    Nemesis::Log.info("Bumping version to #{version}")
 
     remove_package(stack_name, 'nemesis-puppet', options[:gpg_key]) if options[:cleanup]
 
@@ -76,7 +76,7 @@ module NemesisOps::Puppet
         " --vendor 'Acquia, Inc.'" \
         ' --depends puppet' \
         " -m 'hosting-eng@acquia.com'" \
-        " --description \"Acquia #{version} built on #{build_time.to_s}\" " \
+        " --description \"Acquia #{version} built on #{build_time}\" " \
         ' --prefix /etc/puppet/' \
         ' .'
 

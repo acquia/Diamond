@@ -17,8 +17,8 @@ require 'puppet-lint/tasks/puppet-lint'
 require 'rubocop/rake_task'
 
 task :test => :spec
-task :all => [:validate, :lint, :rubocop, :spec]
-task :default => [:rubocop, :spec]
+task :all => [:validate, :lint, :style, :spec]
+task :default => :all
 
 # This is to get around https://github.com/rodjek/puppet-lint/issues/331
 Rake::Task[:lint].clear
@@ -51,10 +51,13 @@ task :spec_modules do
   end
 end
 
-desc 'Run Rubocop on code we have written'
-RuboCop::RakeTask.new(:rubocop) do |task|
-  task.patterns = ['lib/**/*.rb', 'puppet/modules/**/*.rb', 'puppet/lib/**/*.rb']
-  task.options = ['-D', '--force-exclusion', '-c', "#{File.expand_path(File.dirname(__FILE__))}/.rubocop.yml"]
+task :style => [:'style:rubocop']
+namespace :style do
+  desc 'Run rubocop style tests'
+  RuboCop::RakeTask.new(:rubocop) do |task|
+    task.patterns = ['lib/**/*.rb', 'puppet/modules/**/*.rb', 'puppet/lib/**/*.rb']
+    task.options = ['-D', '--force-exclusion', '-c', "#{File.expand_path(File.dirname(__FILE__))}/.rubocop.yml"]
+  end
 end
 
 desc 'Run tests with code coverage'

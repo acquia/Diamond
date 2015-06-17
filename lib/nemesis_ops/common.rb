@@ -60,7 +60,7 @@ module NemesisOps
     #  newer than the last modified time of the s3 object, or the local file does
     #  not exist under the specified bucket and prefix"
     def needs_update?(file, object)
-      return true if !object.exists? || !File.exists?(file)
+      return true if !object.exists? || !File.exist?(file)
 
       # Compare sizes first since md5 is actually unreliable
       size = File.size(file)
@@ -151,12 +151,12 @@ module NemesisOps
 
     def add_package(stack, package_path, gpg_key)
       path = Pathname.new(File.absolute_path(package_path))
-      unless File.exists? path
+      unless File.exist?(path)
         Nemesis::Log.error("You must specifiy a valid file: #{path} does not exist")
         exit 1
       end
       stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
-      FileUtils.cp(path, stack_cache_dir) unless File.exists?(stack_cache_dir + File.basename(path))
+      FileUtils.cp(path, stack_cache_dir) unless File.exist?(stack_cache_dir + File.basename(path))
       build_repo(stack, gpg_key)
     end
 
@@ -172,7 +172,7 @@ module NemesisOps
 
       # Cleanup aptly's pool. Packages which are not referenced in any repo are deleted.
       stack_repo_dir = NemesisOps::PKG_REPO_DIR.join(stack)
-      if File.exists?(stack_repo_dir)
+      if File.exist?(stack_repo_dir)
         Dir.chdir(stack_repo_dir) do |d|
           # Remove package from aptly
           aptly "repo remove nemesis-testing #{package}"

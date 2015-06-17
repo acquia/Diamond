@@ -77,12 +77,12 @@ module NemesisOps::Cli
       def build_ami(template, tag, debug = false)
         # make sure packer is installed and available in the PATH
         unless ENV['PATH'].split(':').any? { |dir| File.executable?(File.join(dir, 'packer')) }
-          fail Thor::Error, 'Unable to find packer application in your PATH'
+          raise Thor::Error.new('Unable to find packer application in your PATH')
         end
 
         # Make sure the source AMI is available before trying to create the new AMI
         unless ami_exists?(options[:ami])
-          fail Thor::Error, "Unable to find given AMI #{options[:ami]}"
+          raise Thor::Error.new("Unable to find given AMI #{options[:ami]}")
         end
 
         # Create a tempfile and use it to build the ami

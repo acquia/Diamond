@@ -27,7 +27,7 @@ module NemesisOps::PackerGen
       template_klazz = PackerGen::PackerGen::Templates.const_get(template_name)
       template_klazz
     rescue NameError
-      raise TemplateNameError, "Unable to find template: #{name}"
+      raise TemplateNameError.new("Unable to find template: #{name}")
     end
   end
 end
