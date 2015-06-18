@@ -38,7 +38,7 @@ module NemesisOps::PackerGen
       if respond_to? type.to_s
         send(type)[key]
       else
-        fail InvalidBuilderException, "Unknown builder #{type} in config"
+        raise InvalidBuilderException.new("Unknown builder #{type} in config")
       end
     end
 

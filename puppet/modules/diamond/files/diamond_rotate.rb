@@ -23,7 +23,7 @@ class NemesisRotate < NemesisServer::Hook
   # @return [Array] the found filepaths
   def find_uncompressed_files(dir, log_pattern)
     uncompressed = []
-    if Dir.exists? dir
+    if Dir.exist?(dir)
       Dir.glob(File.join(dir, '*')).each do |filepath|
         uncompressed << filepath if filepath.match(log_pattern)
       end
@@ -39,7 +39,7 @@ class NemesisRotate < NemesisServer::Hook
   # @return [Array] the found filepaths
   def find_outdated_files(dir, type, age)
     outdated = []
-    if Dir.exists? dir
+    if Dir.exist?(dir)
       Dir.glob(File.join(dir, type)).each do |filepath|
         mtime = File.stat(filepath).mtime.to_i
         outdated << filepath if (Time.now.to_i - mtime) > age

@@ -16,13 +16,13 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'z
 
   Facter.add('zk_exhibitor_aws_access_key_id') do
     setcode do
-      AWS::config.credentials[:access_key_id]
+      AWS.config.credentials[:access_key_id]
     end
   end
 
   Facter.add('zk_exhibitor_aws_secret_access_key') do
     setcode do
-      AWS::config.credentials[:secret_access_key]
+      AWS.config.credentials[:secret_access_key]
     end
   end
 

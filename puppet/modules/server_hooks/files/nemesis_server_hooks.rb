@@ -135,10 +135,7 @@ module NemesisServer
 
     # Locks the hook.
     def lock_file(hook)
-      success = false
-      unless Dir.exists? @lock_location
-        Dir.mkdir(@lock_location, 0700)
-      end
+      Dir.mkdir(@lock_location, 0700) unless Dir.exist?(@lock_location)
       @lock = File.open(lock_file_path(hook), File::RDWR | File::CREAT, 0644)
       success = @lock.flock(File::LOCK_EX)
       if success
@@ -184,8 +181,8 @@ module NemesisServer
         contents = File.read lock_file_path(hook)
         if contents.length > 2
           info = JSON.parse contents
-          hook.lock_info.each do |k, v|
-            hook.lock_info[k] = info[k] if info.key? k
+          hook.lock_info.each do |k, _|
+            hook.lock_info[k] = info[k] if info.key?(k)
           end
         end
       end

@@ -10,118 +10,103 @@ AllCops:
     # This is a copy of a third party gem to get rid of a dependency issue
     - '**/puppet/version.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Lint/DeprecatedClassMethods:
-  Enabled: false
-
-# Offense count: 1
-Lint/Eval:
-  Enabled: false
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
-  Enabled: false
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/UnusedBlockArgument:
-  Enabled: false
-
-# Offense count: 1
-Lint/UselessAssignment:
-  Enabled: false
-
-# Offense count: 7
 Metrics/AbcSize:
   Max: 59
 
-# Offense count: 54
-# Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
 
-# Offense count: 8
-# Configuration parameters: CountComments.
 Metrics/MethodLength:
   Max: 50
 
-# Offense count: 7
-# Configuration parameters: CountComments.
-Metrics/ModuleLength:
-  Max: 161
-
-# Offense count: 1
 Style/AccessorMethodName:
   Enabled: false
 
 Style/BlockDelimiters:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/BracesAroundHashParameters:
   Enabled: false
 
-# Offense count: 5
-# Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/ClassAndModuleChildren:
   Enabled: false
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/ColonMethodCall:
-  Enabled: false
-
-# Offense count: 10
 Style/Documentation:
   Enabled: false
 
-# Removing this check because it's stupid and not in the style guide
 Style/EachWithObject:
   Enabled: false
 
-# Offense count: 4
-# Configuration parameters: AllowedVariables.
-Style/GlobalVars:
-  Enabled: false
-
-# Offense count: 2
-# Configuration parameters: MinBodyLength.
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 26
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/HashSyntax:
   Enabled: false
 
-# Offense count: 3
-# Configuration parameters: MaxLineLength.
-Style/IfUnlessModifier:
+Style/PerlBackrefs:
   Enabled: false
 
-# Offense count: 2
-# Configuration parameters: EnforcedStyle, MinBodyLength, SupportedStyles.
-Style/Next:
+Style/MultilineBlockChain:
   Enabled: false
 
-# We like trailing commas
+Style/NumericLiterals:
+  Enabled: false
+
+Style/RaiseArgs:
+  EnforcedStyle: compact
+
+Style/SelfAssignment:
+  Enabled: false
+
+Style/Semicolon:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
 Style/TrailingComma:
   Enabled: false
-# Offense count: 2
-Style/UnlessElse:
-  Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: WordRegex.
 Style/WordArray:
   Enabled: false
 
-# Yet another thing we disagree with vs. the style guide
-Style/NumericLiterals:
-  Enabled: false
+# Above are all our modifications to rubocop as our defaults.
+# Below are the modifications for classes needing to be refactored
+# @todo: refactor classes listed below
+
+Lint/Eval:
+  Exclude:
+    - 'lib/nemesis_ops/puppet.rb'
+
+Lint/UnusedBlockArgument:
+  Exclude:
+    - 'lib/nemesis_ops/common.rb'
+    - 'lib/nemesis_ops/puppet.rb'
+    - 'puppet/modules/base/lib/puppet/parser/functions/ephemeral_volumes.rb'
+
+Lint/UselessAssignment:
+  Exclude:
+    - 'lib/nemesis_ops/puppet.rb'
+    - 'puppet/modules/server_hooks/files/cloudwatch_alarms.rb'
+    - 'puppet/modules/server_hooks/files/nemesis_server_hooks.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/nemesis_ops/common.rb'
+
+Style/IfUnlessModifier:
+  Exclude:
+    - 'lib/nemesis_ops/common.rb'
+    - 'puppet/modules/cassandra/lib/facter/cassandra_seeds_list.rb'
+    - 'puppet/modules/server_hooks/files/cloudwatch_alarms.rb'
+
+Style/Next:
+  Exclude:
+    - 'lib/nemesis_ops/common.rb'
+    - 'puppet/modules/graphite/lib/facter/cassandra_nodes.rb'
+    - 'puppet/modules/server_hooks/files/cloudwatch_alarms.rb'
+    - 'puppet/modules/server_hooks/files/nemesis_server_hooks.rb'
+
+Style/UnlessElse:
+  Exclude:
+    - 'lib/nemesis_ops/common.rb'
