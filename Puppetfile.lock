@@ -1,8 +1,12 @@
 FORGE
   remote: https://forgeapi.puppetlabs.com
   specs:
+    darin-zypprepo (1.0.2)
+    nanliu-staging (1.0.3)
     puppetlabs-concat (1.1.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    puppetlabs-java (1.3.0)
+      puppetlabs-stdlib (>= 2.4.0)
     stahnma-epel (1.0.2)
 
 GIT
@@ -22,6 +26,18 @@ GIT
       puppetlabs-apt (>= 1.1.0)
       puppetlabs-stdlib (>= 4.1.0)
       stahnma-epel (>= 0.0.6)
+
+GIT
+  remote: git@github.com:jenkinsci/puppet-jenkins.git
+  ref: v1.4.0
+  sha: 2f72a2d299b4c56af30763d28500e5fd5cf60f51
+  specs:
+    rtyler-jenkins (1.4.0)
+      darin-zypprepo (< 2.0.0, >= 1.0.1)
+      nanliu-staging (< 2.0.0, >= 1.0.0)
+      puppetlabs-apt (< 2.0.0, >= 0.0.3)
+      puppetlabs-java (< 2.0.0, >= 1.0.1)
+      puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-apache.git
@@ -65,10 +81,10 @@ GIT
 
 GIT
   remote: git@github.com:puppetlabs/puppetlabs-stdlib.git
-  ref: 4.5.1
-  sha: 7a91f209908f78d305e4de56ccc2f42b2b5953af
+  ref: 4.6.0
+  sha: 73474b00b5ae3cbccec6cd0711311d6450139e51
   specs:
-    puppetlabs-stdlib (4.5.1)
+    puppetlabs-stdlib (4.6.0)
 
 GIT
   remote: git@github.com:rodjek/puppet-logrotate.git
@@ -96,5 +112,6 @@ DEPENDENCIES
   puppetlabs-puppetlabs-lvm (>= 0)
   puppetlabs-stdlib (>= 0)
   rodjek-logrotate (>= 0)
+  rtyler-jenkins (>= 0)
   stankevich-python (>= 0)
 
