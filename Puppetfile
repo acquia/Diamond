@@ -23,7 +23,7 @@ mod 'puppetlabs/ntp',
 
 mod 'puppetlabs/stdlib',
   :git => 'git@github.com:puppetlabs/puppetlabs-stdlib.git',
-  :ref => '4.5.1'
+  :ref => '4.6.0'
 
 mod 'rodjek/logrotate',
   :git => 'git@github.com:rodjek/puppet-logrotate.git',
@@ -35,3 +35,7 @@ mod 'stankevich/python',
 
 mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos'
+
+mod 'rtyler/jenkins',
+  :git => 'git@github.com:jenkinsci/puppet-jenkins.git',
+  :ref => 'v1.4.0'
