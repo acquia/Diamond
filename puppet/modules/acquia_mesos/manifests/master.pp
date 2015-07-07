@@ -21,8 +21,9 @@ class acquia_mesos::master {
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {
+      'log_dir'                  => '/mnt/log/mesos/',
       'external_log_file'        => '/mnt/log/mesos/mesos-master.INFO',
-      'log_auto_initialize'      => false,
+      'log_auto_initialize'      => true,
       # 'max_executors_per_slave'  => '24', # TODO: enable when compiled --with-network-isolator
       'quorum'                   => "${mesos_quorum}",
       'registry'                 => 'replicated_log',
