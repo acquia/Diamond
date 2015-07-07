@@ -4,5 +4,10 @@ classes:
 aurora::version: '0.9.0-SNAPSHOT'
 aurora::configure_repo: false
 aurora::manage_package: true
-aurora::master: "%{::mesos_master}"
-aurora::zookeeper: "%{::aurora_zookeeper_connection_string}"
+# You can't use regular automatic parameter lookups here since hashes can't
+# automatically deep merge
+# The mesos profile takes care of passing the options hash to the class
+aurora::options:
+  cluster_name: "%{::mesos_cluster_name}"
+  quorum: "%{::mesos_quorum}"
+  zookeeper: "%{::aurora_zookeeper_connection_string}"
