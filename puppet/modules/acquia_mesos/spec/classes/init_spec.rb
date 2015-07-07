@@ -10,11 +10,10 @@ describe 'acquia_mesos', :type => :class do
     }
   }
 
-  it { should compile.with_all_deps }
+  it { should compile }
 
   context 'creates all necessary directories' do
     it { should contain_file('/var/lib/mesos').with_ensure('link') }
-    it { should contain_file('/mnt/tmp').with_mode('0755') }
     it { should contain_file('/mnt/tmp/mesos').with_mode('0755') }
   end
 
@@ -29,14 +28,14 @@ describe 'acquia_mesos', :type => :class do
       }
     }
 
-    it {
-      should contain_class('mesos').with(
-        {
-          'repo' => repo,
-          'version' => version,
-        }
-      )
-    }
+    it { should contain_class('mesos').with_version(version) }
+    it do
+      should contain_apt__source('mesosphere')
+        .with_location('http://repos.mesosphere.io/ubuntu')
+        .with_release('trusty')
+        .with_repos('main')
+        .with_key('81026D0004C44CF7EF55ADF8DF7D54CBE56151BF')
+    end
   end
 
   context 'includes mesos-slave' do

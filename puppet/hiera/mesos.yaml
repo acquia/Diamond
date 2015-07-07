@@ -1,2 +1,8 @@
 classes:
   - roles::mesos
+
+aurora::version: '0.9.0-SNAPSHOT'
+aurora::configure_repo: false
+aurora::manage_package: true
+aurora::master: "%{::mesos_master}"
+aurora::zookeeper: "%{::aurora_zookeeper_connection_string}"

@@ -16,7 +16,7 @@ class acquia_mesos::slave {
 
   class {'::mesos::slave':
     enable         => true,
-    port           => '5051',
+    port           => 5051,
     work_dir       => '/mnt/lib/mesos',
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,

@@ -9,6 +9,7 @@ class base::setup {
 
   file { '/mnt/tmp':
     ensure => directory,
+    mode   => '0755',
   }
 
   file { '/vol/':
