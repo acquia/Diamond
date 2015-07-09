@@ -13,6 +13,7 @@
 # limitations under the License.
 
 class acquia_mesos::master {
+  include acquia_mesos::aurora
 
   class {'::mesos::master':
     enable         => true,
