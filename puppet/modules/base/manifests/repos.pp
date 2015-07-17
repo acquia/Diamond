@@ -1,5 +1,7 @@
 class base::repos {
-  include apt
+  if !defined(Class['apt']) {
+    class {'apt': }
+  }
 
   class { 'unattended_upgrades':
     origins => ["${::lsbdistid}:${::lsbdistcodename}-security"],

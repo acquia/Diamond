@@ -5,7 +5,6 @@ class profiles::base {
   include logrotate::base
   include puppet
   include server_hooks
-  include docker
 
   Class['::base'] -> Class['diamond']
 }
