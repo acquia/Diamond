@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'acquia_mesos', :type => :class do
   let(:facts) {
     {
+      :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
       :operatingsystem => 'Ubuntu',
       :osfamily => 'Debian',
       :lsbdistcodename => 'trusty',

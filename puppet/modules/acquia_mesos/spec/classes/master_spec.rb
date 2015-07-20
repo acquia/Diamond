@@ -3,6 +3,12 @@ require 'spec_helper'
 describe 'acquia_mesos::master', :type => :class do
   it { should compile.with_all_deps }
 
+  let(:facts) {
+    {
+      :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
+    }
+  }
+
   context 'configures a mesos master' do
     it {
       should contain_class('mesos::master').with_work_dir('/mnt/lib/mesos')
@@ -20,6 +26,7 @@ describe 'acquia_mesos::master', :type => :class do
       let(:facts) {
         {
           :mesos_quorum => mesos_quorum,
+          :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
         }
       }
 

@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe 'acquia_mesos::slave', :type => :class do
+  let(:facts) {
+    {
+      :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
+    }
+  }
+
   it { should compile.with_all_deps }
 
   context 'configures a mesos slave' do

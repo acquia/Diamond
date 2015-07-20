@@ -17,3 +17,6 @@ mod 'puppetlabs/apt', '>= 2.0.0'
 
 mod 'puppetlabs/puppetlabs-lvm',
   :git => 'git@github.com:puppetlabs/puppetlabs-lvm.git'
+
+mod 'garethr/garethr-docker',
+  :git => 'git@github.com:garethr/garethr-docker.git'

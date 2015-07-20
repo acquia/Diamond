@@ -1,6 +1,7 @@
 class base {
   include base::admin_users
   include base::sudo
+  include base::docker
 
   contain base::repos
   contain base::packages
