@@ -13,5 +13,5 @@ aurora::options:
   zookeeper: "%{::aurora_zookeeper_connection_string}"
   thermos_executor_flags:
     - "--announcer-enable"
-    - "--announcer-ensemble=${::aurora_zookeeper_connection_string}"
-    - "--announcer-serverset-path=/services"
+    - "--announcer-ensemble='%{::aurora_zookeeper_connection_string}'"
+    - "--announcer-serverset-path='/aurora/scheduler'"
