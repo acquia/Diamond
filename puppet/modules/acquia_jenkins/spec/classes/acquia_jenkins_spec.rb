@@ -15,27 +15,116 @@
 require 'spec_helper'
 
 describe 'acquia_jenkins', :type => :module do
+  # Mock the environment. :jenkins_plugin_username helps us mock the jenkins
+  # user. In production, the root user will su as this user, but for testing
+  # we often execute as a non-root user, which fails for any jenkins::plugin
+  # definition. The :path variable sets the global execution path for the
+  # archive module to exec curl.
   let(:facts) {
     {
       :osfamily => 'Debian',
       :lsbdistcodename => 'trusty',
-      :lsbdistid => 'ubuntu'
+      :lsbdistid => 'ubuntu',
+      :jenkins_email => 'test@host.com',
+      :jenkins_plugin_username => `whoami`.chomp!,
+      :path => '/bin:/usr/bin:/usr/local/sbin'
     }
   }
 
+  it { should compile.with_all_deps }
+
+  it { should contain_class('acquia_jenkins') }
+
+  it { should contain_group('jenkins') }
+
   it {
-    should contain_class('jenkins')
-    should contain_class('acquia_jenkins')
-    should contain_jenkins__plugin('parameterized-trigger')
-    should contain_jenkins__plugin('token-macro')
-    should contain_jenkins__plugin('mailer')
-    should contain_jenkins__plugin('scm-api')
-    should contain_jenkins__plugin('promoted-builds')
-    should contain_jenkins__plugin('matrix-project')
-    should contain_jenkins__plugin('git-client')
-    should contain_jenkins__plugin('ssh-credentials')
-    should contain_jenkins__plugin('credentials')
-    should contain_jenkins__plugin('git')
-    should contain_jenkins__user('darwin')
+    should contain_user('jenkins').with(
+      'groups' => ['jenkins', 'docker'],
+    )
   }
+
+  it {
+    should contain_file('/mnt/acquia_grid_ci_workspace').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/mnt/acquia_grid_ci_dist').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins/.ssh').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins/users').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins/users/admin').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins/config.xml').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+  it {
+    should contain_file('/var/lib/jenkins/users/admin/config.xml').with(
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+
+  it { should contain_exec('create-jenkins-cli-key') }
+
+  it { should contain_class('jenkins::cli_helper') }
+
+  it { should contain_package('bundler') }
+
+  it { should contain_jenkins__plugin('parameterized-trigger') }
+
+  it { should contain_jenkins__plugin('token-macro') }
+
+  it { should contain_jenkins__plugin('mailer') }
+
+  it { should contain_jenkins__plugin('scm-api') }
+
+  it { should contain_jenkins__plugin('promoted-builds') }
+
+  it { should contain_jenkins__plugin('matrix-project') }
+
+  it { should contain_jenkins__plugin('credentials') }
+
+  it { should contain_jenkins__plugin('ssh-credentials') }
+
+  it { should contain_jenkins__plugin('credentials-binding') }
+
+  it { should contain_jenkins__plugin('git') }
+
+  it { should contain_jenkins__plugin('git-client') }
+
+  it { should contain_jenkins__plugin('ssh-agent') }
+
+  it { should contain_jenkins__plugin('rebuild') }
+
+  it { should contain_exec('acquia-jenkins-installed') }
+
+  it { should contain_jenkins__user('admin') }
 end

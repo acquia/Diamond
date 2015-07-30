@@ -15,6 +15,20 @@
 require 'facter'
 require 'nemesis_aws_client'
 
+# The jenkins_cli_pub_key fact reports the contents of the public key that is
+# used to execute jenkins cli commands as admin. This fact will create the key
+# if it does not yet exist. It would be preferable to create the key as a puppet
+# resource, but it needs to be available on init.
+Facter.add('jenkins_cli_pub_key') do
+  setcode do
+    # If the key does not exist yet, create it.
+    unless File.exist?('/var/lib/jenkins/.ssh/jenkins_cli.pub')
+      `mkdir -p /var/lib/jenkins/.ssh && /usr/bin/ssh-keygen -b 2048 -f /var/lib/jenkins/.ssh/jenkins_cli -t rsa -N ''`
+    end
+    `/bin/cat /var/lib/jenkins/.ssh/jenkins_cli.pub`.chomp!
+  end
+end
+
 ec2 = NemesisAwsClient::EC2.new
 
 if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'jenkins'
@@ -25,6 +39,17 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'j
   Facter.add('jenkins_password') do
     setcode do
       params['JenkinsPassword']
+    end
+  end
+
+  Facter.add('jenkins_email') do
+    setcode do
+      # @TODO create this parameter in nemesis and remove the default value.
+      email = 'darwin@acquia.com'
+      if params.key?('JenkinsEmail') && !params['JenkinsEmail'].empty?
+        email = params['JenkinsEmail']
+      end
+      email
     end
   end
 end

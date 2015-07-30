@@ -24,7 +24,6 @@ task :spec_prep do
   # Use librarian-puppet to manage fixtures instead of .fixtures.yml
   FileUtils::mkdir_p("spec/fixtures/modules")
   FileUtils::mkdir_p("spec/fixtures/manifests")
-  FileUtils::touch("spec/fixtures/manifests/site.pp")
 
   sh 'librarian-puppet install --clean --path=spec/fixtures/modules/'
 
@@ -39,9 +38,6 @@ Rake::Task[:spec_clean].clear
 desc "Clean up the spec/fixtures directory"
 task :spec_clean do
   sh "librarian-puppet clean"
-  if File.zero?("spec/fixtures/manifests/site.pp")
-    FileUtils::rm_f("spec/fixtures/manifests/site.pp")
-  end
 end
 
 # This is to get around https://github.com/rodjek/puppet-lint/issues/331
