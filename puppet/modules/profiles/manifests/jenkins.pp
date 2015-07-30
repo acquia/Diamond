@@ -15,6 +15,4 @@
 class profiles::jenkins {
   contain profiles::java
   include ::acquia_jenkins
-
-  Class['profiles::java'] -> Class['::acquia_jenkins']
 }

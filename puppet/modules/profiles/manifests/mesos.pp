@@ -32,7 +32,6 @@ class profiles::mesos {
     scheduler_options => $hash,
   }
 
-  Class['profiles::java'] ->
   Class['::acquia_mesos'] ->
   Class['aurora']
 }

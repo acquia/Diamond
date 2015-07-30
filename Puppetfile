@@ -18,7 +18,7 @@ mod 'puppetlabs/apache',
 
 mod 'puppetlabs/apt',
   :git => 'git://github.com/puppetlabs/puppetlabs-apt.git',
-  :ref => '2.1.0'
+  :ref => '2.1.1'
 
 mod 'puppetlabs/puppetlabs-lvm',
   :git => 'git://github.com/puppetlabs/puppetlabs-lvm.git'
