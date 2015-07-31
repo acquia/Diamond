@@ -19,12 +19,12 @@ start() {
     then
       PID=`cat $PID_FILE`
       if [ -z "`ps -ef | awk '{print $2}' | grep "^$PID$"`" ]; then
-        echo "\n$PID_FILE exists, process is already running"
-        exit 0
-      else
         echo "\n$PID_FILE exists but the process is not running. Deleting $PID_FILE and re-trying"
         rm -f $PID_FILE
         start
+      else
+        echo "\n$PID_FILE exists, process is already running"
+        exit 0
       fi
     else
         exec $DAEMON $DAEMON_OPTS >> /var/log/exhibitor.log 2>&1 &
