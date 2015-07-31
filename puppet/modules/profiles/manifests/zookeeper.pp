@@ -3,5 +3,7 @@ class profiles::zookeeper {
   contain profiles::java
   include ::zookeeper
 
-  Class['profiles::base'] -> Class['::zookeeper']
+  Class['profiles::base'] ->
+  Class['profiles::java'] ->
+  Class['::zookeeper']
 }
