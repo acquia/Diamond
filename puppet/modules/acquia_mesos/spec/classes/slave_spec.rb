@@ -26,6 +26,7 @@ describe 'acquia_mesos::slave', :type => :class do
       let(:facts) {
         {
           :hostname => ec2_public_hostname,
+          :ec2_public_hostname => 'test',
         }
       }
 
