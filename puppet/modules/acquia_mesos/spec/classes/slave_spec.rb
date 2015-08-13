@@ -21,11 +21,11 @@ describe 'acquia_mesos::slave', :type => :class do
     }
 
     context 'configures mesos options' do
-      let(:hostname) { 'test' }
+      let(:ec2_public_hostname) { 'test' }
 
       let(:facts) {
         {
-          :hostname => hostname,
+          :hostname => ec2_public_hostname,
         }
       }
 
@@ -34,7 +34,7 @@ describe 'acquia_mesos::slave', :type => :class do
         should contain_mesos__property('docker_sandbox_directory').with_value('/mnt/mesos/sandbox')
         should contain_mesos__property('enforce_container_disk_quota').with_value(true)
         should contain_mesos__property('executor_registration_timeout').with_value('5mins')
-        should contain_mesos__property('hostname').with_value(hostname)
+        should contain_mesos__property('hostname').with_value(ec2_public_hostname)
         should contain_mesos__property('perf_events').with_value(/cycles,instructions,task-clock/)
         should contain_mesos__property('registration_backoff_factor').with_value('10secs')
         should contain_mesos__property('slave_subsystems').with_value('memory,cpuacct')

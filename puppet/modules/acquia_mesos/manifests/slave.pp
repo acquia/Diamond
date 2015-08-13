@@ -28,7 +28,7 @@ class acquia_mesos::slave {
       'enforce_container_disk_quota'  => true,
       # 'ephemeral_ports_per_container'   => '1024', # @todo: enable when compiled --with-network-isolator
       'executor_registration_timeout' => '5mins',
-      'hostname'                      => $hostname,
+      'hostname'                      => $ec2_public_hostname,
       'perf_events'                   => 'cycles,instructions,task-clock,context-switches,cpu-migrations,stalled-cycles-frontend,stalled-cycles-backend,page-faults,L1-dcache-loads,L1-dcache-load-misses,L1-dcache-stores,L1-dcache-store-misses,LLC-loads,LLC-load-misses,LLC-stores,LLC-store-misses',
       'registration_backoff_factor'   => '10secs',
       'slave_subsystems'              => 'memory,cpuacct',
@@ -42,7 +42,7 @@ class acquia_mesos::slave {
       'ephemeral_ports' => '[32768-57344]',
     },
     attributes     => {
-      'host' => $hostname,
+      'host' => $ec2_public_hostname,
       'rack' => $ec2_placement_availability_zone,
     },
     force_provider => 'upstart',
