@@ -24,6 +24,7 @@
 # @todo: Replace this with the docker build process once it's merged upstream
 
 set -ex
+GRADLE_VERSION=2.6
 
 # Install Java 8
 apt-get update && apt-get install -y \
@@ -36,7 +37,7 @@ apt-get update && apt-get install -y \
   libapr1-dev \
   libcurl4-openssl-dev \
   libsvn-dev \
-  python-dev \
+  python-all-dev \
   software-properties-common
 add-apt-repository ppa:openjdk-r/ppa -y
 apt-get update && apt-get install -y openjdk-8-jdk
@@ -44,7 +45,7 @@ apt-get update && apt-get install -y openjdk-8-jdk
 # Install gradle
 git clone git@github.com:benley/gradle-packaging.git
 cd gradle-packaging
-./gradle-mkdeb.sh
+./gradle-mkdeb.sh ${GRADLE_VERSION}
 dpkg -i gradle*.deb
 cd ..
 
@@ -52,9 +53,12 @@ cd ..
 curl -O http://people.apache.org/~jfarrell/thrift/0.9.1/contrib/deb/ubuntu/12.04/thrift-compiler_0.9.1_amd64.deb
 dpkg -i thrift-compiler_0.9.1_amd64.deb
 
-git clone git@github.com:apache/aurora.git
+git clone https://git-wip-us.apache.org/repos/asf/aurora-packaging.git
+cp aurora-packaging/builder/deb/ubuntu-trusty/pants.ini /
+git clone git@github.com:acquia/aurora.git -b aurora-1095
 cd aurora
-dpkg-buildpackage -uc -b -d -tc
+ln -s ../aurora-packaging/specs/debian debian
+dpkg-buildpackage -uc -b -tc
 cd ..
 
 # If we're in a VM, let's copy the deb file over
