@@ -12,8 +12,9 @@
 
 forge 'https://forgeapi.puppetlabs.com'
 
-# @TODO Revert to jenkinsci/puppet-jenkins once
-# https://github.com/jenkinsci/puppet-jenkins/pull/352 is merged.
+mod 'puppetlabs/stdlib', '>= 4.5.1'
+mod 'puppetlabs/apt', '>= 2.1.1'
+
 mod 'rtyler/jenkins',
-  :git => 'https://github.com/kevinhankens/puppet-jenkins.git',
-  :ref => 'jenkins_cli_ssh_keyfile'
+  :git => 'https://github.com/jenkinsci/puppet-jenkins.git',
+  :ref => 'v1.5.0'

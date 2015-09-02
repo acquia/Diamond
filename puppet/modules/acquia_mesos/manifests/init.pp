@@ -32,7 +32,6 @@ class acquia_mesos (
     }
   )
 
-
   file {'/mnt/tmp/mesos':
     ensure  => 'directory',
     mode    => '0755',

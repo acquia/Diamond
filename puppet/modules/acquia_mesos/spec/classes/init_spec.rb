@@ -14,6 +14,7 @@ describe 'acquia_mesos', :type => :class do
   it { should compile }
 
   context 'creates all necessary directories' do
+    it { should contain_file('/mnt/tmp') }
     it { should contain_file('/var/lib/mesos').with_ensure('link') }
     it { should contain_file('/mnt/tmp/mesos').with_mode('0755') }
   end

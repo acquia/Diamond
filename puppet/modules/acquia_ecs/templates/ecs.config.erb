@@ -1,0 +1,8 @@
+ECS_LOGLEVEL=info
+ECS_ENGINE_AUTH_TYPE=dockercfg
+ECS_LOGFILE=/log/ecs-agent.log
+ECS_DATADIR=/data
+ECS_CLUSTER=<%= ecs_cluster_name -%>
+<%- if docker_registry_url && docker_registry_auth && docker_registry_email -%>
+ECS_ENGINE_AUTH_DATA={"https://<%= docker_registry_url -%>/v1/":{"auth":"<%= docker_registry_auth -%>","email":"<%= docker_registry_email -%>"}}
+<%- end -%>

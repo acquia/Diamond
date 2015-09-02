@@ -30,7 +30,6 @@ Facter.add('jenkins_cli_pub_key') do
 end
 
 ec2 = NemesisAwsClient::EC2.new
-
 if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'jenkins'
   cf = NemesisAwsClient::CloudFormation.new
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
@@ -44,12 +43,13 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'j
 
   Facter.add('jenkins_email') do
     setcode do
-      # @TODO create this parameter in nemesis and remove the default value.
-      email = 'darwin@acquia.com'
-      if params.key?('JenkinsEmail') && !params['JenkinsEmail'].empty?
-        email = params['JenkinsEmail']
-      end
-      email
+      params['JenkinsEmail']
+    end
+  end
+
+  Facter.add('jenkins_url') do
+    setcode do
+      params['JenkinsURL'] ? params['JenkinsURL'] : Facter.value('ec2_public_hostname')
     end
   end
 end
