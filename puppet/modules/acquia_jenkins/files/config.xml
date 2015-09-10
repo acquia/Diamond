@@ -20,7 +20,6 @@
     <permission>hudson.model.Hudson.Administer:admin</permission>
     <permission>hudson.model.Hudson.ConfigureUpdateCenter:admin</permission>
     <permission>hudson.model.Hudson.Read:admin</permission>
-    <permission>hudson.model.Hudson.Read:anonymous</permission>
     <permission>hudson.model.Hudson.RunScripts:admin</permission>
     <permission>hudson.model.Hudson.UploadPlugins:admin</permission>
     <permission>hudson.model.Item.Build:admin</permission>

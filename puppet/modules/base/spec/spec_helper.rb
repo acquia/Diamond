@@ -1,6 +1,5 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet'
-require 'rspec-puppet/coverage'
 
 RSpec.configure do |c|
   c.before :each do
@@ -21,5 +20,3 @@ RSpec.configure do |c|
     PuppetlabsSpec::Files.cleanup
   end
 end
-
-at_exit { RSpec::Puppet::Coverage.report! }

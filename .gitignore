@@ -29,4 +29,5 @@ puppet/third_party/*
 ec2_amazon-instance.pem
 spec/fixtures/modules/*
 puppet/modules/*/.librarian/*
+puppet/modules/*/.tmp/*
 puppet/modules/*/Puppetfile.lock

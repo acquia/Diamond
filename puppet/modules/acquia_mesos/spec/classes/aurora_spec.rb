@@ -27,6 +27,11 @@ EOF
 
   it { should compile }
 
-  it { should contain_file('/etc/aurora') }
-  it { should contain_file('/etc/aurora/clusters.json').with_content(cluster_json) }
+  it { should contain_class('acquia_mesos::aurora') }
+
+  it {
+    should contain_file('/etc/aurora')
+    should contain_file('/etc/aurora/clusters.json')
+      .with_content(cluster_json)
+  }
 end

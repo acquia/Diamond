@@ -38,13 +38,13 @@ mod 'rodjek/logrotate',
   :git => 'git://github.com/rodjek/puppet-logrotate.git',
   :ref => '1.1.1'
 
-# @TODO Revert to jenkinsci/puppet-jenkins once
-# https://github.com/jenkinsci/puppet-jenkins/pull/352 is merged.
 mod 'rtyler/jenkins',
-  :git => 'https://github.com/kevinhankens/puppet-jenkins.git',
-  :ref => 'jenkins_cli_ssh_keyfile'
+  :git => 'https://github.com/jenkinsci/puppet-jenkins.git',
+  :ref => 'v1.5.0'
 
 mod 'stankevich/python',
   :git => 'git://github.com/stankevich/puppet-python.git',
   :ref => '1.9.1'
 
+mod 'puppet-sysctl',
+  :git => 'https://github.com/thias/puppet-sysctl'

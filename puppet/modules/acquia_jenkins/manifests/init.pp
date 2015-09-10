@@ -12,7 +12,6 @@
 class acquia_jenkins (
   $plugin_username = 'jenkins'
 ) {
-
   package { 'bundler':
     ensure => present,
   }
@@ -63,6 +62,24 @@ class acquia_jenkins (
     ],
     owner   => 'jenkins',
     group   => 'jenkins',
+  }
+
+  file { '/var/lib/jenkins/.ssh/config':
+    ensure  => directory,
+    require => File['/var/lib/jenkins/.ssh'],
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0600',
+    source  => 'puppet:///modules/acquia_jenkins/jenkins_ssh_config',
+  }
+
+  file { '/var/lib/jenkins/.ssh/github.pub':
+    ensure  => present,
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    source  => 'puppet:///modules/acquia_jenkins/github.pub',
+    require => File['/var/lib/jenkins/.ssh'],
   }
 
   file { '/var/lib/jenkins/users':
@@ -131,27 +148,12 @@ class acquia_jenkins (
     ssh_keyfile => '/var/lib/jenkins/.ssh/jenkins_cli',
   }
 
-  jenkins::plugin { 'parameterized-trigger':
+  # Install plugins
+  jenkins::plugin { 'build-token-root':
     username => "${plugin_username}"
   }
 
-  jenkins::plugin { 'token-macro':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'mailer':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'scm-api':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'promoted-builds':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'matrix-project':
+  jenkins::plugin { 'ci-skip':
     username => "${plugin_username}"
   }
 
@@ -159,12 +161,19 @@ class acquia_jenkins (
     username => "${plugin_username}"
   }
 
-  jenkins::plugin { 'ssh-credentials':
+  jenkins::plugin { 'credentials-binding':
     username => "${plugin_username}"
   }
 
-  jenkins::plugin { 'credentials-binding':
-    version  => '1.4',
+  jenkins::plugin { 'docker-build-publish':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'docker-commons':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'ec2':
     username => "${plugin_username}"
   }
 
@@ -176,17 +185,51 @@ class acquia_jenkins (
     username => "${plugin_username}"
   }
 
-  jenkins::plugin { 'ssh-agent':
-    version  => '1.7',
+  jenkins::plugin { 'greenballs':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'google-login':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'mailer':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'matrix-project':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'parameterized-trigger':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'promoted-builds':
     username => "${plugin_username}"
   }
 
   jenkins::plugin { 'rebuild':
-    version  => '1.25',
     username => "${plugin_username}"
   }
 
-  # After installing he admin user, we need to restart the service in order
+  jenkins::plugin { 'scm-api':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'ssh-agent':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'ssh-credentials':
+    username => "${plugin_username}"
+  }
+
+  jenkins::plugin { 'token-macro':
+    username => "${plugin_username}"
+  }
+
+  # After installing the admin user, we need to restart the service in order
   # for the ssh key authentication to work. This is a brute force method
   # because notifying the jenkins service does not work and we cannot reload
   # the configuration via cli since we do not allow anonymous access. The
@@ -216,4 +259,6 @@ class acquia_jenkins (
     password   => "${::jenkins_password}",
     public_key => "${::jenkins_cli_pub_key}",
   }
+
+  contain acquia_jenkins::proxy
 }

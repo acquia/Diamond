@@ -67,14 +67,19 @@ in place
 ## Creating the apt mirror
 
     nemesis bootstrap ${stack_name}
-    nemesis-ops package init
+    nemesis-ops package init ${stack_name}
     nemesis-ops puppet build ${stack_name}
     nemesis-ops package upload ${stack_name}
 
 
-## Updating a specific package
+## Adding a specific package
 
     nemesis-ops package add ${stack_name} path/to/*.deb
+
+
+## Removing a specific package
+
+    nemesis-ops package remove ${stack_name} path/to/*.deb
 
 
 ## Building the nemesis-puppet package

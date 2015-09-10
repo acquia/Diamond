@@ -1,7 +1,7 @@
 FORGE
   remote: https://forgeapi.puppetlabs.com
   specs:
-    camptocamp-archive (0.8.0)
+    camptocamp-archive (0.8.1)
     darin-zypprepo (1.0.2)
     nanliu-staging (1.0.3)
     puppetlabs-concat (1.2.3)
@@ -110,11 +110,11 @@ GIT
       stahnma-epel (>= 0.0.6)
 
 GIT
-  remote: https://github.com/kevinhankens/puppet-jenkins.git
-  ref: jenkins_cli_ssh_keyfile
-  sha: b586c6881c0bd1f4d5d05004801b02dcecfe8836
+  remote: https://github.com/jenkinsci/puppet-jenkins.git
+  ref: v1.5.0
+  sha: fa47ad67c8a8bb9c2174c12f5dec2edc62273992
   specs:
-    rtyler-jenkins (1.4.0)
+    rtyler-jenkins (1.5.0)
       camptocamp-archive (>= 0.8.0)
       darin-zypprepo (< 2.0.0, >= 1.0.1)
       nanliu-staging (< 2.0.0, >= 1.0.0)
@@ -122,11 +122,19 @@ GIT
       puppetlabs-java (< 2.0.0, >= 1.0.1)
       puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
 
+GIT
+  remote: https://github.com/thias/puppet-sysctl
+  ref: master
+  sha: 38df36e8d8fab7d6a2f755e3f5fbf62f1d792a9f
+  specs:
+    puppet-sysctl (1.0.2)
+
 DEPENDENCIES
   acquia-puppet-aurora (>= 0)
   deric-puppet-mesos (>= 0)
   garethr-garethr-docker (>= 0)
   puppet-community-puppet-unattended_upgrades (>= 0)
+  puppet-sysctl (>= 0)
   puppetlabs-apache (>= 0)
   puppetlabs-apt (>= 0)
   puppetlabs-ntp (>= 0)

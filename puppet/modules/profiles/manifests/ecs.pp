@@ -12,13 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-classes:
-  - roles::jenkins
+class profiles::ecs {
+  contain profiles::base
+  include ::acquia_ecs
 
-jenkins::install_java: false
-jenkins::config_hash:
-  HTTP_PORT:
-    value: 8080
-  JENKINS_ARGS:
-    value: "--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT --httpListenAddress=127.0.0.1"
+  Class['profiles::base'] ->
+  Class['::acquia_ecs']
+}

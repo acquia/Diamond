@@ -9,6 +9,8 @@ AllCops:
   Exclude:
     # This is a copy of a third party gem to get rid of a dependency issue
     - '**/puppet/version.rb'
+    # Exclude 3rd party dependencies from librarian used in each module
+    - 'puppet/modules/**/spec/fixtures/modules/**/*.rb'
 
 Metrics/AbcSize:
   Max: 59
