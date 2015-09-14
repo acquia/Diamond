@@ -1,0 +1,60 @@
+# Copyright 2015 Acquia, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+require 'puppetlabs_spec_helper/rake_tasks'
+require 'puppet-lint/tasks/puppet-lint'
+require 'rake/clean'
+
+task(:default).clear
+task :default => [:spec, :lint]
+
+Rake::Task[:spec_prep].clear
+desc "Create the spec/fixtures directory"
+task :spec_prep do
+  # Use librarian-puppet to manage fixtures instead of .fixtures.yml
+  FileUtils::mkdir_p("spec/fixtures/modules")
+  FileUtils::mkdir_p("spec/fixtures/manifests")
+  FileUtils::touch("spec/fixtures/manifests/site.pp")
+
+  sh 'librarian-puppet install --clean --path=spec/fixtures/modules/'
+
+  module_path = Dir.getwd
+  module_name = File.basename(module_path)
+  fixture_module_path = "spec/fixtures/modules/#{module_name}"
+  FileUtils.rm_f fixture_module_path
+  FileUtils.ln_sf module_path, fixture_module_path
+end
+
+Rake::Task[:spec_clean].clear
+desc "Clean up the spec/fixtures directory"
+task :spec_clean do
+  sh "librarian-puppet clean"
+  if File.zero?("spec/fixtures/manifests/site.pp")
+    FileUtils::rm_f("spec/fixtures/manifests/site.pp")
+  end
+end
+
+# This is to get around https://github.com/rodjek/puppet-lint/issues/331
+Rake::Task[:lint].clear
+PuppetLint::RakeTask.new :lint do |config|
+  config.fail_on_warnings = true
+  config.disable_checks = [
+    '80chars',
+    'class_inherits_from_params_class',
+    'class_parameter_defaults',
+    'only_variable_string',
+    'documentation',
+    'variable_scope',
+  ]
+end

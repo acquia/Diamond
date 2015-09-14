@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class profiles::jenkins {
-  contain profiles::java
-  include ::acquia_jenkins
-  include ::acquia_registry
-  contain ::docker
+class acquia_registry::client {
 
-  Class['::docker'] -> Class['::acquia_jenkins']
+  include acquia_registry::common
+
+  docker::registry { $registry_endpoint:
+    username => 'admin',
+    password => "${registry_admin_password}",
+    email    => 'engineering@acquia.com',
+    require  => File["/etc/docker/certs.d/${registry_endpoint}/domain.crt"],
+  }
 }

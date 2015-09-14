@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class profiles::jenkins {
-  contain profiles::java
-  include ::acquia_jenkins
-  include ::acquia_registry
-  contain ::docker
-
-  Class['::docker'] -> Class['::acquia_jenkins']
+class roles::registry {
+  include profiles::registry
 }
