@@ -77,7 +77,7 @@ class acquia_jenkins (
     ensure  => present,
     owner   => 'jenkins',
     group   => 'jenkins',
-    mode    => '0644',
+    mode    => '0600',
     source  => 'puppet:///modules/acquia_jenkins/github.pub',
     require => File['/var/lib/jenkins/.ssh'],
   }
