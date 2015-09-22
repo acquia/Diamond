@@ -27,6 +27,10 @@ Nemesis Package Manager:
     gpg --keyserver pgp.mit.edu --send-keys <KEY ID>
     ````
 
+    You may want to set up `gpg-agent` to avoid repeatedly typing your
+    GPG password when signing packages; see
+    [Appendix A](#appendixa:usinggpg-agent), below.
+
   * Setup AWS credentials and ssh keys
   * Install the Nemesis gem or add to your RUBYPATH
     *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
@@ -106,10 +110,32 @@ path in not passed in then the template will just be printed to stdout
       --ami <existing ami id> \
       /path/desired-output-file.json
 
+## Appendix A: Using gpg-agent
 
-## License
----
-Except as otherwise noted this software is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+If you want to avoid being prompted for your GPG key's password every
+time you publish packages, you can run `gpg-agent`, the GPG equivalent
+of `ssh-agent`.
+
+1. Install the `gpg-agent` executable -- on the Mac, try `brew install gpg-agent`.
+2. Edit `~/.gnupg/gpg-agent.conf`:
+
+        allow-preset-passphrase
+        max-cache-ttl 60480000
+        default-cache-ttl 60480000
+        pinentry-program /usr/local/bin/pinentry
+        no-grab
+
+3. Edit `~/.gnupg/gpg.conf`:
+
+        use-agent  # Uncomment this line to enable it
+
+4. Add to your `.bashrc`, or run manually:
+
+        eval $(gpg-agent --daemon --allow-preset-passphrase)
+
+# License
+
+Except as otherwise noted this software is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
