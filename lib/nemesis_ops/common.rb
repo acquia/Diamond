@@ -24,6 +24,8 @@ require 'zlib'
 require 'nemesis'
 
 module NemesisOps
+  class AptlyError < RuntimeError; end
+
   module Common
     def s3_upload(bucket, path, acl = :private)
       s3 = Nemesis::Aws::Sdk::S3.new
@@ -84,10 +86,12 @@ module NemesisOps
       [NemesisOps::PKG_CACHE_DIR, NemesisOps::PKG_REPO_DIR].each { |dir| FileUtils.mkdir_p(dir.join(stack)) }
     end
 
+    # Execute the given aptly command, raising an AptlyError if it
+    # does not succeed (i.e. if its exit status is not zero).
     def aptly(cmd)
       command = "aptly --config=#{NemesisOps::PKG_DIR}/aptly.conf #{cmd}"
       Nemesis::Log.info(command)
-      `#{command}`
+      system(command) || raise(NemesisOps::AptlyError.new('Fatal error while running aptly.'))
     end
 
     def get_repo(stack)
