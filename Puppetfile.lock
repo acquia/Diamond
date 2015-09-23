@@ -94,7 +94,7 @@ GIT
 GIT
   remote: git://github.com/stankevich/puppet-python.git
   ref: 1.9.1
-  sha: cf744a4120990d798597ee11b61c471976fa847a
+  sha: 6e285db9f178da581f96062faf5f5201ffe7f440
   specs:
     stankevich-python (1.8.0)
       puppetlabs-stdlib (>= 4.0.0)
