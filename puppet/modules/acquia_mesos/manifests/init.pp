@@ -14,7 +14,7 @@
 
 class acquia_mesos (
   $mesos_repo = 'mesosphere',
-  $mesos_version = '0.22.0-1.0.ubuntu1404',
+  $mesos_version = '0.23.0-1.0.ubuntu1404',
 ) {
   include apt
 

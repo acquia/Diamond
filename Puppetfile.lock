@@ -4,7 +4,7 @@ FORGE
     camptocamp-archive (0.8.1)
     darin-zypprepo (1.0.2)
     nanliu-staging (1.0.3)
-    puppetlabs-concat (1.2.3)
+    puppetlabs-concat (1.2.4)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-java (1.4.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
@@ -12,8 +12,8 @@ FORGE
 
 GIT
   remote: git://github.com/acquia/puppet-aurora.git
-  ref: master
-  sha: f4573edd888d4b4cc3a0aed5453b1927214bf186
+  ref: 0.0.1
+  sha: 1e076c05db690a233ba731a3c647aa556cdc3325
   specs:
     acquia-puppet-aurora (0.1.0)
       puppetlabs-apt (>= 0, >= 2.0.1)
@@ -40,9 +40,9 @@ GIT
 GIT
   remote: git://github.com/puppetlabs/puppetlabs-apache.git
   ref: master
-  sha: ce72c66ad49b81b23fb72607184d90ad5f0014ba
+  sha: fbf0effc73d8afdc19e8d029190e7034fa4e3350
   specs:
-    puppetlabs-apache (1.5.0)
+    puppetlabs-apache (1.6.0)
       puppetlabs-concat (< 2.0.0, >= 1.1.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
 
@@ -64,7 +64,7 @@ GIT
 GIT
   remote: git://github.com/puppetlabs/puppetlabs-lvm.git
   ref: master
-  sha: 103fccd835fc431ca785482e9bfb16040c9da937
+  sha: 696fe41f88d89406805d06b6e4ad01c412b436b3
   specs:
     puppetlabs-puppetlabs-lvm (0.5.0)
       puppetlabs-stdlib (< 5.0.0, >= 4.1.0)
@@ -102,9 +102,9 @@ GIT
 GIT
   remote: git@github.com:garethr/garethr-docker.git
   ref: master
-  sha: b481270c96a26bacdfd11a7d1990e478f475a601
+  sha: 32b6e4f669ef3f6d546f4e8216f06341b92d912d
   specs:
-    garethr-garethr-docker (4.0.2)
+    garethr-garethr-docker (4.1.0)
       puppetlabs-apt (<= 3.0.0, >= 1.1.0)
       puppetlabs-stdlib (>= 4.1.0)
       stahnma-epel (>= 0.0.6)
