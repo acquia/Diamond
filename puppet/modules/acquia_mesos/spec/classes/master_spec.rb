@@ -25,6 +25,9 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_service('mesos-master').with(
         :enable => true
       )
+      should contain_service('mesos-slave').with(
+        :enable => false
+      )
     }
 
     context 'configures mesos options' do
