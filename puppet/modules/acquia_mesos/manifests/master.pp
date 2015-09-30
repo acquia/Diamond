@@ -12,18 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::master {
+class acquia_mesos::master (
+  $mesos_log_dir = '/var/log/mesos',
+  $mesos_lib_dir = '/var/lib/mesos',
+) {
   include acquia_mesos::aurora
 
   class {'::mesos::master':
     enable         => true,
     cluster        => $mesos_cluster_name,
-    work_dir       => '/mnt/lib/mesos',
+    work_dir       => $mesos_lib_dir,
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {
-      'log_dir'                  => '/mnt/log/mesos/',
-      'external_log_file'        => '/mnt/log/mesos/mesos-master.INFO',
+      'external_log_file'        => "${mesos_log_dir}/mesos-master.INFO",
       'log_auto_initialize'      => true,
       # 'max_executors_per_slave'  => '24', # TODO: enable when compiled --with-network-isolator
       'quorum'                   => "${mesos_quorum}",
@@ -34,5 +36,4 @@ class acquia_mesos::master {
     },
     force_provider => 'upstart',
   }
-
 }

@@ -5,7 +5,8 @@ mod 'acquia/puppet-aurora',
   :ref => '0.0.1'
 
 mod 'deric/puppet-mesos',
-  :git => 'git://github.com/deric/puppet-mesos.git'
+  :git => 'git://github.com/deric/puppet-mesos.git',
+  :ref => 'v0.6.3'
 
 mod 'garethr/garethr-docker',
   :git => 'git@github.com:garethr/garethr-docker.git'

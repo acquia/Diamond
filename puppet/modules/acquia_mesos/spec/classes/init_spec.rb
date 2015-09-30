@@ -11,6 +11,10 @@ describe 'acquia_mesos', :type => :class do
     }
   }
 
+  let(:params) {
+    { mesos_base_dir: '/mnt' }
+  }
+
   it { should compile }
 
   context 'creates all necessary directories' do
@@ -27,6 +31,7 @@ describe 'acquia_mesos', :type => :class do
       {
         :mesos_repo => repo,
         :mesos_version => version,
+        :mesos_base_dir => '/mnt',
       }
     }
 
@@ -64,13 +69,13 @@ describe 'acquia_mesos', :type => :class do
           'group'   => 'root',
           'ensure'  => 'present',
         }
-      ).with_content(%r{\/var\/log\/mesos\/\*\.log})
+      ).with_content(%r{#{params[:mesos_base_dir]}\/log\/mesos\/\*\.log})
     }
 
     it {
       should contain_logrotate__rule('mesos').with(
         {
-          'path'      => '/var/log/mesos/*.log',
+          'path'      => "#{params[:mesos_base_dir]}/log/mesos/*.log",
           'rotate'    => '7',
           'size'      => '250M',
           'missingok' => true,
