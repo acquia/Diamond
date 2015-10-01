@@ -1,6 +1,8 @@
 classes:
   - roles::mesos
 
+acquia_mesos::mesos_base_dir: '/mnt'
+
 aurora::version: '0.9.0'
 aurora::configure_repo: false
 aurora::manage_package: true

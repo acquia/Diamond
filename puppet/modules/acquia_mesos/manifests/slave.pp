@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::slave {
+class acquia_mesos::slave (
+  $mesos_lib_dir = '/var/lib/mesos',
+) {
 
   class {'::mesos::slave':
     enable         => true,
     port           => 5051,
-    work_dir       => '/mnt/lib/mesos',
+    work_dir       => $mesos_lib_dir,
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {
-      'log_dir'                       => '/mnt/log/mesos/',
       'containerizers'                => 'docker,mesos',
       'docker_sandbox_directory'      => '/mnt/mesos/sandbox',
       # 'egress_rate_limit_per_container' => '37500KB', # @todo: enable when compiled --with-network-isolator

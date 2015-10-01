@@ -21,8 +21,8 @@ GIT
 
 GIT
   remote: git://github.com/deric/puppet-mesos.git
-  ref: master
-  sha: 421b46894f2aabbf7166a03025c0f92b81a284f2
+  ref: v0.6.3
+  sha: 8c4fc1aba6924d58f5a52ab8a3d0589f797854a5
   specs:
     deric-puppet-mesos (0.6.3)
       puppetlabs-apt (>= 2.1.0)

@@ -9,6 +9,13 @@ describe 'acquia_mesos::master', :type => :class do
     }
   }
 
+  let(:params) {
+    {
+      mesos_lib_dir: '/mnt/lib/mesos',
+      mesos_log_dir: '/mnt/log/mesos',
+    }
+  }
+
   context 'configures a mesos master' do
     it {
       should contain_class('mesos::master').with_work_dir('/mnt/lib/mesos')
@@ -33,7 +40,6 @@ describe 'acquia_mesos::master', :type => :class do
       it {
         should contain_mesos__property('external_log_file').with_value('/mnt/log/mesos/mesos-master.INFO')
         should contain_mesos__property('log_auto_initialize').with_value(true)
-        should contain_mesos__property('log_dir').with_value('/mnt/log/mesos/')
         should contain_mesos__property('quorum').with_value(mesos_quorum)
         should contain_mesos__property('registry').with_value('replicated_log')
         should contain_mesos__property('registry_store_timeout').with_value('10secs')
