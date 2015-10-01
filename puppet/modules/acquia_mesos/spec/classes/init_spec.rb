@@ -43,6 +43,8 @@ describe 'acquia_mesos', :type => :class do
         .with_repos('main')
         .with_key('81026D0004C44CF7EF55ADF8DF7D54CBE56151BF')
     end
+
+    it { should contain_package('libcurl4-nss-dev').with({ :ensure => 'latest' }) }
   end
 
   context 'includes mesos-slave' do
