@@ -61,6 +61,12 @@ class acquia_mesos (
     require        => Apt::Source['mesosphere'],
   }
 
+  # TODO this needs to be removed once https://github.com/mesosphere/mesos-deb-packaging/pull/48
+  # is merged or we switch to building Mesos ourselves
+  package { 'libcurl4-nss-dev':
+    ensure => latest,
+  }
+
   # NOTE: This is a giant hack around the Apt and Mesos classes not playing
   # well together. Apt::Source should force the Mesos package install to wait
   # on apt-get update. This doesn't seem to be the case in 2.1.0 of the Apt
