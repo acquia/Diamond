@@ -1,87 +1,123 @@
-# Nemesis Package Manager
+# Nemesis-Ops
 [![Build Status](https://magnum.travis-ci.com/acquia/nemesis-puppet.svg?token=fuZxkY8h1TVDnxYTXZSB&branch=master)](https://magnum.travis-ci.com/acquia/nemesis-puppet)
-APT Packages manager and Puppet manifests used with Nemesis
 
+The `nemesis-ops` project (formerly known as `nemesis-puppet`) manages
+Debian packages, creates Puppet manifests, and builds AMIs for
+Nemesis-launched infrastructure.
+
+Nemesis-Ops sits in the middle of a typical Nemesis workflow:
+
+* `nemesis bootstrap` --- creates a *Nemesis repo*, stored in S3,
+  which will be used to store packages and manifests for the rest of
+  your Nemesis stacks.
+
+* The Nemesis-Ops build scripts (in `packages/build_scripts`) build
+  custom `deb` packages for your Nemesis stacks.
+
+* `nemesis-ops package` --- uses [Aptly](http://www.aptly.info/) to
+  upload the `deb` packages to your Nemesis repo, where `apt-get` can
+  find them later.
+
+* `nemesis-ops puppet build` --- assembles the `nemesis-puppet`
+  package, a custom Puppet manifest for configuring your Nemesis
+  stacks.
+
+* `nemesis launch` --- launches CloudFormation stacks that configure
+  themselves with the `nemesis-puppet` package (via EC2's `userdata`
+  and `cloud-init`).
+
+* `nemesis ami` --- bakes pre-configured AMIs.
+
+For more detailed walkthroughs see the
+[Nemesis](https://github.com/acquia/nemesis) documentation.
 
 ## Dependencies
-Dependencies needed to be installed and configured before working with the
-Nemesis Package Manager:
 
-  * Install dependencies
-    - Common Dependencies: aptly gnu-tar gpg
-      * Mac: brew install aptly gnu-tar gpg
+Install and configure these tools before using `nemesis-ops`:
 
-    - Install Virtualbox
-      * https://www.virtualbox.org/wiki/Downloads
-    - Install Vagrant
-      * https://www.vagrantup.com/downloads.html
-    - Install Packer
-      * Mac: brew tap homebrew/binary && brew install packer
+  - For managing `deb` packages: install `aptly`, `gnu-tar`, and `gpg`.
+    - On the Mac: `brew install aptly gnu-tar gpg`
 
-  * Setup GPG key for signing packages. If you generate a new key, you
-    need to use the `nemesis-ops --gpg-key` flag to use that generated key.
-    If no key is provided then the default key used is 23406CA7.
+  - Install the Nemesis gem, or if you are actively developing the
+    Nemesis gem, add its source to your `RUBYPATH`: `export
+    RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib`
 
+  - To build `deb` packages, install Virtualbox and Vagrant.
+    - [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
+    - [Vagrant](https://www.vagrantup.com/downloads.html)
+
+  - To build AMIs, install Packer.
+    - On the Mac: `brew tap homebrew/binary && brew install packer`
+    - Or, use
+      [the command line installer](https://packer.io/downloads.html).
+
+  - Install GPG (on the Mac: `brew install gnupg`). You may also want
+    to set up `gpg-agent` to avoid repeatedly typing your GPG password
+    when signing packages; see
+    [Appendix A](#appendixa:usinggpg-agent), below.
+
+  - Create a GPG key for signing packages, or obtain access to a
+    key. If you generate a new key, you need to include the
+    `nemesis-ops --gpg-key` flag to use that key. If you don't provide
+    a GPG key, the default key (`23406CA7`) will be used.
+
+    To generate a key:
     ````
     gpg --gen-key
     gpg --keyserver pgp.mit.edu --send-keys <KEY ID>
     ````
 
-    You may want to set up `gpg-agent` to avoid repeatedly typing your
-    GPG password when signing packages; see
-    [Appendix A](#appendixa:usinggpg-agent), below.
+  - Setup AWS credentials. AWS has [instructions for configuring them on your machine.](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 
-  * Setup AWS credentials and ssh keys
-  * Install the Nemesis gem or add to your RUBYPATH
-    *  export RUBYLIB=$RUBYLIB:/sandbox/nemesis/lib
-
+  - You need to set the `SECURE` environment variable to point to a
+    credentials directory, and the `EC2_ACCOUNT` environment variable
+    to the name of your account. (*Hint: if you're not using the
+    credentials-export feature of `nemesis-puppet`, you can set these to
+    fake values to get started -- mikeb.*) If you've set up Fields
+    before, you should be all set.
 
 ## Setup
 
-You need to ensure that the environment variables $SECURE and $EC2_ACCOUNT are
-set to valid values. If you have already set up Nemesis or Fields then you
-should not need to do anything.
-
-Go back to the nemesis-puppet folder
+Go back to the nemesis-puppet folder and run:
 
     bundle install
 
-
 ## Building the packages
-The package build system uses Vagrant and Docker as its main components for
-building all packages. Vagrant launches a base ubuntu host and Docker
-containers are used to isolate each script. The resulting package from each
-script is left in the ./dist directory.
 
-NOTE: Currently builds using local Docker on OS X do not work due to and issue
-with [boot2docker](https://github.com/docker/docker/issues/6396). A work around
-is to ssh to the boot2docker image and then run the container directly from there.
-Your home directory will be available as /Users within the container
+The Debian-package build system uses Vagrant and Docker to build all
+packages: Vagrant launches an Ubuntu host, and each package is built
+in a Docker container on that host. The build process leaves the
+packages in the `./dist` directory.
 
-    boot2docker ssh -A
-    docker run -it --rm -v /Users:/Users -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent ubuntu /bin/bash
-
-Ubuntu systems do not have this problem, so using vagrant is the current solution
-in place
+To build every package:
 
     vagrant up
-    vagrant ssh -c sudo -E su -c /vagrant/packages/build_scripts/build-all.sh
+    vagrant ssh -c 'sudo -E su -c /vagrant/packages/build_scripts/build-all.sh'
+
+(We intend to remove Vagrant from the build process eventually, but
+are blocked by
+[an issue with forwarding SSH keys into Docker on Mac OS X](https://github.com/docker/docker/issues/6396).)
 
 
-## Creating the apt mirror
+## Managing the apt mirror
+
+### Creating the mirror
 
     nemesis bootstrap ${stack_name}
     nemesis-ops package init ${stack_name}
-    nemesis-ops puppet build ${stack_name}
+    nemesis-ops puppet build ${stack_name}  # see the nemesis-puppet section, below
     nemesis-ops package upload ${stack_name}
 
+These steps create an `apt` repo in S3, which defaults to being
+private and is intended mainly for the private use of your Nemesis
+stacks. `nemesis-puppet` automatically configures your newly-launched
+instances to point to this repo.
 
-## Adding a specific package
+### Adding a specific package
 
     nemesis-ops package add ${stack_name} path/to/*.deb
 
-
-## Removing a specific package
+### Removing a specific package
 
     nemesis-ops package remove ${stack_name} path/to/*.deb
 
@@ -90,19 +126,53 @@ in place
 
     nemesis-ops puppet build ${stack_name}
 
+This creates a `deb` package named `nemesis-puppet` containing the
+Puppet configuration for all the stacks supported by Nemesis. This
+package then gets uploaded to your Nemesis repo along with the rest of
+your private `deb` packages.
+
+As an instance gets launched by Nemesis:
+
+1. Its AWS userdata script directs the instance to run `cloud-init`.
+
+2. `cloud-init` contacts the Nemesis repo in S3 and installs `puppet`
+   and `nemesis-puppet`.
+
+3. `cloud-init` calls `puppet apply`, which determines what sort of
+   instance it's running on (using the instance's `server_type` tag),
+   uses Facter and Heira to look up configuration for that instance,
+   and runs Puppet to configure the instance.
+
+If you've ever configured a Puppet Master, you'll probably be pleased
+to know that Nemesis doesn't use one.
+
+Consult the `docs` directory for more information on building and
+versioning `nemesis-puppet`.
+
+## Editing Nemesis Puppet manifests
+
+The manifests used for configuring every Nemesis-launched instance
+live in the `/puppet` subdirectory of this project.
 
 ## Building an AMI
-Run the following commands to generate an AMI in the region specified above.
-Passing in a list of regions stores the AMI in the first region in the list and
-copies it to the other regions once the build is complete.
+
+By default, Nemesis-launched instances are launched from AWS base
+AMIs, which are then configured in-place at launch time from
+`nemesis-puppet.deb`. But you can also run `nemesis-puppet` to
+configure an AMI which can be launched again and again.
+
+Run the following commands to generate an AMI in a specified region.
+Passing in a list of regions stores the AMI in the first region in the
+list and copies it to the other regions once the build is complete.
 
     nemesis-ops ami build ${stack_name} \
       --tag <tag> \
       --regions=<list of regions> \
       --ami <existing ami id>
 
-To just generate the ami template output run the following, note: if the file
-path in not passed in then the template will just be printed to stdout
+To just generate the ami template output run the following. (_Note: if
+the file path in not passed in then the template will just be printed
+to stdout._)
 
     nemesis-ops ami gen \
       --tag <tag> \
