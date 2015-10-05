@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class profiles::jenkins {
-  contain profiles::java
-  include ::acquia_jenkins
-  include ::acquia_registry
-  contain ::docker
+class acquia_registry {
 
-  Class['::docker'] -> Class['::acquia_jenkins']
+  # In this context clients are consumers of the registry
+  if $server_type == 'docker-registry' {
+    contain acquia_registry::server
+  } else {
+    contain acquia_registry::client
+  }
 }

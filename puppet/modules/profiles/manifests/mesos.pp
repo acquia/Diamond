@@ -15,6 +15,7 @@
 class profiles::mesos {
   contain profiles::java
   include ::acquia_mesos
+  include ::acquia_registry
   include aurora::params
 
   # This gets around the fact that you can't merge data using
