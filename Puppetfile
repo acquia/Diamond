@@ -8,8 +8,9 @@ mod 'deric/puppet-mesos',
   :git => 'git://github.com/deric/puppet-mesos.git',
   :ref => 'v0.6.3'
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git'
+mod 'kasisnu/garethr-docker',
+  :git => 'git@github.com:kasisnu/garethr-docker.git',
+  :ref => 'registry_login_as_user'
 
 mod 'puppet-community/puppet-unattended_upgrades',
   :git => 'git://github.com/puppet-community/puppet-unattended_upgrades.git',

@@ -100,11 +100,11 @@ GIT
       puppetlabs-stdlib (>= 4.0.0)
 
 GIT
-  remote: git@github.com:garethr/garethr-docker.git
-  ref: master
-  sha: 32b6e4f669ef3f6d546f4e8216f06341b92d912d
+  remote: git@github.com:kasisnu/garethr-docker.git
+  ref: registry_login_as_user
+  sha: aed543aacfb7044d056a9bb1c5e34b1b18ad86ec
   specs:
-    garethr-garethr-docker (4.1.0)
+    kasisnu-garethr-docker (4.1.1)
       puppetlabs-apt (<= 3.0.0, >= 1.1.0)
       puppetlabs-stdlib (>= 4.1.0)
       stahnma-epel (>= 0.0.6)
@@ -132,7 +132,7 @@ GIT
 DEPENDENCIES
   acquia-puppet-aurora (>= 0)
   deric-puppet-mesos (>= 0)
-  garethr-garethr-docker (>= 0)
+  kasisnu-garethr-docker (>= 0)
   puppet-community-puppet-unattended_upgrades (>= 0)
   puppet-sysctl (>= 0)
   puppetlabs-apache (>= 0)

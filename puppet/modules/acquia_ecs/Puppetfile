@@ -15,8 +15,9 @@ forge 'https://forgeapi.puppetlabs.com'
 mod 'puppetlabs/stdlib', '>= 4.5.1'
 mod 'puppetlabs/apt', '>= 2.1.1'
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git'
+mod 'kasisnu/garethr-docker',
+  :git => 'git@github.com:kasisnu/garethr-docker.git',
+  :ref => 'registry_login_as_user'
 
 mod 'puppet-sysctl',
   :git => 'https://github.com/thias/puppet-sysctl'
