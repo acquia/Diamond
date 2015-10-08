@@ -12,6 +12,5 @@
 
 forge 'https://forgeapi.puppetlabs.com'
 
-mod 'kasisnu/garethr-docker',
-  :git => 'git@github.com:kasisnu/garethr-docker.git',
-  :ref => 'registry_login_as_user'
+mod 'garethr/garethr-docker',
+  :git => 'git@github.com:garethr/garethr-docker.git'
