@@ -102,7 +102,7 @@ GIT
 GIT
   remote: git@github.com:kasisnu/garethr-docker.git
   ref: registry_login_as_user
-  sha: aed543aacfb7044d056a9bb1c5e34b1b18ad86ec
+  sha: 339ce8975f96ceb19c416b5e29d3b328346a7720
   specs:
     kasisnu-garethr-docker (4.1.1)
       puppetlabs-apt (<= 3.0.0, >= 1.1.0)
