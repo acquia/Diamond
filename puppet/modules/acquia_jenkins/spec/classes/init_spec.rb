@@ -99,6 +99,26 @@ describe 'acquia_jenkins', :type => :module do
       'owner' => 'jenkins',
       'group' => 'jenkins'
     )
+
+    should contain_file('/opt/grid-ci').with(
+      'ensure' => 'directory',
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+
+    should contain_file('/var/lib/jenkins/jobs').with(
+      'ensure' => 'symlink',
+      'owner' => 'jenkins',
+      'group' => 'jenkins'
+    )
+  }
+
+  it {
+    should contain_vcsrepo('/opt/grid-ci').with(
+      'ensure'   => 'present',
+      'provider' => 'git',
+      'source'   => 'git@github.com:kasisnu/grid-ci'
+    )
   }
 
   it {
@@ -109,25 +129,44 @@ describe 'acquia_jenkins', :type => :module do
   it { should contain_jenkins__user('admin') }
 
   it {
+    should contain_jenkins__plugin('authentication-tokens')
     should contain_jenkins__plugin('build-token-root')
     should contain_jenkins__plugin('ci-skip')
     should contain_jenkins__plugin('credentials')
     should contain_jenkins__plugin('credentials-binding')
     should contain_jenkins__plugin('docker-build-publish')
     should contain_jenkins__plugin('docker-commons')
+    should contain_jenkins__plugin('durable-task')
     should contain_jenkins__plugin('ec2')
     should contain_jenkins__plugin('git')
     should contain_jenkins__plugin('git-client')
-    should contain_jenkins__plugin('greenballs')
+    should contain_jenkins__plugin('git-server')
     should contain_jenkins__plugin('google-login')
+    should contain_jenkins__plugin('greenballs')
+    should contain_jenkins__plugin('groovy')
     should contain_jenkins__plugin('mailer')
+    should contain_jenkins__plugin('mapdb-api')
     should contain_jenkins__plugin('matrix-project')
+    should contain_jenkins__plugin('node-iterator-api')
     should contain_jenkins__plugin('parameterized-trigger')
+    should contain_jenkins__plugin('plain-credentials')
     should contain_jenkins__plugin('promoted-builds')
     should contain_jenkins__plugin('rebuild')
+    should contain_jenkins__plugin('ruby-runtime')
     should contain_jenkins__plugin('scm-api')
+    should contain_jenkins__plugin('script-security')
     should contain_jenkins__plugin('ssh-agent')
     should contain_jenkins__plugin('ssh-credentials')
     should contain_jenkins__plugin('token-macro')
+    should contain_jenkins__plugin('workflow-api')
+    should contain_jenkins__plugin('workflow-basic-steps')
+    should contain_jenkins__plugin('workflow-cps')
+    should contain_jenkins__plugin('workflow-cps-global-lib')
+    should contain_jenkins__plugin('workflow-durable-task-step')
+    should contain_jenkins__plugin('workflow-job')
+    should contain_jenkins__plugin('workflow-scm-step')
+    should contain_jenkins__plugin('workflow-step-api')
+    should contain_jenkins__plugin('workflow-support')
+    should contain_jenkins__plugin('workflow-aggregator')
   }
 end

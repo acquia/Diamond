@@ -51,3 +51,5 @@ mod 'stankevich/python',
 
 mod 'puppet-sysctl',
   :git => 'https://github.com/thias/puppet-sysctl'
+
+mod 'puppetlabs/vcsrepo', '= 1.3.1'

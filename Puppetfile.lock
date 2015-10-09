@@ -8,6 +8,7 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-java (1.4.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
+    puppetlabs-vcsrepo (1.3.1)
     stahnma-epel (1.0.2)
 
 GIT
@@ -141,6 +142,7 @@ DEPENDENCIES
   puppetlabs-puppetlabs-limits (>= 0)
   puppetlabs-puppetlabs-lvm (>= 0)
   puppetlabs-stdlib (>= 0)
+  puppetlabs-vcsrepo (= 1.3.1)
   rodjek-logrotate (>= 0)
   rtyler-jenkins (>= 0)
   stankevich-python (>= 0)

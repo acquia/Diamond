@@ -142,91 +142,106 @@ class acquia_jenkins (
     cli             => true,
     cli_ssh_keyfile => '/var/lib/jenkins/.ssh/jenkins_cli',
     install_java    => false,
+    lts             => true,
   }
 
   class { 'jenkins::cli_helper':
     ssh_keyfile => '/var/lib/jenkins/.ssh/jenkins_cli',
   }
 
+  $jenkins_plugins = [
+                      'build-token-root',
+                      'credentials',
+                      'plain-credentials',
+                      'credentials-binding',
+                      'docker-build-publish',
+                      'authentication-tokens',
+                      'docker-commons',
+                      'node-iterator-api',
+                      'ec2',
+                      'git',
+                      'git-client',
+                      'git-server',
+                      'google-login',
+                      'mailer',
+                      'matrix-project',
+                      'parameterized-trigger',
+                      'promoted-builds',
+                      'rebuild',
+                      'scm-api',
+                      'ssh-agent',
+                      'ssh-credentials',
+                      'token-macro',
+                      'groovy',
+                      'mapdb-api',
+                      'workflow-cps-global-lib',
+                      'workflow-durable-task-step',
+                      'workflow-step-api',
+                      'workflow-cps',
+                      'workflow-scm-step',
+                      'workflow-job',
+                      'workflow-basic-steps',
+                      'workflow-api',
+                      'durable-task',
+                      'workflow-support',
+                      'script-security',
+                      'ci-skip',
+                      'ruby-runtime',
+                      'greenballs',
+                      ]
+
   # Install plugins
-  jenkins::plugin { 'build-token-root':
+  jenkins::plugin { $jenkins_plugins:
     username => "${plugin_username}"
   }
 
-  jenkins::plugin { 'ci-skip':
-    username => "${plugin_username}"
+  jenkins::plugin { 'workflow-aggregator':
+    username => "${plugin_username}",
+    require  => [
+                  Jenkins::Plugin['workflow-cps-global-lib'],
+                  Jenkins::Plugin['workflow-durable-task-step'],
+                  Jenkins::Plugin['workflow-step-api'],
+                  Jenkins::Plugin['workflow-scm-step'],
+                  Jenkins::Plugin['workflow-job'],
+                  Jenkins::Plugin['workflow-basic-steps'],
+                  Jenkins::Plugin['workflow-api'],
+                  Jenkins::Plugin['durable-task'],
+                  Jenkins::Plugin['workflow-support']
+                ],
   }
 
-  jenkins::plugin { 'credentials':
-    username => "${plugin_username}"
+  file { '/opt/grid-ci':
+    ensure  => 'directory',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require => User['jenkins'],
   }
 
-  jenkins::plugin { 'credentials-binding':
-    username => "${plugin_username}"
+  vcsrepo { '/opt/grid-ci':
+    ensure   => present,
+    provider => git,
+    source   => 'git@github.com:kasisnu/grid-ci',
+    revision => 'baseimage',
+    user     => 'jenkins',
+    require  => [
+                  File['/var/lib/jenkins/.ssh/github.pub'],
+                  File['/opt/grid-ci'],
+                  User['jenkins'],
+                ],
   }
 
-  jenkins::plugin { 'docker-build-publish':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'docker-commons':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'ec2':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'git':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'git-client':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'greenballs':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'google-login':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'mailer':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'matrix-project':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'parameterized-trigger':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'promoted-builds':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'rebuild':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'scm-api':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'ssh-agent':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'ssh-credentials':
-    username => "${plugin_username}"
-  }
-
-  jenkins::plugin { 'token-macro':
-    username => "${plugin_username}"
+  file { '/var/lib/jenkins/jobs':
+    ensure  => symlink,
+    target  => '/opt/grid-ci/jobs',
+    force   => true,
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require =>  [
+                  Vcsrepo['/opt/grid-ci'],
+                  User['jenkins'],
+                ],
   }
 
   # After installing the admin user, we need to restart the service in order
@@ -241,6 +256,7 @@ class acquia_jenkins (
     require => [
       Service['jenkins'],
       File['/var/lib/jenkins'],
+      File['/var/lib/jenkins/jobs'],
       Exec['create-jenkins-cli-key'],
     ],
     unless  => "test -f ${acquia_jenkins_installed}",
