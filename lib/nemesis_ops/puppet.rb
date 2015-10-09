@@ -43,8 +43,13 @@ module NemesisOps::Puppet
     Nemesis::Log.info(`librarian-puppet install`)
 
     Dir.mktmpdir do |dir|
-      # Copy over the puppet subdirectory
+      # Copy over third party and puppet modules
       FileUtils.cp_r(NemesisOps::BASE_PATH.join('puppet'), dir)
+      source = Pathname.new(dir) + 'puppet' + 'third_party'
+      files = Dir.glob(source + '*')
+      dest = dir + '/puppet' + '/modules'
+      FileUtils.mv(files, dest, verbose: true, force: true)
+      FileUtils.rm_r(source)
 
       # Create a unique gpg key for this run
       eyaml_gpg = Pathname.new(dir) + 'puppet/.gnupg'
