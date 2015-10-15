@@ -5,6 +5,7 @@ acquia_mesos::mesos_base_dir: '/mnt'
 acquia_mesos::mesos_dns: false
 acquia_mesos::master::api: false
 acquia_mesos::master::watcher: false
+acquia_mesos::master::install_baragon: false
 
 aurora::version: '0.10.0-1.el7.centos.aurora'
 aurora::configure_repo: false
@@ -21,5 +22,6 @@ aurora::options:
     - "--announcer-ensemble %{::aurora_zookeeper_connection_string}"
     - "--announcer-serverset-path /aurora/services"
     - "--log_to_std"
+    - "--preserve_env"
   extra_scheduler_args:
     - '-allow_docker_parameters=true'

@@ -1,0 +1,14 @@
+FROM acquia/baragonagentbase-aurora:latest
+MAINTAINER Acquia <engineering@acquia.com>
+
+
+COPY ./BaragonAgentService.jar /etc/baragon/BaragonAgentService.jar
+
+COPY ./resources/supervisor /etc/supervisor
+COPY ./resources/baragon-start-agent.sh /etc/baragon/start.sh
+COPY ./resources/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./resources/nginx/start.sh /etc/nginx/start.sh
+COPY ./resources/nginx /etc/nginx
+COPY ./resources/baragon.yaml /etc/baragon/baragon.yaml
+
+CMD /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf
