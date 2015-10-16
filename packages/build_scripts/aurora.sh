@@ -24,7 +24,12 @@
 # @todo: Replace this with the docker build process once it's merged upstream
 
 set -ex
-GRADLE_VERSION=2.6
+# The following bash sets default values for incoming env vars;
+#  see http://stackoverflow.com/a/28085062
+: ${GRADLE_VERSION:=2.6}
+: ${GRADLE_PACKAGING_GIT_TAG:=acquia-20151015a}
+: ${AURORA_PACKAGING_GIT_TAG:=acquia-20150909a}
+: ${AURORA_GIT_TAG:=aurora-1095}
 
 # Install Java 8
 apt-get update && apt-get install -y \
@@ -43,7 +48,14 @@ add-apt-repository ppa:openjdk-r/ppa -y
 apt-get update && apt-get install -y openjdk-8-jdk
 
 # Install gradle
-git clone git@github.com:benley/gradle-packaging.git
+rm -rf gradle-packaging
+if [ -z $GITHUB_OAUTH_TOKEN ]; then
+    git clone -b ${GRADLE_PACKAGING_GIT_TAG} git@github.com:acquia/gradle-packaging.git
+else
+    mkdir -p gradle-packaging
+    # See http://stackoverflow.com/a/23796159
+    curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -L https://api.github.com/repos/acquia/gradle-packaging/tarball/${GRADLE_PACKAGING_GIT_TAG} | tar xz --strip-components 1 -C gradle-packaging
+fi
 cd gradle-packaging
 ./gradle-mkdeb.sh ${GRADLE_VERSION}
 dpkg -i gradle*.deb
@@ -53,9 +65,23 @@ cd ..
 curl -O http://people.apache.org/~jfarrell/thrift/0.9.1/contrib/deb/ubuntu/12.04/thrift-compiler_0.9.1_amd64.deb
 dpkg -i thrift-compiler_0.9.1_amd64.deb
 
-git clone https://git-wip-us.apache.org/repos/asf/aurora-packaging.git
+rm -rf aurora-packaging
+if [ -z $GITHUB_OAUTH_TOKEN ]; then
+    git clone -b ${AURORA_PACKAGING_GIT_TAG} git@github.com:acquia/aurora-packaging.git
+else
+    mkdir -p aurora-packaging
+    curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -L https://api.github.com/repos/acquia/aurora-packaging/tarball/${AURORA_PACKAGING_GIT_TAG} | tar xz --strip-components 1 -C aurora-packaging
+fi
+
 cp aurora-packaging/builder/deb/ubuntu-trusty/pants.ini /
-git clone git@github.com:acquia/aurora.git -b aurora-1095
+
+rm -rf aurora
+if [ -z $GITHUB_OAUTH_TOKEN ]; then
+    git clone -b ${AURORA_GIT_TAG} git@github.com:acquia/aurora.git
+else
+    mkdir -p aurora
+    curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -L https://api.github.com/repos/acquia/aurora/tarball/${AURORA_GIT_TAG} | tar xz --strip-components 1 -C aurora
+fi
 cd aurora
 ln -s ../aurora-packaging/specs/debian debian
 dpkg-buildpackage -uc -b -tc
