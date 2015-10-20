@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,22 +13,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-class acquia_mesos::aurora(
-  $cluster_name = $::mesos_cluster_name,
-  $zookeeper_servers = $::aurora_zookeeper_connection_string,
-  $scheduler_zk_path = '/aurora/scheduler',
-  $slave_root = '/mnt/lib/mesos',
-  $slave_run_directory = 'latest',
-  $auth_mechanism = 'UNAUTHENTICATED',
-){
-  file { '/etc/aurora':
-    ensure => directory,
-  }
+# Download and build the Acquia grid-api container. Assumes Acquia Github keys
+# are available on the system performing the build.
 
-  file { '/etc/aurora/clusters.json':
-    ensure  => present,
-    content => template('acquia_mesos/clusters.json.erb'),
-    require => File['/etc/aurora'],
-  }
-}
+: ${GIT_TAG:=master}
+
+if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
+ echo "Error: GITHUB_OAUTH_TOKEN environment variable not set"
+ exit 1
+fi
+
+mkdir -p grid-api
+curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/acquia/grid-api/tarball/${GIT_TAG} | tar -xz --strip 1 -C grid-api
+
+cd grid-api
+make docker-release

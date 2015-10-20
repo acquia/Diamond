@@ -24,8 +24,9 @@ module NemesisOps
   AWS_TOOLS_VERSION = '1.5.6'
 
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
-  PKG_DIR = BASE_PATH.join('packages')
-  DIST_DIR = BASE_PATH.join('dist')
+  BUILD_DIR = BASE_PATH.join('build')
+  PKG_DIR = BUILD_DIR.join('packages')
+  DIST_DIR = BUILD_DIR.join('dist')
   PKG_CACHE_DIR = DIST_DIR.join('cache')
   PKG_REPO_DIR = DIST_DIR.join('repo')
 

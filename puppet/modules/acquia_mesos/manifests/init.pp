@@ -80,10 +80,10 @@ class acquia_mesos (
     }
     contain acquia_mesos::master
   } else {
-    class { 'acquia_mesos::slave':
+    class { 'acquia_mesos::agent':
       mesos_lib_dir => $mesos_lib_dir
     }
-    contain acquia_mesos::slave
+    contain acquia_mesos::agent
   }
 
   logrotate::rule { 'mesos':

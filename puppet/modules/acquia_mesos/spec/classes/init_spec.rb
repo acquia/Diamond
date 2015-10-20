@@ -47,9 +47,9 @@ describe 'acquia_mesos', :type => :class do
     it { should contain_package('libcurl4-nss-dev').with({ :ensure => 'latest' }) }
   end
 
-  context 'includes mesos-slave' do
+  context 'includes mesos-agent' do
     it {
-      should contain_class('acquia_mesos::slave')
+      should contain_class('acquia_mesos::agent')
     }
   end
 

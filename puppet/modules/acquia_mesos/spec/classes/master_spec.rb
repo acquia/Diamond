@@ -51,4 +51,10 @@ describe 'acquia_mesos::master', :type => :class do
       }
     end
   end
+
+  context 'includes grid-api' do
+    it {
+      should contain_class('acquia_mesos::master_api')
+    }
+  end
 end

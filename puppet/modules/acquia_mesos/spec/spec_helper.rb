@@ -2,6 +2,10 @@ require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet'
 
 RSpec.configure do |c|
+  c.color = true
+  c.full_backtrace = true
+  c.raise_errors_for_deprecations!
+
   c.before :each do
     # Ensure that we don't accidentally cache facts and environment between test cases.
     Facter::Util::Loader.any_instance.stubs(:load_all)

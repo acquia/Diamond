@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'acquia_mesos::slave', :type => :class do
+describe 'acquia_mesos::agent', :type => :class do
   let(:facts) {
     {
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
@@ -15,7 +15,7 @@ describe 'acquia_mesos::slave', :type => :class do
 
   it { should compile.with_all_deps }
 
-  context 'configures a mesos slave' do
+  context 'configures a mesos agent' do
     it {
       should contain_class('mesos::slave').with_work_dir('/mnt/lib/mesos')
     }

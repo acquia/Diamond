@@ -15,6 +15,9 @@ forge 'https://forgeapi.puppetlabs.com'
 mod 'puppetlabs/stdlib', '>= 4.5.1'
 mod 'puppetlabs/apt', '>= 2.1.1'
 
+mod 'garethr/garethr-docker',
+  :git => 'git@github.com:garethr/garethr-docker.git'
+
 mod 'rodjek/logrotate',
   :git => 'git@github.com:rodjek/puppet-logrotate.git',
   :ref => '1.1.1'
@@ -22,4 +25,3 @@ mod 'rodjek/logrotate',
 mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos.git',
   :ref => 'v0.6.3'
-

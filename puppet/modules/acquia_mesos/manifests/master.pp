@@ -15,8 +15,12 @@
 class acquia_mesos::master (
   $mesos_log_dir = '/var/log/mesos',
   $mesos_lib_dir = '/var/lib/mesos',
+  $master_api = true,
 ) {
   include acquia_mesos::aurora
+  if $master_api {
+    include acquia_mesos::master_api
+  }
 
   class {'::mesos::master':
     enable         => true,

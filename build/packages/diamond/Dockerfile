@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # Copyright 2014 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-#
-# Download the latest version of Sumologic
-#
-set -ex
 
-NAME="sumocollector"
+FROM acquia:deb_packaging
 
-BASEDIR=/tmp/${NAME}
-rm -rf ${BASEDIR}
-mkdir -p ${BASEDIR}
+ADD resources/package.sh $HOME/package.sh
+run chmod +x $HOME/package.sh
 
-
-cd ${BASEDIR}
-curl -sSL -OJ https://collectors.sumologic.com/rest/download/deb/64
-
-# If we're in a VM, let's copy the deb file over
-if [ -d "/dist/" ]; then
-  mv -f ${BASEDIR}/${NAME}* /dist/
-fi
-
-rm -rf ${BASEDIR}
+WORKDIR $HOME
+CMD ./package.sh

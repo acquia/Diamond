@@ -34,6 +34,10 @@ Dir.glob(File.join(SPEC_ROOT, 'helpers', '/**/*_helper.rb')).each { |f| require 
 RSpec.configure do |config|
   config.include GpgHelper
 
+  config.color = true
+  config.full_backtrace = true
+  config.raise_errors_for_deprecations!
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

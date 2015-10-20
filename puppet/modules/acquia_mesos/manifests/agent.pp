@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::slave (
+class acquia_mesos::agent(
   $mesos_lib_dir = '/var/lib/mesos',
 ) {
 

@@ -21,6 +21,10 @@ RSpec.configure do |c|
   c.module_path = File.join(fixture_path, 'modules')
   c.manifest_dir = File.join(fixture_path, 'manifests')
 
+  c.color = true
+  c.full_backtrace = true
+  c.raise_errors_for_deprecations!
+
   c.before do
     # avoid 'Only root can execute commands as other users'
     Puppet.features.stubs(:root? => true)

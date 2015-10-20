@@ -17,17 +17,18 @@ require 'aws-sdk'
 
 ec2 = AWS::EC2.new
 if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'mesos'
-
   cf = AWS::CloudFormation.new
   stack = cf.stack_resource(Facter.value('ec2_instance_id'))
   stack_name = stack.stack_name
+  params = stack.stack.parameters
 
-  # Return the name of the nemsos cluster
+  # Return the name of the mesos cluster
   Facter.add(:mesos_cluster_name) do
     setcode do
-      stack_name
+      params['MesosClusterName'] || stack_name
     end
   end
+
   # Fact to check and see if this node is a Mesos master or not
   Facter.add(:mesos_master) do
     setcode do
@@ -39,8 +40,14 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'm
   # Returns a list of mesos masters
   Facter.add(:mesos_masters) do
     setcode do
+      if params['MesosMasterStack']
+        master_cluster = params['MesosMasterStack']
+        masters_autoscaling_group_id = cf.stacks[master_cluster].resources['MesosMasterAutoScalingGroup'].physical_resource_id
+      else
+        masters_autoscaling_group_id = cf.stacks[stack_name].resources['MesosMasterAutoScalingGroup'].physical_resource_id
+      end
+
       masters = []
-      masters_autoscaling_group_id = cf.stacks[stack_name].resources['MesosMasterAutoScalingGroup'].physical_resource_id
       autoscaling_group = AWS::AutoScaling::Group.new(masters_autoscaling_group_id)
       autoscaling_group.auto_scaling_instances.each { |i| masters << ec2.instances[i.id].ip_address }
       masters.join(',')
@@ -50,7 +57,13 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'm
   # Mesos Master quorum value
   Facter.add(:mesos_quorum) do
     setcode do
-      masters_autoscaling_group_id = cf.stacks[stack_name].resources['MesosMasterAutoScalingGroup'].physical_resource_id
+      if params['MesosMasterStack']
+        master_cluster = params['MesosMasterStack']
+        masters_autoscaling_group_id = cf.stacks[master_cluster].resources['MesosMasterAutoScalingGroup'].physical_resource_id
+      else
+        masters_autoscaling_group_id = cf.stacks[stack_name].resources['MesosMasterAutoScalingGroup'].physical_resource_id
+      end
+
       autoscaling_group = AWS::AutoScaling::Group.new(masters_autoscaling_group_id)
       count = autoscaling_group.auto_scaling_instances.count
       count / 2 + 1
