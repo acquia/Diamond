@@ -44,8 +44,9 @@ Install and configure these tools before using `nemesis-ops`:
 
   - Setup AWS credentials. AWS has [instructions for configuring them on your machine.](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 
-  - Setup a [Github OAuth Token](https://github.com/settings/tokens) and make it available as the
-    `GITHUB_OAUTH_TOKEN` envrionment variable.
+  - Setup a [Github OAuth Token](https://github.com/settings/tokens) and make it available as
+    either the `GITHUB_OAUTH_TOKEN` envrionment variable or as global git config
+    `git config --global github.token YOUR_GITHUB_OAUTH_TOKEN`.
 
 ## Setup
 
