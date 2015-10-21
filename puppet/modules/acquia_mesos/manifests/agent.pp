@@ -14,7 +14,12 @@
 
 class acquia_mesos::agent(
   $mesos_lib_dir = '/var/lib/mesos',
+  $mesos_dns_version = 'latest',
 ) {
+
+  if $mesos_dns_version {
+    include acquia_mesos::mesos_dns_client
+  }
 
   class {'::mesos::slave':
     enable         => true,

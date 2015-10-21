@@ -15,7 +15,8 @@
 class acquia_mesos (
   $mesos_repo = 'mesosphere',
   $mesos_version = '0.23.0-1.0.ubuntu1404',
-  $mesos_base_dir = '/var'
+  $mesos_base_dir = '/var',
+  $mesos_dns_version = 'latest',
 ) {
   include apt
 
@@ -75,13 +76,15 @@ class acquia_mesos (
 
   if $mesos_master {
     class { 'acquia_mesos::master':
-      mesos_log_dir => $mesos_log_dir,
-      mesos_lib_dir => $mesos_lib_dir,
+      mesos_log_dir     => $mesos_log_dir,
+      mesos_lib_dir     => $mesos_lib_dir,
+      mesos_dns_version => $mesos_dns_version,
     }
     contain acquia_mesos::master
   } else {
     class { 'acquia_mesos::agent':
-      mesos_lib_dir => $mesos_lib_dir
+      mesos_lib_dir     => $mesos_lib_dir,
+      mesos_dns_version => $mesos_dns_version,
     }
     contain acquia_mesos::agent
   }

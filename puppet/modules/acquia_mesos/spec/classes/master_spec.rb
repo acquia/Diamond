@@ -6,6 +6,13 @@ describe 'acquia_mesos::master', :type => :class do
   let(:facts) {
     {
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
+      :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
+      :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
+      :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181',
+      :operatingsystem => 'Ubuntu',
+      :osfamily => 'Debian',
+      :lsbdistcodename => 'trusty',
+      :lsbdistid => 'Ubuntu',
     }
   }
 
@@ -34,10 +41,7 @@ describe 'acquia_mesos::master', :type => :class do
       let(:mesos_quorum) { 5 }
 
       let(:facts) {
-        {
-          :mesos_quorum => mesos_quorum,
-          :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
-        }
+        super().merge(:mesos_quorum => mesos_quorum)
       }
 
       it {
@@ -55,6 +59,12 @@ describe 'acquia_mesos::master', :type => :class do
   context 'includes grid-api' do
     it {
       should contain_class('acquia_mesos::master_api')
+    }
+  end
+
+  context 'includes mesos-dns' do
+    it {
+      should contain_class('acquia_mesos::mesos_dns')
     }
   end
 end

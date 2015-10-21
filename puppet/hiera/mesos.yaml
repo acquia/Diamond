@@ -2,6 +2,7 @@ classes:
   - roles::mesos
 
 acquia_mesos::mesos_base_dir: '/mnt'
+acquia_mesos::mesos_dns_version: v0.4.0
 acquia_mesos::master::master_api: false
 
 aurora::version: '0.9.0'

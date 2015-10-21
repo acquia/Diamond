@@ -14,6 +14,9 @@ describe 'acquia_mesos', :type => :class do
   let(:facts) {
     {
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
+      :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
+      :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
+      :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181',
       :operatingsystem => 'Ubuntu',
       :osfamily => 'Debian',
       :lsbdistcodename => 'trusty',

@@ -16,10 +16,17 @@ class acquia_mesos::master (
   $mesos_log_dir = '/var/log/mesos',
   $mesos_lib_dir = '/var/lib/mesos',
   $master_api = true,
+  $mesos_dns_version = 'latest'
 ) {
   include acquia_mesos::aurora
   if $master_api {
     include acquia_mesos::master_api
+  }
+
+  if $mesos_dns_version {
+    class { 'acquia_mesos::mesos_dns':
+      mesos_dns_version => $mesos_dns_version,
+    }
   }
 
   class {'::mesos::master':
