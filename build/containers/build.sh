@@ -17,11 +17,6 @@ for f in $(find . -name Dockerfile -maxdepth 3); do
   name=$dir
   tag="latest"
 
-  if [[ "${dir}" =~ "/" ]]; then
-  	name=$(echo "${dir}" | cut -d "/" -f 1)
-  	tag=$(echo "${dir}" | cut -d "/" -f 2)
-  fi
-
   echo "building: ${name}:${tag}"
   docker build -t "${name}:${tag}" $dir
 done

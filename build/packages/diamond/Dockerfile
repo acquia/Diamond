@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia:deb_packaging
+FROM acquia/deb_packaging
 
 ADD resources/package.sh $HOME/package.sh
 run chmod +x $HOME/package.sh
