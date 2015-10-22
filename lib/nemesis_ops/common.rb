@@ -124,20 +124,19 @@ module NemesisOps
       end
 
       bootstrap(stack)
-      dist_pkg_dir = NemesisOps::DIST_DIR.join('packages')
+      dist_packages = Dir.glob(NemesisOps::DIST_DIR.join('*.deb'))
       stack_cache_dir = NemesisOps::PKG_CACHE_DIR.join(stack)
       stack_repo_dir = NemesisOps::PKG_REPO_DIR.join(stack)
 
       # Copy the deb files in the dist package dir over to the stack_cache_dir
-      FileUtils.cp_r(Dir.glob(dist_pkg_dir.join('*')), stack_cache_dir)
+      FileUtils.cp_r(dist_packages, stack_cache_dir)
 
       # Get the contents of the existing repo
       get_repo(stack)
 
       # Build the repo w/ Aptly
-
       Dir.chdir(stack_repo_dir) do |d|
-        unless File.directory?('db') && File.directory?('pool')
+        unless File.directory?('db')
           aptly "repo create --distribution=#{NemesisOps::DEFAULT_OS} --architectures=amd64 nemesis-testing"
         end
         aptly "repo add --force-replace=true nemesis-testing #{stack_cache_dir}"

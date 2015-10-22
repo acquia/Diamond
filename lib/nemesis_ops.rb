@@ -26,7 +26,7 @@ module NemesisOps
   BASE_PATH = Pathname.new(File.dirname(File.dirname(File.absolute_path(__FILE__))))
   BUILD_DIR = BASE_PATH.join('build')
   PKG_DIR = BUILD_DIR.join('packages')
-  DIST_DIR = BUILD_DIR.join('dist')
+  DIST_DIR = BASE_PATH.join('dist')
   PKG_CACHE_DIR = DIST_DIR.join('cache')
   PKG_REPO_DIR = DIST_DIR.join('repo')
 

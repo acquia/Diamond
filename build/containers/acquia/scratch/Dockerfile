@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_registry {
-  # In this context clients are consumers of the registry
-  if $server_type == 'docker-registry' {
-    contain acquia_registry::server
-  } else {
-    contain acquia_registry::client
-  }
-}
+FROM scratch
+MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
+
+ADD ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+

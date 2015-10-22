@@ -20,7 +20,7 @@ tmp
 .vagrant
 
 # Project-specific
-build/dist/*
+dist/*
 *.tgz
 *.tar.gz
 Gemfile.lock
