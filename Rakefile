@@ -94,6 +94,6 @@ end
 desc 'Build all packages and docker images used by puppet'
 task :package do
   Dir.chdir('build') do
-    sh './build-all.sh'
+    sh './build.sh'
   end
 end
