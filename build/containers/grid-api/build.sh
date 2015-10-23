@@ -17,16 +17,37 @@
 
 # Download and build the Acquia grid-api container. Assumes Acquia Github keys
 # are available on the system performing the build.
+set -ex
 
 : ${GIT_TAG:=master}
+
+# Attempt to read the Github OAuth token from the global .gitconfig
+GITHUB_OAUTH_TOKEN=$(git config --global github.token) || true
 
 if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
  echo "Error: GITHUB_OAUTH_TOKEN environment variable not set"
  exit 1
+else
+  export GITHUB_OAUTH_TOKEN="${GITHUB_OAUTH_TOKEN}"
 fi
 
-mkdir -p grid-api
-curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/acquia/grid-api/tarball/${GIT_TAG} | tar -xz --strip 1 -C grid-api
+BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
+SRCDIR=${BASEDIR}/src
 
-cd grid-api
-make docker-release
+# Download the grid-api source
+mkdir -p ${SRCDIR}
+curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/acquia/grid-api/tarball/${GIT_TAG} | tar -xz --strip 1 -C ${SRCDIR}
+
+# Build the grid-api application
+cd ${SRCDIR}
+make release
+
+# Create the scratch container the grid-api application will run in
+cd ${BASEDIR}
+mv ${SRCDIR}/dist/grid-api ${BASEDIR}/
+docker build -t grid-api -f Dockerfile.release
+
+# Cleanup
+rm -rf ${SRCDIR}
+rm grid-api
+

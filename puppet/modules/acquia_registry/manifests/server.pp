@@ -13,7 +13,6 @@
 # limitations under the License.
 
 class acquia_registry::server {
-
   include acquia_registry::common
 
   file { "/etc/docker/certs.d/${registry_endpoint}/domain.key":

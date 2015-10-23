@@ -15,14 +15,15 @@
 class acquia_registry::client(
   $local_user = 'root'
 ) {
-
   include acquia_registry::common
 
-  docker::registry { $registry_endpoint:
-    username   => 'admin',
-    password   => "${registry_admin_password}",
-    email      => 'engineering@acquia.com',
-    local_user => $local_user,
-    require    => File["/etc/docker/certs.d/${registry_endpoint}/domain.crt"],
+  if $registry_endpoint {
+    docker::registry { $registry_endpoint:
+      username   => 'admin',
+      password   => "${registry_admin_password}",
+      email      => 'engineering@acquia.com',
+      local_user => $local_user,
+      require    => File["/etc/docker/certs.d/${registry_endpoint}/domain.crt"],
+    }
   }
 }
