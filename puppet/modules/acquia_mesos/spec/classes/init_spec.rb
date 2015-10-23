@@ -1,6 +1,16 @@
 require 'spec_helper'
 
 describe 'acquia_mesos', :type => :class do
+  # Allow the module to supply the right provider for packages
+  # See https://github.com/rodjek/rspec-puppet/issues/256
+  let(:pre_condition) {
+    '''
+    Package {
+      provider => \'apt\'
+    }
+    '''
+  }
+
   let(:facts) {
     {
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
