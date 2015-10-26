@@ -31,6 +31,12 @@ describe 'acquia_registry::server', :type => :class do
         .with_content(facts[:registry_ssl_key])
     }
 
+    it {
+      should contain_file("/etc/docker/certs.d/#{facts[:registry_endpoint]}/domain.cert")
+        .with_ensure('link')
+        .with_target("/etc/docker/certs.d/#{facts[:registry_endpoint]}/domain.crt")
+    }
+
     it { should contain_package('apache2-utils') }
 
     it { should contain_exec('create-htpasswd') }
