@@ -21,6 +21,12 @@ class acquia_registry::server {
     require => File["/etc/docker/certs.d/${registry_endpoint}"],
   }
 
+  file { "/etc/docker/certs.d/${registry_endpoint}/domain.cert":
+    ensure  => 'link',
+    target  => "/etc/docker/certs.d/${registry_endpoint}/domain.crt",
+    require => File["/etc/docker/certs.d/${registry_endpoint}/domain.crt"],
+  }
+
   package { 'apache2-utils':
     ensure => present
   }
@@ -35,11 +41,11 @@ class acquia_registry::server {
   }
 
   docker::run { 'registry':
-    image           => 'registry:2.1.1',
-    ports           => ['0.0.0.0:443:5000'],
-    use_name        => true,
-    volumes         => ["/etc/docker/certs.d/${registry_endpoint}:/certs"],
-    env             =>  [
+    image            => 'registry:2.1.1',
+    ports            => ['0.0.0.0:443:5000'],
+    use_name         => true,
+    volumes          => ["/etc/docker/certs.d/${registry_endpoint}:/certs"],
+    env              => [
                           'REGISTRY_STORAGE=s3',
                           'REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt',
                           'REGISTRY_HTTP_TLS_KEY=/certs/domain.key',
@@ -52,10 +58,11 @@ class acquia_registry::server {
                           "REGISTRY_STORAGE_S3_REGION=${registry_storage_region}",
                           "REGISTRY_STORAGE_S3_BUCKET=${registry_storage_bucket}",
                         ],
-    restart_service => true,
-    privileged      => false,
-    pull_on_start   => true,
-    require         =>  [
+    extra_parameters => '--restart=always',
+    restart_service  => true,
+    privileged       => false,
+    pull_on_start    => true,
+    require          => [
                           File["/etc/docker/certs.d/${registry_endpoint}/domain.key"],
                           Exec['create-htpasswd'],
                         ],
