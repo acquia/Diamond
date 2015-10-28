@@ -1,0 +1,23 @@
+<%
+  masters = @mesos_masters.split(',').map{|i| "#{i}:5050" }.join('", "')
+-%>
+{
+  "zk": "<%= @mesos_zookeeper_connection_string %>",
+  "masters": ["<%= masters %>"],
+  "refreshSeconds": 60,
+  "ttl": 60,
+  "domain": "mesos",
+  "port": 53,
+  "resolvers": ["10.0.0.2"],
+  "timeout": 5,
+  "httpon": true,
+  "dsnon": true,
+  "httpport": 8123,
+  "externalon": false,
+  "SOARname": "root.ns1.mesos",
+  "SOAMname": "ns1.mesos",
+  "SOARefresh": 60,
+  "SOARetry":   600,
+  "SOAExpire":  86400,
+  "SOAMinttl": 60
+}

@@ -1,3 +1,7 @@
+#!/bin/bash
+#
+# Copyright 2015 Acquia, Inc.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9,20 +13,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-forge 'https://forgeapi.puppetlabs.com'
+set -ex
+SRC_PATH="/usr/share/go/src/github.com/mesosphere/mesos-dns"
+MESOS_DNS_RELEASE=$1
 
-mod 'puppetlabs/stdlib', '>= 4.5.1'
-mod 'puppetlabs/apt', '>= 2.1.1'
+mkdir -p ${SRC_PATH}
+curl -sSL https://github.com/mesosphere/mesos-dns/tarball/${MESOS_DNS_RELEASE} | tar -xz --strip 1 -C ${SRC_PATH}
+cd ${SRC_PATH}
+CGO_ENABLED=0 godep go build -a -installsuffix cgo -o /dist/mesos-dns .
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git',
-  :ref => 'ac6dbe42277c96b4131fcda19a869711ad03a4d7'
 
-mod 'rodjek/logrotate',
-  :git => 'git@github.com:rodjek/puppet-logrotate.git',
-  :ref => '1.1.1'
-
-mod 'deric/puppet-mesos',
-  :git => 'https://github.com/deric/puppet-mesos.git',
-  :ref => 'v0.6.3'

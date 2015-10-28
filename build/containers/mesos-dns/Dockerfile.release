@@ -1,3 +1,5 @@
+# Copyright 2015 Acquia, Inc.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,19 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-forge 'https://forgeapi.puppetlabs.com'
+FROM acquia/scratch:latest
+MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
 
-mod 'puppetlabs/stdlib', '>= 4.5.1'
-mod 'puppetlabs/apt', '>= 2.1.1'
+EXPOSE 53 8123
+COPY mesos-dns /mesos-dns
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git',
-  :ref => 'ac6dbe42277c96b4131fcda19a869711ad03a4d7'
-
-mod 'rodjek/logrotate',
-  :git => 'git@github.com:rodjek/puppet-logrotate.git',
-  :ref => '1.1.1'
-
-mod 'deric/puppet-mesos',
-  :git => 'https://github.com/deric/puppet-mesos.git',
-  :ref => 'v0.6.3'
+ENTRYPOINT ["/mesos-dns"]

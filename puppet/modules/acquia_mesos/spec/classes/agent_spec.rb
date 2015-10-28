@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'acquia_mesos::agent', :type => :class do
   let(:facts) {
     {
+      :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
     }
   }
@@ -31,6 +32,7 @@ describe 'acquia_mesos::agent', :type => :class do
 
       let(:facts) {
         {
+          :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
           :hostname => ec2_public_hostname,
           :ec2_public_hostname => 'test',
         }
@@ -56,6 +58,7 @@ describe 'acquia_mesos::agent', :type => :class do
 
       let(:facts) {
         {
+          :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
           :mesos_slave_processorcount => cpu,
           :mesos_slave_memorysize_mb => memory,
           :mesos_slave_disk_space => disk_space,
