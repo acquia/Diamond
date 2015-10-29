@@ -73,15 +73,6 @@ class acquia_jenkins (
     source  => 'puppet:///modules/acquia_jenkins/jenkins_ssh_config',
   }
 
-  file { '/var/lib/jenkins/.ssh/github.pub':
-    ensure  => present,
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0600',
-    source  => 'puppet:///modules/acquia_jenkins/github.pub',
-    require => File['/var/lib/jenkins/.ssh'],
-  }
-
   file { '/var/lib/jenkins/users':
     ensure  => directory,
     require => [
@@ -210,40 +201,6 @@ class acquia_jenkins (
                 ],
   }
 
-  file { '/opt/grid-ci':
-    ensure  => 'directory',
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0644',
-    require => User['jenkins'],
-  }
-
-  vcsrepo { '/opt/grid-ci':
-    ensure   => present,
-    provider => git,
-    source   => 'git@github.com:kasisnu/grid-ci',
-    revision => 'baseimage',
-    user     => 'jenkins',
-    require  => [
-                  File['/var/lib/jenkins/.ssh/github.pub'],
-                  File['/opt/grid-ci'],
-                  User['jenkins'],
-                ],
-  }
-
-  file { '/var/lib/jenkins/jobs':
-    ensure  => symlink,
-    target  => '/opt/grid-ci/jobs',
-    force   => true,
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0644',
-    require =>  [
-                  Vcsrepo['/opt/grid-ci'],
-                  User['jenkins'],
-                ],
-  }
-
   # After installing the admin user, we need to restart the service in order
   # for the ssh key authentication to work. This is a brute force method
   # because notifying the jenkins service does not work and we cannot reload
@@ -256,7 +213,6 @@ class acquia_jenkins (
     require => [
       Service['jenkins'],
       File['/var/lib/jenkins'],
-      File['/var/lib/jenkins/jobs'],
       Exec['create-jenkins-cli-key'],
     ],
     unless  => "test -f ${acquia_jenkins_installed}",

@@ -75,11 +75,6 @@ describe 'acquia_jenkins', :type => :module do
       'group' => 'jenkins'
     )
 
-    should contain_file('/var/lib/jenkins/.ssh/github.pub').with(
-      'owner' => 'jenkins',
-      'group' => 'jenkins'
-    )
-
     should contain_file('/var/lib/jenkins/users').with(
       'owner' => 'jenkins',
       'group' => 'jenkins'
@@ -98,26 +93,6 @@ describe 'acquia_jenkins', :type => :module do
     should contain_file('/var/lib/jenkins/users/admin/config.xml').with(
       'owner' => 'jenkins',
       'group' => 'jenkins'
-    )
-
-    should contain_file('/opt/grid-ci').with(
-      'ensure' => 'directory',
-      'owner' => 'jenkins',
-      'group' => 'jenkins'
-    )
-
-    should contain_file('/var/lib/jenkins/jobs').with(
-      'ensure' => 'symlink',
-      'owner' => 'jenkins',
-      'group' => 'jenkins'
-    )
-  }
-
-  it {
-    should contain_vcsrepo('/opt/grid-ci').with(
-      'ensure'   => 'present',
-      'provider' => 'git',
-      'source'   => 'git@github.com:kasisnu/grid-ci'
     )
   }
 
