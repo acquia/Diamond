@@ -1,0 +1,4 @@
+%_signature gpg
+%_gpg_path /dist/.gnupg
+%_gpg_name Acquia Engineering <engineering@acquia.com>
+%_gpgbin /usr/bin/gpg

@@ -4,6 +4,7 @@ sudo: false
 rvm:
   - 2.1.5
 script:
+  - bundle install
   - bundle exec rake
 notifications:
   email: false

@@ -1,0 +1,52 @@
+id:
+  name: example
+  role: www-data
+  environment: devel
+applications:
+- id:
+    name: foo
+    role: www-data
+    environment: dev
+  appconfig:
+    apptype: 0
+    sourcetype: 0
+    source: ubuntu/trusty
+    command: ""
+    parameters: {}
+    cronschedule: null
+  resources:
+    cpu:
+      num: 1
+    ram:
+      size: 128
+    disk:
+      size: 10
+  copies:
+    max: 1
+  applicationhealthcheck: null
+  exposedports: []
+  updateconfig: null
+- id:
+    name: bar
+    role: www-data
+    environment: dev
+  appconfig:
+    apptype: 0
+    sourcetype: 0
+    source: ubuntu/trusty
+    command: ""
+    parameters:
+      port: "12345"
+    cronschedule: null
+  resources:
+    cpu:
+      num: 1
+    ram:
+      size: 128
+    disk:
+      size: 10
+  copies:
+    max: 1
+  applicationhealthcheck: null
+  exposedports: []
+  updateconfig: null

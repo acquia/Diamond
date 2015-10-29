@@ -1,0 +1,148 @@
+#!/usr/bin/env ruby
+#
+# Copyright 2015 Acquia, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Utility to manage creating a rpm repository from packages built for nemesis-puppet
+#
+
+require 'aws-sdk-v1'
+require 'fileutils'
+require 'gpgme'
+require 'pathname'
+
+nemesis_puppet_root = File.expand_path(File.join(Pathname.new(__FILE__).realpath, '..', '..'))
+dist_root = File.join(nemesis_puppet_root, 'dist')
+repo_root = File.join(dist_root, 'repo')
+
+@default_gpg_key_id = "Acquia Engineering <engineering@acquia.com>"
+@default_gpg_key_params= <<PARAMS
+<GnupgKeyParms format="internal">
+Key-Type: RSA
+Key-Length: 2048
+Name-Real: Acquia Engineering
+Name-Email: engineering@acquia.com
+Expire-Date: 0
+</GnupgKeyParms>
+PARAMS
+
+module GpgUtils
+  # Create a GPG key and keyring in a directory
+  #
+  # @param params [String] parameters to generate the key with.
+  #   Options are one per line wrapped in <GnupgKeyParms format="internal">...<</GnupgKeyParms>>
+  # @param options [Hash] GPG options. valid options are:
+  #   => [ :protocol, :armor, :textmode, :keylist_mode, :pinentry_mode, :offline ]
+  # @param gpg_homedir [String] the path to a gpg keyring
+  def self.gen_key(params, options = {}, gpg_homedir = nil)
+    GPGME::Engine.home_dir = gpg_homedir.to_s if gpg_homedir
+    ctx = GPGME::Ctx.new(options)
+    ctx.generate_key(params, nil, nil)
+  end
+end
+
+def get_s3_bootstrap_repo_bucket(repo_stackname)
+  cf = AWS::CloudFormation.new
+  stack = cf.stacks[repo_stackname]
+  repo = stack.resources['repo']
+  repo.physical_resource_id
+end
+
+def create(dist_root)
+  gpg_homedir = "#{dist_root}/.gnupg"
+  rpm_gpg_key = "#{dist_root}/RPM-GPG-KEY-nemesis"
+  FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
+  FileUtils.rm_f(rpm_gpg_key) if File.exists?(rpm_gpg_key)
+  FileUtils.mkdir_p(gpg_homedir)
+  GpgUtils.gen_key(@default_gpg_key_params, {}, gpg_homedir)
+
+  container_id=`docker run -d -v #{dist_root}:/dist acquia/rpm_repo:latest`
+  exit_code=`docker wait #{container_id}`.to_i
+  system("docker rm -f #{container_id}")
+
+  if exit_code != 0
+    puts "Error: unable to create repo, exited with code #{exit_code}"
+    exit 1
+  end
+  puts "Repository created at: #{dist_root}/repo"
+end
+
+def delete(repo_root, stackname)
+  system("rm -rf #{repo_root}")
+
+  bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+  if system('which gof3r')
+    cmd = "gof3r rm s3://#{bucket}/repo"
+  else
+    aws_creds = "-e AWS_ACCESS_KEY_ID='#{ENV['AWS_ACCESS_KEY_ID']}' -e AWS_SECRET_ACCESS_KEY='#{AWS_SECRET_ACCESS_KEY}'"
+    cmd = "docker run -d #{aws_creds} -v #{repo_root}:/dist --entrypoint=/gof3r tools/gof3r rm s3://<bucket>/<s3_path>"
+  end
+
+  system(cmd)
+end
+
+def upload(repo_root, stackname)
+  bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+  if system('which gof3r')
+    cmd = "gof3r cp #{repo_root} s3://#{bucket}/repo"
+  else
+    aws_creds = "-e AWS_ACCESS_KEY_ID='#{ENV['AWS_ACCESS_KEY_ID']}' -e AWS_SECRET_ACCESS_KEY='#{AWS_SECRET_ACCESS_KEY}'"
+    cmd = "docker run -d #{aws_creds} -v #{repo_root}:/dist --entrypoint=/gof3r tools/gof3r cp /dist s3://<bucket>/<s3_path>"
+  end
+
+  system(cmd)
+end
+
+def download(repo_root, stackname)
+  bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+  system("rm -rf #{repo_root}")
+
+  if system('which gof3r')
+    cmd = "gof3r cp s3://#{bucket}/repo #{repo_root}"
+  else
+    aws_creds = "-e AWS_ACCESS_KEY_ID='#{ENV['AWS_ACCESS_KEY_ID']}' -e AWS_SECRET_ACCESS_KEY='#{AWS_SECRET_ACCESS_KEY}'"
+    cmd = "docker run -d #{aws_creds} -v #{repo_root}:/dist --entrypoint=/gof3r tools/gof3r cp s3://<bucket>/<s3_path> /dist"
+  end
+
+  system(cmd)
+end
+
+
+action = ARGV.pop
+stackname = ''
+
+unless action == 'create'
+  unless ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
+    puts 'Error: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables required'
+    exit 1
+  end
+  stackname = ARGV.pop
+end
+
+case action.downcase
+when 'create'
+  create(dist_root)
+when 'delete'
+  delete(repo_root, stackname)
+when 'upload'
+  upload(dist_root, stackname)
+when 'download'
+  delete(dist_root, stackname)
+else
+  puts 'Usage: repo [ACTION] [REPO] [OPTION]'
+end

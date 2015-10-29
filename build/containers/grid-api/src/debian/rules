@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	$(MAKE) clean
+
+override_dh_auto_build:
+	$(MAKE)
+
+override_dh_builddeb:
+	# Force gzip compression for older system wth dpkg version < 1.15.6
+	dh_builddeb -- -Zgzip
+
+override_dh_auto_install:
+	mkdir -p $(CURDIR)/debian/grid-api/usr/bin
+	install -Dm755 $(GOPATH)/bin/grid-api $(CURDIR)/debian/grid-api/usr/bin/grid-api
+	dh_installinit --no-start --name grid-api
+
+.PHONY: override_dh_auto_clean override_dh_auto_build override_dh_builddeb override_dh_auto_install

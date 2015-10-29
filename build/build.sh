@@ -17,8 +17,30 @@
 #
 # Build all packages and containers used within the nemesis-puppet manifests
 #
+# - Skip a package build
+#    Place an empty 'skip' file in a package directory to skip building it
+# - Environment variables
+#    Add a env.conf in a package directory or your globally with NEMESIS_PUPPET_#{VAR}
+#
+
 require 'fileutils'
 require 'optparse'
+
+# Monkey patch to help convert build time result to a more readable format
+class Numeric
+  def duration
+    rest, secs = self.divmod( 60 )
+    rest, mins = rest.divmod( 60 )
+    days, hours = rest.divmod( 24 )
+
+    result = []
+    result << "#{days} Days" if days > 0
+    result << "#{hours} Hours" if hours > 0
+    result << "#{mins} Minutes" if mins > 0
+    result << "#{secs} Seconds" if secs > 0
+    return result.join(' ')
+  end
+end
 
 # Attempt to read the Github OAuth token from the global .gitconfig
 github_oauth_token=`git config --global github.token` || ENV['GITHUB_OAUTH_TOKEN']
@@ -30,15 +52,15 @@ else
   ENV['GITHUB_OAUTH_TOKEN'] = github_oauth_token
 end
 
-$basedir=File.expand_path(File.dirname(__FILE__))
-$distdir=File.join($basedir, '..', 'dist')
+basedir=File.expand_path(File.dirname(__FILE__))
+$distdir=File.join(basedir, '..', 'dist', 'packages')
 
 # Run through all listed container builds in a list and execute their build process.
-def run_containers_build(list)
+def run_container_build(basedir, list)
   puts "Starting build for: containers"
   list.each do |script|
     name = File.dirname(script)
-    package_build_dir = File.join($basedir, 'containers', name)
+    package_build_dir = File.join(basedir, name)
     next if File.exist?(File.join(package_build_dir, 'skip'))
     puts "Building: #{name}"
     Dir.chdir(package_build_dir) do
@@ -50,7 +72,7 @@ def run_containers_build(list)
       when "build.sh"
         system("/bin/bash build.sh")
       when "Makefile"
-        system("make")
+        system("make && make clean")
       end
     end
   end
@@ -60,25 +82,37 @@ end
 # building that package and second a package.sh script with is the command entrypoint for the container.
 # This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
 # for the resulting package to be created.
-def run_packages_build(list)
+def run_package_build(basedir, list)
   puts "Starting build for: packages"
   list.each do |script|
     name = File.dirname(script)
-    package_build_dir = File.join($basedir, 'packages', name)
+    package_build_dir = File.join(basedir, name)
     next if File.exist?(File.join(package_build_dir, 'skip'))
+    env_file = File.join(package_build_dir, 'env.conf')
     puts "Building: #{name}"
     Dir.chdir(package_build_dir) do
       case File.basename(script)
       when "Dockerfile"
         tag = 'latest'
         system("docker build -t #{name}:latest .")
-        container_id=`docker run -d -e "GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}" -v #{$distdir}:/dist #{name}:#{tag}`
+
+        # Add custom env flags
+        flags = []
+        flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
+        flags << " --env-file #{env_file}" if File.exist?(env_file)
+        global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
+        flags.concat(global_env_flags) if global_env_flags
+
+        # Run the container
+        container_id=`docker run -d #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}`
         exit_code=`docker wait #{container_id}`.to_i
         system("docker rm -f #{container_id}")
 
         if exit_code != 0
           puts "Error: #{name}:#{tag} build exited with code #{exit_code}"
           exit 1
+        else
+          system("docker rmi -f #{name}:#{tag}")
         end
       when "build.sh"
         system("/bin/bash build.sh")
@@ -89,38 +123,46 @@ def run_packages_build(list)
   end
 end
 
+# Map of build directories to build type
+build_directories={
+  'bootstrap' => 'container',
+  'packages' => 'package',
+  'containers' => 'container',
+}
 
-build_directories=['packages', 'containers']
+build_list=[]
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: build.sh [OPTIONS] REGEX_PATTERN"
-  opts.on('-c', 'Build Containers') { build_directories=['containers'] }
-  opts.on('-p', 'Build Packages') { build_directories=['packages'] }
+  opts.on('-b', 'Build Bootstrap Containers') { build_list=['bootstrap'] }
+  opts.on('-c', 'Build Containers') { build_list=['containers'] }
+  opts.on('-p', 'Build Packages') { build_list=['packages'] }
   opts.on('-d', '--dist DIR', String) { |v| $distdir = v }
 end.parse!
 
+build_list = build_directories.keys if build_list.empty?
 
 regex_pattern = ARGV[0] || '**'
 
 FileUtils.mkdir_p($distdir)
-
+start_time = Time.now
 # Change to where the build script is since there are hardcoded paths and assumptions for the build
-Dir.chdir($basedir) do
+Dir.chdir(basedir) do
   # Loop through the build directiries
-  build_directories.each do |build_dir|
+  build_list.sort.each do |build_dir|
     # Change into the specific build directory and search for any files matching the regex_pattern to be built
     Dir.chdir(build_dir) do
-      # The acquia directory is reserved for common base images used by all other builds.
-      # Build those first and then run the build for everything else
-      files = Dir.glob("acquia/#{regex_pattern}/{Dockerfile,Makefile,build.sh}")
-      send("run_#{build_dir}_build", files) unless files.size == 0
-      # now build everything else excluding the acquia directory
-      files = Dir.glob("#{regex_pattern}/{Dockerfile,Makefile,build.sh}").reject{ |f| f =~ /acquia/ }
-      send("run_#{build_dir}_build", files) unless files.size == 0
+      files = Dir.glob("#{regex_pattern}/{Dockerfile,Makefile,build.sh}")
+      path = File.join(basedir, build_dir)
+      send("run_#{build_directories[build_dir]}_build", path, files) unless files.size == 0
     end
   end
 end
 
+build_time = Time.now - start_time
+puts "Build Time: #{build_time.duration}"
+
 if `docker ps -a | grep Exited | wc -l`.to_i > 0
   system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
 end
+

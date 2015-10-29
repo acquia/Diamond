@@ -1,0 +1,13 @@
+%packager %(echo "$USER")
+
+# %release_tag .el7.acquia
+%release_tag %(awk '{ print ".el" substr($(NF-1),0,1) ".acquia"}' /etc/redhat-release)
+
+%_topdir /root/rpmbuild
+%_tmppath /tmp
+%debug_package %{nil}
+
+%_signature gpg
+%_gpg_path /root/.gnupg
+%_gpg_name Acquia Engineering <engineering@acquia.com>
+%_gpgbin /usr/bin/gpg

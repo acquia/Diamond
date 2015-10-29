@@ -12,23 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/deb_packaging
+FROM acquia/rpm_packaging
 
 # Install Java
-RUN echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  add-apt-repository -y ppa:webupd8team/java && \
-  apt-get update -y && \
-  apt-get install -y oracle-java7-installer ant maven
+RUN curl --retry 5 -H 'Cookie: oraclelicense=accept-securebackup-cookie' -OJ -sSL http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.rpm && \
+  rpm -ivh jdk-7u79-linux-x64.rpm && \
+  rm jdk-7u79-linux-x64.rpm && \
+  mkdir -p /usr/java/maven && \
+  curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz | tar xz --strip 1 -C /usr/java/maven && \
+  mkdir -p /usr/java/ant && \
+  curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/ant/binaries/apache-ant-1.9.6-bin.tar.gz | tar -xz --strip 1 -C /usr/java/ant \
+&& yum clean all \
+&& rm -rf /tmp/* \
+&& rm -rf /var/tmp/*
 
 ADD resources/package.sh $HOME/package.sh
-run chmod +x $HOME/package.sh
+RUN chmod +x $HOME/package.sh
 
-# Clean up
-RUN apt-get clean && \
-      rm -rf /var/cache/apt/* && \
-      rm -rf /var/lib/apt/lists/* && \
-      rm -rf /tmp/* && \
-      rm -rf /var/tmp/*
+ENV JAVA_HOME /usr/java/jdk1.7.0_79
+ENV M2_HOME /usr/java/maven
+ENV ANT_HOME /usr/java/ant
+ENV PATH $PATH:${JAVA_HOME}/bin:${M2_HOME}/bin:${ANT_HOME}/bin
 
 WORKDIR $HOME
 CMD ./package.sh
