@@ -32,4 +32,40 @@ describe 'base::docker' do
       should contain_file('/mnt/lib/docker')
     }
   end
+
+  describe 'docker-gc script' do
+    it {
+      should contain_file('/var/lib/docker-gc').with(
+        'mode' => '0600',
+        'ensure' => 'directory',
+        'owner' => 'root',
+        'group' => 'root'
+      )
+
+      should contain_file('/usr/sbin/docker-gc').with(
+        'source' => 'puppet:///modules/base/docker-gc/docker-gc',
+        'mode' => '0500',
+        'owner' => 'root',
+        'group' => 'root'
+      )
+
+      should contain_file('/etc/docker-gc-exclude').with(
+        'source' => 'puppet:///modules/base/docker-gc/docker-gc-exclude',
+        'mode' => '0400',
+        'owner' => 'root',
+        'group' => 'root'
+      )
+    }
+  end
+
+  describe 'docker-gc cron job' do
+    it {
+      should contain_cron('docker-gc').with(
+        'command' => '/usr/sbin/docker-gc',
+        'user' => 'root',
+        'hour' => 1,
+        'environment' => 'GRACE_PERIOD_SECONDS=3600'
+      )
+    }
+  end
 end
