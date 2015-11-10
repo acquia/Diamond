@@ -5,6 +5,7 @@ RSpec.configure do |c|
   c.color = true
   c.full_backtrace = true
   c.raise_errors_for_deprecations!
+  c.hiera_config = File.expand_path(File.join(__FILE__, '../fixtures/hiera/hiera.yaml'))
 
   c.before :each do
     # Ensure that we don't accidentally cache facts and environment between test cases.
