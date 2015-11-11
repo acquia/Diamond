@@ -39,7 +39,7 @@ class base::docker(
     command     => '/usr/sbin/docker-gc',
     user        => root,
     hour        => 1,
-    environment => "GRACE_PERIOD_SECONDS=${docker_gc_grace_period}",
+    environment => "GRACE_PERIOD_SECONDS=${docker_gc_grace_period} LOG_TO_SYSLOG=1",
     require     => File['/usr/sbin/docker-gc'],
   }
 }

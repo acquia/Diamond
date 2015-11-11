@@ -54,7 +54,7 @@ describe 'base::docker' do
         'command' => '/usr/sbin/docker-gc',
         'user' => 'root',
         'hour' => 1,
-        'environment' => 'GRACE_PERIOD_SECONDS=3600'
+        'environment' => 'GRACE_PERIOD_SECONDS=3600 LOG_TO_SYSLOG=1'
       )
     }
   end
