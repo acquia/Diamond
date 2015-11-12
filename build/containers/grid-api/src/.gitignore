@@ -1,6 +1,0 @@
-.idea/*
-
-dist/**/*
-_vendor/**/*
-thrift/**/*
-*.coverprofile

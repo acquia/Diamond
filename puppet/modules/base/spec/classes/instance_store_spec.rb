@@ -5,13 +5,7 @@ describe 'base::instance_store' do
     {
       blockdevices: 'xvda,xvdb,xvdc',
       ec2_instance_type: 'r3.xlarge',
-      lsbdistcodename: 'trusty',
-      lsbdistdescription: 'Ubuntu 14.04.2 LTS',
-      lsbdistid: 'Ubuntu',
-      lsbdistrelease: '14.04',
-      lsbmajdistrelease: '14.04',
-      osfamily: 'Debian',
-      operatingsystem: 'Ubuntu',
+      osfamily: 'redhat',
     }.merge(
       {
         needs_blockdevices_mounted: true,

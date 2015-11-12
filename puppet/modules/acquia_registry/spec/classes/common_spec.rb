@@ -5,10 +5,7 @@ describe 'acquia_registry::common', :type => :class do
     {
       :registry_endpoint => 'registry.sandbox.acquia.io',
       :registry_ssl_certificate => 'somehash',
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
     }
   }
 

@@ -3,10 +3,7 @@ require 'spec_helper'
 describe 'acquia_ecs', :type => :class do
   let(:facts) {
     {
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
 
       :ecs_cluster_name => 'test',
       :docker_registry_url => 'index.docker.io',

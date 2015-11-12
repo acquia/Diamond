@@ -18,6 +18,7 @@ ENV HOME /root
 
 RUN yum install -y \
   createrepo \
+  expect \
   rpm-sign \
 && yum clean all \
 && rm -rf /tmp/*

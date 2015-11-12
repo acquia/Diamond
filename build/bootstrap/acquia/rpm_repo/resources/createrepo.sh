@@ -12,6 +12,7 @@ cp -a ${BASEDIR}/packages/*.rpm ${REPO_PATH}/x86_64/
 # If a GPG_HOMEDIR is included with the dist then sign all rpms before creating the repo.
 # ~/.rpmmacros is setup to use GPG_HOMEDIR as its default %_gpg_path
 if [ -d "${GPG_HOMEDIR}" ]; then
+  echo "Signing packages"
   # Export the GPG public key to be imported by yum
   gpg --export -a "Acquia Engineering <engineering@acquia.com>" --homedir=${GPG_HOMEDIR} > ${BASEDIR}/RPM-GPG-KEY-nemesis
   # Sign all the packages
@@ -19,4 +20,5 @@ if [ -d "${GPG_HOMEDIR}" ]; then
 fi
 
 # Create the repo
+echo "Creating package repository"
 cd ${REPO_PATH} && /usr/bin/createrepo .

@@ -8,20 +8,17 @@ mod 'deric/puppet-mesos',
   :git => 'git://github.com/deric/puppet-mesos.git',
   :ref => 'v0.6.3'
 
+mod 'example42/puppet-yum',
+  :git => 'git@github.com:example42/puppet-yum.git',
+  :ref => 'v2.1.25'
+
 mod 'garethr/garethr-docker',
   :git => 'git@github.com:garethr/garethr-docker.git',
-  :ref => 'ac6dbe42277c96b4131fcda19a869711ad03a4d7'
+  :ref => '654739d83eb8677fe7e3f360c2da5b9cc88b13d4'
 
 mod 'puppet-community/puppet-unattended_upgrades',
   :git => 'git://github.com/puppet-community/puppet-unattended_upgrades.git',
   :ref => '1.0.3'
-
-mod 'puppetlabs/apache',
-  :git => 'git://github.com/puppetlabs/puppetlabs-apache.git'
-
-mod 'puppetlabs/apt',
-  :git => 'git://github.com/puppetlabs/puppetlabs-apt.git',
-  :ref => '2.1.1'
 
 mod 'puppetlabs/puppetlabs-lvm',
   :git => 'git://github.com/puppetlabs/puppetlabs-lvm.git'

@@ -51,7 +51,6 @@ class acquia_mesos::agent(
       'host' => $ec2_public_hostname,
       'rack' => $ec2_placement_availability_zone,
     },
-    force_provider => 'upstart',
   }
 
 }

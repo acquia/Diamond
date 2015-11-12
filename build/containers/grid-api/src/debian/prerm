@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Stop the service.
-/etc/init.d/grid-api stop || true

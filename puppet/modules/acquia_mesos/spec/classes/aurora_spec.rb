@@ -3,10 +3,7 @@ require 'spec_helper'
 describe 'acquia_mesos::aurora', :type => :class do
   let(:facts) do
     {
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
       :mesos_cluster_name => 'test-cluster',
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
     }

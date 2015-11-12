@@ -1,4 +1,4 @@
-# Copyright 2015 Acquia, Inc.
+# Copyright 2014 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/scratch:latest
-MAINTAINER Acquia Engineering <engineering@acquia.com>
+FROM acquia/rpm_packaging
 
-EXPOSE 53 8123
-COPY mesos-dns /mesos-dns
+ADD resources/package.sh $HOME/package.sh
+RUN chmod +x $HOME/package.sh
 
-ENTRYPOINT ["/mesos-dns"]
+WORKDIR $HOME
+CMD ./package.sh

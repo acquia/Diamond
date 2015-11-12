@@ -1,6 +1,6 @@
 define base::admin_users::create(
   $ensure         = present,
-  $groups         = ['sudo'],
+  $groups         = ['wheel'],
   $key            = undef,
   $shell          = '/bin/bash',
   $type           = 'ssh-rsa',

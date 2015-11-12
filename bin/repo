@@ -20,38 +20,12 @@
 
 require 'aws-sdk-v1'
 require 'fileutils'
-require 'gpgme'
 require 'pathname'
+require 'tempfile'
 
 nemesis_puppet_root = File.expand_path(File.join(Pathname.new(__FILE__).realpath, '..', '..'))
 dist_root = File.join(nemesis_puppet_root, 'dist')
 repo_root = File.join(dist_root, 'repo')
-
-@default_gpg_key_id = "Acquia Engineering <engineering@acquia.com>"
-@default_gpg_key_params= <<PARAMS
-<GnupgKeyParms format="internal">
-Key-Type: RSA
-Key-Length: 2048
-Name-Real: Acquia Engineering
-Name-Email: engineering@acquia.com
-Expire-Date: 0
-</GnupgKeyParms>
-PARAMS
-
-module GpgUtils
-  # Create a GPG key and keyring in a directory
-  #
-  # @param params [String] parameters to generate the key with.
-  #   Options are one per line wrapped in <GnupgKeyParms format="internal">...<</GnupgKeyParms>>
-  # @param options [Hash] GPG options. valid options are:
-  #   => [ :protocol, :armor, :textmode, :keylist_mode, :pinentry_mode, :offline ]
-  # @param gpg_homedir [String] the path to a gpg keyring
-  def self.gen_key(params, options = {}, gpg_homedir = nil)
-    GPGME::Engine.home_dir = gpg_homedir.to_s if gpg_homedir
-    ctx = GPGME::Ctx.new(options)
-    ctx.generate_key(params, nil, nil)
-  end
-end
 
 def get_s3_bootstrap_repo_bucket(repo_stackname)
   cf = AWS::CloudFormation.new
@@ -66,7 +40,25 @@ def create(dist_root)
   FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
   FileUtils.rm_f(rpm_gpg_key) if File.exists?(rpm_gpg_key)
   FileUtils.mkdir_p(gpg_homedir)
-  GpgUtils.gen_key(@default_gpg_key_params, {}, gpg_homedir)
+
+  default_gpg_key_params= <<PARAMS
+Key-Type: RSA
+Key-Length: 2048
+Name-Real: Acquia Engineering
+Name-Email: engineering@acquia.com
+Expire-Date: 0
+%commit
+%echo done
+PARAMS
+
+  begin
+    gpg_params_file = Tempfile.new('gpg_key_params.conf')
+    gpg_params_file.write(default_gpg_key_params)
+    gpg_params_file.close
+    system("gpg --homedir #{gpg_homedir} --batch --gen-key #{gpg_params_file.path}")
+  ensure
+     gpg_params_file.unlink
+  end
 
   container_id=`docker run -d -v #{dist_root}:/dist acquia/rpm_repo:latest`
   exit_code=`docker wait #{container_id}`.to_i

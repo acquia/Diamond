@@ -32,22 +32,20 @@ else
 fi
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
-SRCDIR=${BASEDIR}/src
 
-# Download the grid-api source
-mkdir -p ${SRCDIR}
-curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/acquia/grid-api/tarball/${GIT_TAG} | tar -xz --strip 1 -C ${SRCDIR}
+# Create the builder container
+docker build -t nemesis/grid-api -f ${BASEDIR}/Dockerfile.build ${BASEDIR}
 
-# Build the grid-api application
-cd ${SRCDIR}
-make release
+# Run the build
+docker run -it --rm \
+  -e GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN} \
+  -e GIT_TAG=${GIT_TAG} \
+  -v ${BASEDIR}:/dist nemesis/grid-api /package.sh
 
-# Create the scratch container the grid-api application will run in
-cd ${BASEDIR}
-mv ${SRCDIR}/dist/grid-api ${BASEDIR}/
-docker build -t grid-api -f Dockerfile.release .
+docker rmi -f nemesis/grid-api
+
+# Package the build in a minimal scratch container
+docker build -t grid-api -f ${BASEDIR}/Dockerfile.release ${BASEDIR}
 
 # Cleanup
-rm -rf ${SRCDIR}
 rm grid-api
-

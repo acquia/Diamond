@@ -1,26 +1,22 @@
 class base::repos {
-  if !defined(Class['apt']) {
-    class {'apt': }
-  }
-
-  class { 'unattended_upgrades':
-    origins => ["${::lsbdistid}:${::lsbdistcodename}-security"],
-    update  => 1,
-    upgrade => 1,
-    auto    => {
-      'remove' => true,
-    }
+  if !defined(Class['yum']) {
+    class { 'yum': }
   }
 
   if $::custom_repo {
-    apt::source { 'nemesis':
-      location => "http://${::custom_repo}.s3.amazonaws.com",
-      release  => $::lsbdistcodename,
-      repos    => 'main',
-      key      => {
-        id     => 'C62E9B8A0B2E58728DF30F8AD9AF42A123406CA7',
-        server => 'pgp.mit.edu',
-      },
+    file { '/etc/yum.repos.d/nemesis.repo':
+      ensure  => present,
+      content => "[nemesis]\nname=Nemesis Repository\nbaseurl=http://${::custom_repo}.s3.amazonaws.com/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=http://${::custom_repo}.s3.amazonaws.com/repo/gpg\n",
     }
+  }
+
+  package { 'yum-cron':
+    ensure => present,
+  }
+
+  file { '/etc/yum/yum-cron.conf':
+    ensure  => present,
+    require => Package['yum-cron'],
+    source  => 'puppet:///modules/base/yum_cron',
   }
 }

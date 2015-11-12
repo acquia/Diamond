@@ -13,7 +13,6 @@
 forge 'https://forgeapi.puppetlabs.com'
 
 mod 'puppetlabs/stdlib', '>= 4.5.1'
-mod 'puppetlabs/apt', '>= 2.1.1'
 
 mod 'garethr/garethr-docker',
   :git => 'git@github.com:garethr/garethr-docker.git'

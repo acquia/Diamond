@@ -6,7 +6,7 @@ describe 'acquia_mesos', :type => :class do
   let(:pre_condition) {
     '''
     Package {
-      provider => \'apt\'
+      provider => \'yum\'
     }
     '''
   }
@@ -17,10 +17,7 @@ describe 'acquia_mesos', :type => :class do
       :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
       :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181',
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
     }
   }
 
@@ -37,27 +34,16 @@ describe 'acquia_mesos', :type => :class do
   end
 
   context 'installs the correct version' do
-    let(:version) { '0.23.0' }
-    let(:repo) { 'mesosphere' }
+    let(:version) { '0.23.0-1.0.centos701406' }
 
     let(:params) {
       {
-        :mesos_repo => repo,
         :mesos_version => version,
         :mesos_base_dir => '/mnt',
       }
     }
 
     it { should contain_class('mesos').with_version(version) }
-    it do
-      should contain_apt__source('mesosphere')
-        .with_location('http://repos.mesosphere.io/ubuntu')
-        .with_release('trusty')
-        .with_repos('main')
-        .with_key('81026D0004C44CF7EF55ADF8DF7D54CBE56151BF')
-    end
-
-    it { should contain_package('libcurl4-nss-dev').with({ :ensure => 'latest' }) }
   end
 
   context 'includes mesos-agent' do

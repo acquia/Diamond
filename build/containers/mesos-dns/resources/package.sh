@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,11 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-FROM acquia/scratch:latest
-MAINTAINER Acquia Engineering <engineering@acquia.com>
+set -ex
+SRC_PATH="/usr/share/go/src/github.com/mesosphere/mesos-dns"
+MESOS_DNS_RELEASE=$1
 
-EXPOSE 53 8123
-COPY mesos-dns /mesos-dns
-
-ENTRYPOINT ["/mesos-dns"]
+mkdir -p ${SRC_PATH}
+curl -sSL https://github.com/mesosphere/mesos-dns/tarball/${MESOS_DNS_RELEASE} | tar -xz --strip 1 -C ${SRC_PATH}
+cd ${SRC_PATH}
+CGO_ENABLED=0 godep go build -a -installsuffix cgo -o /dist/mesos-dns .

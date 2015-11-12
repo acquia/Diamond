@@ -21,6 +21,5 @@ group :development, :test do
   gem 'rubocop', '0.31.0',                 require: false
 end
 
-gem 'gpgme', '2.0.10'
 gem 'puppet', '3.8.4'
 gem 'librarian-puppet'
