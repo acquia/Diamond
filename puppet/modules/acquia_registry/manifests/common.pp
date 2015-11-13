@@ -22,6 +22,12 @@ class acquia_registry::common {
     require => File['/etc/docker'],
   }
 
+  file { "/etc/docker/certs.d/${registry_endpoint}/ca.crt":
+    ensure  => 'link',
+    target  => '/etc/ssl/certs/ca-certificates.crt',
+    require => File['/etc/docker/certs.d'],
+  }
+
   if $registry_endpoint {
     file { "/etc/docker/certs.d/${registry_endpoint}":
       ensure  => directory,
