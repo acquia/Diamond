@@ -55,5 +55,6 @@ Facter.add(:aws_block_devices) do
     extras = devices.reject { |dev| %w(xvda).include? dev }
     extras.delete 'xvdb' if xvdb_instance_store.include?(instance_type)
     extras.map { |dev| "/dev/#{dev}" }
+    extras.size > 0 ? extras : nil
   end
 end

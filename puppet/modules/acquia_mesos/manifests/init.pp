@@ -13,13 +13,10 @@
 # limitations under the License.
 
 class acquia_mesos (
-  $mesos_repo = 'mesosphere',
-  $mesos_version = '0.23.0-1.0.ubuntu1404',
+  $mesos_version = '0.23.0-1.0.centos701406',
   $mesos_base_dir = '/var',
   $mesos_dns_version = 'latest',
 ) {
-  include apt
-
   $mesos_log_dir = "${mesos_base_dir}/log/mesos"
   $mesos_lib_dir = "${mesos_base_dir}/lib/mesos"
 
@@ -43,14 +40,6 @@ class acquia_mesos (
     require => File['/mnt/tmp'],
   }
 
-  $distro = downcase($::operatingsystem)
-  apt::source { 'mesosphere':
-    location => "http://repos.mesosphere.io/${distro}",
-    release  => $::lsbdistcodename,
-    repos    => 'main',
-    key      => '81026D0004C44CF7EF55ADF8DF7D54CBE56151BF',
-  }
-
   class { '::mesos':
     version        => $mesos_version,
     conf_dir       => '/etc/mesos',
@@ -59,20 +48,7 @@ class acquia_mesos (
     zookeeper      => $mesos_zookeeper_connection_string,
     master_port    => 5050,
     ulimit         => 8192,
-    require        => Apt::Source['mesosphere'],
   }
-
-  # TODO this needs to be removed once https://github.com/mesosphere/mesos-deb-packaging/pull/48
-  # is merged or we switch to building Mesos ourselves
-  package { 'libcurl4-nss-dev':
-    ensure => latest,
-  }
-
-  # NOTE: This is a giant hack around the Apt and Mesos classes not playing
-  # well together. Apt::Source should force the Mesos package install to wait
-  # on apt-get update. This doesn't seem to be the case in 2.1.0 of the Apt
-  # module
-  Class['apt::update'] -> Class['mesos::install']
 
   if $mesos_master {
     class { 'acquia_mesos::master':

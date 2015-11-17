@@ -12,7 +12,9 @@ class base::instance_store (
   $mount_path   = '/mnt',
   $ephemeral_path = '/vol',
 ){
-  if $::needs_blockdevices_mounted {
+  # Only configure LVM if this is a known server type that uses instance store
+  # volumes and they're configured to be present
+  if $::needs_blockdevices_mounted and $::aws_block_devices {
 
     if $::ec2_instance_type != 'c3.large' and $::ec2_instance_type != 'c3.xlarge' {
       $base_logical_volume = {

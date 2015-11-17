@@ -32,12 +32,11 @@ CURDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 docker build -t ${MESOS_DNS_BUILDER_TAG} -f ${CURDIR}/Dockerfile.build ${CURDIR}
 
 # Run the build
-SRC_PATH="/usr/share/go/src/github.com/mesosphere/mesos-dns"
 docker run -it --rm -v ${CURDIR}:/dist ${MESOS_DNS_BUILDER_TAG} /bin/bash package.sh ${MESOS_DNS_RELEASE}
+docker rmi -f ${MESOS_DNS_BUILDER_TAG}
 
-# Package the build in a release image
+# Package the build in a minimal scratch container
 docker build -t ${MESOS_DNS_TAG} -f ${CURDIR}/Dockerfile.release ${CURDIR}
-docker tag -f ${MESOS_DNS_TAG} ${MESOS_DNS_LATEST_TAG}
 
 # Clean up intermediate file
 rm ${CURDIR}/mesos-dns

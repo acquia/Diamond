@@ -8,10 +8,7 @@ describe 'acquia_registry', :type => :class do
       :registry_storage_bucket => 'some-bucket',
       :registry_ssl_certificate => 'somehash',
       :registry_ssl_key => 'someotherhash',
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
     }
   }
 

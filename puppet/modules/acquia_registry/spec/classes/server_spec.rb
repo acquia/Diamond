@@ -5,10 +5,7 @@ describe 'acquia_registry::server', :type => :class do
     {
       :registry_endpoint => 'registry.sandbox.acquia.io',
       :registry_ssl_key => 'someotherhash',
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
       :server_type => 'docker-registry'
     }
   }

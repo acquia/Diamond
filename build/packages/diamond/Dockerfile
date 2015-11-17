@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/deb_packaging
+FROM acquia/rpm_packaging
+
+RUN yum install -y \
+  git \
+  python-configobj \
+&& yum clean all \
+&& rm -rf /tmp/*
 
 ADD resources/package.sh $HOME/package.sh
-run chmod +x $HOME/package.sh
+RUN chmod +x $HOME/package.sh
 
 WORKDIR $HOME
 CMD ./package.sh

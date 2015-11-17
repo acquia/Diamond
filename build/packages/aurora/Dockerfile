@@ -12,31 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/deb_packaging
+FROM acquia/rpm_packaging
 
-RUN apt-get update && apt-get install -y \
+RUN yum install -y \
+  yum-utils \
+  apr-devel \
+  cyrus-sasl-devel \
+  git \
+  java-1.8.0-openjdk-devel \
+  krb5-devel \
+  libcurl-devel \
+  python \
+  python-devel \
+  subversion-devel \
   wget \
-  bison \
-  libapr1-dev \
-  libcurl4-openssl-dev \
-  libsvn-dev \
-  python-all-dev
-
-# Install Java
-RUN add-apt-repository ppa:openjdk-r/ppa -y && \
-  apt-get update && apt-get install -y openjdk-8-jdk
-
-# Install Gradle
-RUN mkdir -p /tmp/gradle-packaging && \
-  curl -sSL https://github.com/benley/gradle-packaging/archive/master.tar.gz | tar -xz --strip 1 -C /tmp/gradle-packaging && \
-  cd /tmp/gradle-packaging && \
-  ./gradle-mkdeb.sh 2.7 && \
-  dpkg -i gradle*.deb
-
-# Install Thrift
-RUN curl -sSL http://people.apache.org/~jfarrell/thrift/0.9.1/contrib/deb/ubuntu/12.04/thrift-compiler_0.9.1_amd64.deb -O && \
-  dpkg -i thrift-compiler_*_amd64.deb && \
-  rm -f thrift-compiler_*_amd64.deb
+  zlib-devel \
+&& yum clean all \
+&& rm -rf /tmp/* \
+&& rm -rf /var/tmp/*
 
 ADD resources/package.sh $HOME/package.sh
 run chmod +x $HOME/package.sh

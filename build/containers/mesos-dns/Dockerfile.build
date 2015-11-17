@@ -13,15 +13,13 @@
 # limitations under the License.
 
 FROM ubuntu:trusty
-MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
+MAINTAINER Acquia Engineering <engineering@acquia.com>
 
 ENV GOLANG_VERSION=1.5 \
     DEBIAN_FRONTEND=noninteractive \
     GOROOT=/usr/lib/go \
     GOPATH=/usr/share/go
 
-# If a Docker ENV depends on another Docker ENV they need to be set in
-# different ENV statements.
 ENV PATH=${GOROOT}/bin:${GOPATH}/bin:$PATH
 
 RUN apt-get update && \
@@ -29,7 +27,8 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/cache/apt/* /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     curl -sSL https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/lib/ -xz && \
     go get github.com/tools/godep
-ADD package.sh /package.sh
+
+ADD resources/package.sh /package.sh
 
 
 

@@ -31,3 +31,5 @@ spec/fixtures/modules/*
 puppet/modules/*/.librarian/*
 puppet/modules/*/.tmp/*
 puppet/modules/*/Puppetfile.lock
+puppet/modules/*/spec/fixtures/manifests/site.pp
+puppet/modules/*/spec/fixtures/modules

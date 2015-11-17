@@ -6,10 +6,7 @@ describe 'acquia_mesos::mesos_dns', :type => :class do
       :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
       :mesos_masters_private_ips => '127.0.0.2,127.0.0.3,127.0.0.4',
       :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181/mesos',
-      :operatingsystem => 'Ubuntu',
-      :osfamily => 'Debian',
-      :lsbdistcodename => 'trusty',
-      :lsbdistid => 'Ubuntu',
+      :osfamily => 'redhat',
     }
   }
 

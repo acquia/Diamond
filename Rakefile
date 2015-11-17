@@ -23,6 +23,10 @@ task :all => [:validate, :lint, :style, :rcoverage]
 task(:default).clear
 task :default => :all
 
+# List of extra files to delete when rake clean is run
+CLEAN.include("coverage")
+CLOBBER.include("dist")
+
 # This is to get around https://github.com/rodjek/puppet-lint/issues/331
 Rake::Task[:lint].clear
 PuppetLint::RakeTask.new :lint do |config|
@@ -41,7 +45,8 @@ PuppetLint::RakeTask.new :lint do |config|
   ]
 end
 
-Rake::Task[:spec].enhance do
+Rake::Task[:spec].clear
+task :spec do
   Rake::Task['spec_modules'].invoke
 end
 
@@ -72,6 +77,7 @@ task :clean do
   end
 end
 
+
 task :style => [:'style:rubocop']
 namespace :style do
   desc 'Run rubocop style tests'
@@ -89,11 +95,4 @@ desc 'Run tests with code coverage'
 task :rcoverage do
   ENV['COVERAGE'] = 'true'
   Rake::Task['spec'].execute
-end
-
-desc 'Build all packages and docker images used by puppet'
-task :package do
-  Dir.chdir('build') do
-    sh './build.sh'
-  end
 end

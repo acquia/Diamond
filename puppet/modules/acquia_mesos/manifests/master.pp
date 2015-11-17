@@ -50,6 +50,5 @@ class acquia_mesos::master (
 
   class {'::mesos::slave':
     enable         => false,
-    force_provider => 'upstart',
   }
 }

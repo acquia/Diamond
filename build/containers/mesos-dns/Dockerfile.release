@@ -13,7 +13,7 @@
 # limitations under the License.
 
 FROM acquia/scratch:latest
-MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
+MAINTAINER Acquia Engineering <engineering@acquia.com>
 
 EXPOSE 53 8123
 COPY mesos-dns /mesos-dns

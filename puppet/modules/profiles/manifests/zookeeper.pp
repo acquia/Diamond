@@ -1,9 +1,9 @@
 class profiles::zookeeper {
   contain profiles::base
   contain profiles::java
-  include ::zookeeper
+  include ::acquia_zookeeper
 
   Class['profiles::base'] ->
   Class['profiles::java'] ->
-  Class['::zookeeper']
+  Class['::acquia_zookeeper']
 }
