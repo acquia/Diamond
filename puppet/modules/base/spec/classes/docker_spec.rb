@@ -49,12 +49,37 @@ describe 'base::docker' do
   end
 
   describe 'docker-gc cron job' do
+    let(:node) { 'testhost.example.com' }
+
     it {
       should contain_cron('docker-gc').with(
         'command' => '/usr/sbin/docker-gc',
         'user' => 'root',
-        'hour' => 1,
-        'environment' => 'GRACE_PERIOD_SECONDS=3600'
+        'hour' => 13,
+        'environment' => 'GRACE_PERIOD_SECONDS=3600 LOG_TO_SYSLOG=1'
+      )
+    }
+  end
+
+  describe 'docker-gc-volume script' do
+    it {
+      should contain_file('/usr/sbin/docker-gc-volume').with(
+        'source' => 'puppet:///modules/base/docker-gc-volume/docker-gc-volume',
+        'mode' => '0755',
+        'owner' => 'root',
+        'group' => 'root'
+      )
+    }
+  end
+
+  describe 'docker-gc-volume cron job' do
+    let(:node) { 'testhost.example.com' }
+
+    it {
+      should contain_cron('docker-gc-volume').with(
+        'command' => '/usr/sbin/docker-gc-volume',
+        'user' => 'root',
+        'hour' => 13,
       )
     }
   end

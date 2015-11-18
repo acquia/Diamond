@@ -42,13 +42,14 @@ class Numeric
   end
 end
 
-# Attempt to read the Github OAuth token from the global .gitconfig
-github_oauth_token=`git config --global github.token` || ENV['GITHUB_OAUTH_TOKEN']
-
-unless github_oauth_token
- puts 'Error: GITHUB_OAUTH_TOKEN environment variable not set'
- exit 1
-else
+# Attempt to read the Github OAuth token from the global .gitconfig and make it
+# available in ENV
+if ENV['GITHUB_OAUTH_TOKEN'].nil? || ENV['GITHUB_OAUTH_TOKEN'] == ""
+  github_oauth_token = `git config --global github.token`
+  if github_oauth_token == ""
+    puts 'Error: GITHUB_OAUTH_TOKEN environment variable not set'
+    exit 1
+  end
   ENV['GITHUB_OAUTH_TOKEN'] = github_oauth_token
 end
 

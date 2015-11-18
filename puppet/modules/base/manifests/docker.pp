@@ -38,8 +38,23 @@ class base::docker(
   cron { 'docker-gc':
     command     => '/usr/sbin/docker-gc',
     user        => root,
-    hour        => 1,
-    environment => "GRACE_PERIOD_SECONDS=${docker_gc_grace_period}",
+    hour        => fqdn_rand(23),
+    environment => "GRACE_PERIOD_SECONDS=${docker_gc_grace_period} LOG_TO_SYSLOG=1",
     require     => File['/usr/sbin/docker-gc'],
+  }
+
+  file { '/usr/sbin/docker-gc-volume':
+    mode      => '0755',
+    source    => 'puppet:///modules/base/docker-gc-volume/docker-gc-volume',
+    show_diff => false,
+    owner     => root,
+    group     => root,
+  }
+
+  cron { 'docker-gc-volume':
+    command => '/usr/sbin/docker-gc-volume',
+    user    => root,
+    hour    => fqdn_rand(23),
+    require => File['/usr/sbin/docker-gc-volume'],
   }
 }
