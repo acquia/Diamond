@@ -2,8 +2,12 @@ class base::docker(
   $docker_gc_grace_period=hiera('base::docker_gc::grace_period', 3600)
 ) {
   class { '::docker':
-    root_dir => '/mnt/lib/docker',
-    tmp_dir  => '/mnt/tmp',
+    package_name            => 'docker-engine',
+    version                 => '1.9.0-1.el7.centos',
+    package_source_location => 'https://yum.dockerproject.org/repo/main/centos/7',
+    package_key_source      => 'https://yum.dockerproject.org/gpg',
+    root_dir                => '/mnt/lib/docker',
+    tmp_dir                 => '/mnt/tmp',
   }
 
   file { '/mnt/lib/docker':
