@@ -15,6 +15,7 @@ describe 'acquia_registry::common', :type => :class do
     it { should contain_file('/etc/docker') }
     it { should contain_file('/etc/docker/certs.d') }
     it { should contain_file("/etc/docker/certs.d/#{facts[:registry_endpoint]}") }
+    it { should contain_file("/etc/docker/certs.d/#{facts[:registry_endpoint]}/ca.crt") }
   end
 
   context 'creates the certificate file' do
