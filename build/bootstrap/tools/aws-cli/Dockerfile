@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM scratch
+FROM centos:7
 MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
 
-ADD gof3r /gof3r
-
-ENTRYPOINT ["/gof3r"]
+RUN yum install -y epel-release && \
+  yum install -y python-pip && \
+  pip install awscli \
+&& yum clean all \
+&& rm -rf /tmp/* \
+&& rm -rf /var/tmp/*

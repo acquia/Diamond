@@ -8,14 +8,14 @@
 #   http://open.mesosphere.com/downloads/mesos/
 #
 
-BASE_URL="http://downloads.mesosphere.io/master/centos/"
+BASE_URL="http://downloads.mesosphere.io/master/centos"
 OS_REL="7"
 MESOS_VERSION="0.23.0-1.0.centos701406"
 
 BASEDIR=/tmp
 
 cd ${BASEDIR}
-/usr/bin/curl -sSL -OJ ${BASEURL}/${OS_REL}/mesos-${MESOS_VERSION}.x86_64.rpm
+/usr/bin/curl -sSL -OJ ${BASE_URL}/${OS_REL}/mesos-${MESOS_VERSION}.x86_64.rpm
 
 if [ -d "/dist/" ]; then
   mv -f ${BASEDIR}/mesos-*.rpm /dist/
