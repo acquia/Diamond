@@ -40,9 +40,7 @@ end
 
 def create(dist_root)
   gpg_homedir = "#{dist_root}/.gnupg"
-  rpm_gpg_key = "#{dist_root}/RPM-GPG-KEY-nemesis"
   FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
-  FileUtils.rm_f(rpm_gpg_key) if File.exists?(rpm_gpg_key)
   FileUtils.mkdir_p(gpg_homedir)
 
   default_gpg_key_params= <<PARAMS
@@ -92,9 +90,9 @@ def upload(repo_root, stackname)
   bucket = get_s3_bootstrap_repo_bucket(stackname)
 
   if system('which aws')
-    cmd = "aws s3 cp #{repo_root} s3://#{bucket}/repo --recursive"
+    cmd = "aws s3 cp #{repo_root}/repo s3://#{bucket}/repo --recursive"
   else
-    cmd = "docker run -i --rm #{get_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 cp /dist s3://#{bucket}/repo --recursive"
+    cmd = "docker run -i --rm #{get_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 cp /dist s3://#{bucket}/repo --recursive"
   end
   system(cmd)
 end
