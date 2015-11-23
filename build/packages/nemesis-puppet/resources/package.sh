@@ -119,11 +119,10 @@ def build(basedir, distdir, version, build_time)
     # Copy over third party and puppet modules
     @log.info('Preparing to build nemesis-puppet package')
     FileUtils.cp_r(basedir.join('puppet'), dir)
-    source = Pathname.new(dir) + 'puppet' + 'third_party'
-    files = Dir.glob(source + '*')
-    dest = dir + '/puppet' + '/modules'
+    librar_puppet_files = Pathname.new(ENV['LIBRARIAN_PUPPET_PATH'])
+    files = Dir.glob("#{librar_puppet_files}*")
+    dest = File.join(dir, 'puppet', 'modules')
     FileUtils.mv(files, dest, verbose: false, force: true)
-    FileUtils.rm_r(source)
 
     @log.info('Building nemesis-puppet package')
     cli = 'fpm' \
