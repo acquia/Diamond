@@ -4,9 +4,13 @@ class base::repos {
   }
 
   if $::custom_repo {
+    package { 'yum-plugin-s3-iam':
+      ensure => '1.0.2-1',
+    }
+
     file { '/etc/yum.repos.d/nemesis.repo':
       ensure  => present,
-      content => "[nemesis]\nname=Nemesis Repository\nbaseurl=http://${::custom_repo}.s3.amazonaws.com/repo/main/centos/7\nenabled=1\ngpgcheck=1\ngpgkey=http://${::custom_repo}.s3.amazonaws.com/repo/gpg\n",
+      content => template('base/nemesis.repo.erb'),
     }
   }
 
