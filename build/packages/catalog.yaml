@@ -1,0 +1,7 @@
+# Array of packages that will go into the public repository. By default all
+# package builds are considered private unless they are placed in this list.
+public:
+- puppet
+
+# Array of packages to skip the build for
+skip:
