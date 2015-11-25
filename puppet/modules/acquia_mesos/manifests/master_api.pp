@@ -21,7 +21,6 @@ class acquia_mesos::master_api {
 
   docker::run { 'grid-api':
     image            => 'acquia/grid-api',
-    use_name         => true,
     env              => [
       "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
       'AG_REMOTE_SCHEDULER_PORT=8081',

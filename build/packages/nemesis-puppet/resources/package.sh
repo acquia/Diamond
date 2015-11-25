@@ -112,8 +112,17 @@ end
 def build(basedir, distdir, version, build_time)
   @log.info("Bumping version to #{version}")
 
+  @log.info("Installing dependencies")
+  unless system('bundle install')
+    @log.error('Error installing dependencies')
+    exit 1
+  end
+
   @log.info('Updating puppet 3rd party modules')
-  system('librarian-puppet install')
+  unless system('librarian-puppet install')
+    @log.error('Error installing puppet 3rd party modules')
+    exit 1
+  end
 
   Dir.mktmpdir do |dir|
     # Copy over third party and puppet modules

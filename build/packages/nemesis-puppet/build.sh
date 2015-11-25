@@ -21,7 +21,5 @@ BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 NEMESIS_PUPPET_ROOT=${BASEDIR}/../../../
 
 docker build -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
-CONTAINER_ID=$(docker run -d -v ${NEMESIS_PUPPET_ROOT}:/nemesis-puppet -v ${NEMESIS_PUPPET_ROOT}/dist:/dist nemesis-puppet)
-docker wait ${CONTAINER_ID}
-docker rm -f ${CONTAINER_ID}
+docker run -i --rm -v ${NEMESIS_PUPPET_ROOT}:/nemesis-puppet -v ${NEMESIS_PUPPET_ROOT}/dist:/dist nemesis-puppet
 docker rmi -f nemesis-puppet
