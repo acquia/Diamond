@@ -25,6 +25,7 @@
 
 require 'fileutils'
 require 'optparse'
+require 'yaml'
 
 # Monkey patch to help convert build time result to a more readable format
 class Numeric
@@ -85,10 +86,11 @@ end
 # for the resulting package to be created.
 def run_package_build(basedir, list)
   puts "Starting build for: packages"
+  catalog = YAML.load_file(File.join(basedir, 'catalog.yaml'))
   list.each do |script|
     name = File.dirname(script)
     package_build_dir = File.join(basedir, name)
-    next if File.exist?(File.join(package_build_dir, 'skip'))
+    next if (catalog['skip'] || '').include?(name)
     env_file = File.join(package_build_dir, 'env.conf')
     puts "Building: #{name}"
     Dir.chdir(package_build_dir) do
@@ -104,8 +106,12 @@ def run_package_build(basedir, list)
         global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
         flags.concat(global_env_flags) if global_env_flags
 
+        # Check the package volume mount type
+        package_visability = (catalog['public'] || '').include?(name) ? 'public' : 'private'
+        dist_volume_mount = File.join($distdir, package_visability)
+
         # Run the container
-        container_id=`docker run -d #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}`
+        container_id=`docker run -d #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}`
         exit_code=`docker wait #{container_id}`.to_i
         system("docker rm -f #{container_id}")
 
@@ -145,7 +151,7 @@ build_list = build_directories.keys if build_list.empty?
 
 regex_pattern = ARGV[0] || '**'
 
-FileUtils.mkdir_p($distdir)
+FileUtils.mkdir_p([File.join($distdir, 'private'), File.join($distdir, 'public')])
 start_time = Time.now
 # Change to where the build script is since there are hardcoded paths and assumptions for the build
 Dir.chdir(basedir) do
