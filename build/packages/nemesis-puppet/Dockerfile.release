@@ -14,8 +14,10 @@
 
 FROM acquia/rpm_packaging
 
-RUN yum install -y \
+RUN rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm \
+&& yum install -y \
   git \
+  puppet \
 && yum clean all \
 && rm -rf /tmp/* \
 && rm -rf /var/tmp/*

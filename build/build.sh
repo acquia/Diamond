@@ -118,11 +118,7 @@ def run_package_build(basedir, list, config, options)
           dist_volume_mount = File.join($distdir, package_visability)
 
           # Run the container
-          container_id=`docker run -d #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}`
-          exit_code=`docker wait #{container_id}`.to_i
-          system("docker rm -f #{container_id}")
-
-          if exit_code != 0
+          unless system("docker run -i --rm #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}")
             puts "Error: #{name}:#{tag} build exited with code #{exit_code}"
             exit 1
           else

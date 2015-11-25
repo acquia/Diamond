@@ -20,6 +20,7 @@ tmp
 .vagrant
 
 # Project-specific
+.librarian/*
 dist/*
 *.tgz
 *.tar.gz
