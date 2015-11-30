@@ -23,3 +23,4 @@ end
 
 gem 'puppet', '3.8.4'
 gem 'librarian-puppet'
+gem 'aws-sdk-v1'
