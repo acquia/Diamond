@@ -19,6 +19,8 @@ describe 'base::docker' do
     it {
       should contain_class('docker').with_root_dir('/mnt/lib/docker')
       should contain_class('docker').with_tmp_dir('/mnt/tmp')
+      should contain_class('docker').with_use_upstream_package_source(true)
+
       should contain_file('/mnt/lib/docker')
     }
   end
@@ -33,14 +35,14 @@ describe 'base::docker' do
       )
 
       should contain_file('/usr/sbin/docker-gc').with(
-        'source' => 'puppet:///modules/base/docker-gc/docker-gc',
+        'source' => 'puppet:///modules/base/docker/docker-gc/docker-gc',
         'mode' => '0500',
         'owner' => 'root',
         'group' => 'root'
       )
 
       should contain_file('/etc/docker-gc-exclude').with(
-        'source' => 'puppet:///modules/base/docker-gc/docker-gc-exclude',
+        'source' => 'puppet:///modules/base/docker/docker-gc/docker-gc-exclude',
         'mode' => '0400',
         'owner' => 'root',
         'group' => 'root'
@@ -64,7 +66,7 @@ describe 'base::docker' do
   describe 'docker-gc-volume script' do
     it {
       should contain_file('/usr/sbin/docker-gc-volume').with(
-        'source' => 'puppet:///modules/base/docker-gc-volume/docker-gc-volume',
+        'source' => 'puppet:///modules/base/docker/docker-gc-volume/docker-gc-volume',
         'mode' => '0755',
         'owner' => 'root',
         'group' => 'root'
