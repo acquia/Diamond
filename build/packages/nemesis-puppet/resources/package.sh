@@ -13,7 +13,7 @@ options = {
   :branch => ENV['NEMESIS_PUPPET_BRANCH'] || 'master',
   :github_oauth_token => ENV['GITHUB_OAUTH_TOKEN'],
   :basedir => '/nemesis-puppet',
-  :distdir => '/dist/packages',
+  :distdir => '/dist',
 }
 
 OptionParser.new do |opt|

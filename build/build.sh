@@ -100,6 +100,10 @@ def run_package_build(basedir, list, config, options)
       puts "#{name}"
     else
       env_file = File.join(package_build_dir, 'env.conf')
+      # Check the package volume mount type
+      package_visibility = (config['public'] || '').include?(name) ? 'public' : 'private'
+      dist_volume_mount = File.join($distdir, package_visibility)
+
       puts "Building: #{name}"
       Dir.chdir(package_build_dir) do
         case File.basename(script)
@@ -113,10 +117,6 @@ def run_package_build(basedir, list, config, options)
           global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
           flags.concat(global_env_flags) if global_env_flags
 
-          # Check the package volume mount type
-          package_visability = (config['public'] || '').include?(name) ? 'public' : 'private'
-          dist_volume_mount = File.join($distdir, package_visability)
-
           # Run the container
           unless system("docker run -i --rm #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}")
             puts "Error: #{name}:#{tag} build exited with code #{exit_code}"
@@ -125,7 +125,7 @@ def run_package_build(basedir, list, config, options)
             system("docker rmi -f #{name}:#{tag}")
           end
         when "build.sh"
-          system("/bin/bash build.sh")
+          system("/bin/bash build.sh #{dist_volume_mount}")
         when "Makefile"
           system("make")
         end
@@ -181,4 +181,3 @@ puts "Build Time: #{build_time.duration}" unless options[:list]
 if `docker ps -a | grep Exited | wc -l`.to_i > 0
   system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
 end
-
