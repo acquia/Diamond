@@ -8,12 +8,8 @@ for key in $(rpm -qa gpg-pubkey \* --qf "%{version}-%{release} %{summary}\n" |gr
     /usr/bin/rpm -e --allmatches key >/dev/null 2>&1
 done
 
-# Install or update nemesis-puppet package if necessary
-if [ $(yum list installed nemesis-puppet) == 0 ]; then
-  yum update -y nemesis-puppet
-else
-  yum install -y nemesis-puppet
-fi
+# Update nemesis-puppet package if a new version is available
+yum clean all && yum install -y nemesis-puppet
 
 # Export all necessary environment variables
 export RUBYLIB=/etc/puppet/lib:$RUBYLIB
