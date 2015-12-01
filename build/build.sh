@@ -119,7 +119,7 @@ def run_package_build(basedir, list, config, options)
 
           # Run the container
           unless system("docker run -i --rm #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}")
-            puts "Error: #{name}:#{tag} build exited with code #{exit_code}"
+            puts "Error: #{name}:#{tag} build exited."
             exit 1
           else
             system("docker rmi -f #{name}:#{tag}")
