@@ -1,0 +1,4 @@
+type: build.sh
+version: 1.0
+output: 
+  - acquia/grid-api

@@ -57,89 +57,68 @@ end
 basedir=File.expand_path(File.dirname(__FILE__))
 $distdir=File.join(basedir, '..', 'dist', 'packages')
 
-# Run through all listed container builds in a list and execute their build process.
-def run_container_build(basedir, list, config, options)
+# Run the given container and when finished remove it
+def run_container_build(name, tag, package_build_dir)
+  env_file = File.join(package_build_dir, 'env.conf')
+
+  flags = []
+  flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
+  flags << " --env-file #{env_file}" if File.exist?(env_file)
+  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
+  flags.concat(global_env_flags) if global_env_flags
+
+  # Run the container
+  puts "Running build container: #{name}:#{tag}"
+  unless system("docker run -i --rm #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}")
+    puts "Error: unable to run #{name}:#{tag}"
+    exit 1
+  else
+    puts "Deleting build container: #{name}:#{tag}"
+    system("docker rmi -f #{name}:#{tag}")
+  end
+end
+
+# Run through all builds in a list and execute their script process.
+def build(build_dir, basedir, list, config, options)
   puts "Starting build for: containers" unless options[:list]
-  list.each do |script|
-    name = File.dirname(script)
+  list.uniq.each do |package_config_file|
+    name = File.dirname(package_config_file)
     package_build_dir = File.join(basedir, name)
-    next if ((config && config['skip']) || '').include?(name)
+    build_config = YAML.load_file(package_config_file)
+
+    unless build_config['output']
+      build_config['output'] = [name]
+    end
+
+    next if ((config && config['skip']) || build_config['skip'] || '').include?(name)
 
     if options[:list]
-      puts "#{name}"
+      build_config['output'].each { |x| puts x }
     else
       puts "Building: #{name}"
       Dir.chdir(package_build_dir) do
-        case File.basename(script)
-        when "Dockerfile"
+        case build_config['script']
+        when 'Dockerfile'
           tag = 'latest'
-          puts "docker build -t #{name}:#{tag} ."
           system("docker build -t #{name}:#{tag} .")
-        when "build.sh"
-          system("/bin/bash build.sh")
-        when "Makefile"
-          system("make && make clean")
-        end
-      end
-    end
-  end
-end
 
-# Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
-# building that package and second a package.sh script with is the command entrypoint for the container.
-# This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
-# for the resulting package to be created.
-def run_package_build(basedir, list, config, options)
-  puts "Starting build for: packages" unless options[:list]
-  list.each do |script|
-    name = File.dirname(script)
-    package_build_dir = File.join(basedir, name)
-    next if ((config && config['skip']) || '').include?(name)
-
-    if options[:list]
-      puts "#{name}"
-    else
-      env_file = File.join(package_build_dir, 'env.conf')
-      # Check the package volume mount type
-      package_visibility = (config['public'] || '').include?(name) ? 'public' : 'private'
-      dist_volume_mount = File.join($distdir, package_visibility)
-
-      puts "Building: #{name}"
-      Dir.chdir(package_build_dir) do
-        case File.basename(script)
-        when "Dockerfile"
-          tag = 'latest'
-          system("docker build -t #{name}:latest .")
-          # Add custom env flags
-          flags = []
-          flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
-          flags << " --env-file #{env_file}" if File.exist?(env_file)
-          global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
-          flags.concat(global_env_flags) if global_env_flags
-
-          # Run the container
-          unless system("docker run -i --rm #{flags.join(' ')} -v #{dist_volume_mount}:/dist #{name}:#{tag}")
-            puts "Error: #{name}:#{tag} build exited."
-            exit 1
-          else
-            system("docker rmi -f #{name}:#{tag}")
-          end
-        when "build.sh"
-          system("/bin/bash build.sh #{dist_volume_mount}")
-        when "Makefile"
+          # Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
+          # building that package and second a package.sh script with is the command entrypoint for the container.
+          # This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
+          # for the resulting package to be created.
+          run_container_build(name, tag, package_build_dir) if build_dir == 'packages'
+        when 'build.sh'
+          system("/bin/bash build.sh #{$distdir}")
+        when 'Makefile'
           system("make")
+        when 'Rakefile'
+          system("bundle install")
+          system("bundle exec rake")
         end
       end
     end
   end
 end
-
-# Map of build directories to build type
-build_directories={
-  'bootstrap' => 'container',
-  'packages' => 'package',
-  'containers' => 'container',
-}
 
 build_list=[]
 options = {}
@@ -152,14 +131,14 @@ OptionParser.new do |opts|
   opts.on('-l', '--list') { options[:list] = true }
 end.parse!
 
-build_list = build_directories.keys if build_list.empty?
+build_list = ['bootstrap', 'containers', 'packages'] if build_list.empty?
 
 regex_pattern = ARGV[0] || '**'
 
 # Load build config
 build_config = YAML.load_file(File.join(basedir, 'config.yaml'))
 
-FileUtils.mkdir_p([File.join($distdir, 'private'), File.join($distdir, 'public')])
+FileUtils.mkdir_p($distdir)
 start_time = Time.now
 # Change to where the build script is since there are hardcoded paths and assumptions for the build
 Dir.chdir(basedir) do
@@ -167,10 +146,10 @@ Dir.chdir(basedir) do
   build_list.sort.each do |build_dir|
     # Change into the specific build directory and search for any files matching the regex_pattern to be built
     Dir.chdir(build_dir) do
-      files = Dir.glob("#{regex_pattern}/{Dockerfile,Makefile,build.sh}")
+      files = Dir.glob("#{regex_pattern}/build.yaml")
       path = File.join(basedir, build_dir)
       config = build_config[build_dir]
-      send("run_#{build_directories[build_dir]}_build", path, files, config, options) unless files.size == 0
+      build(build_dir, path, files, config, options) unless files.size == 0
     end
   end
 end
@@ -178,6 +157,11 @@ end
 build_time = Time.now - start_time
 puts "Build Time: #{build_time.duration}" unless options[:list]
 
-if `docker ps -a | grep Exited | wc -l`.to_i > 0
-  system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
+# Purge any exited containers that have been left hanging around
+if File.exists?('/var/run/docker.sock')
+  exited_containers = `docker ps -a | grep Exited | wc -l`.to_i
+  if exited_containers > 0
+    puts "Cleaning up #{exited_containers} exited containers"
+    system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
+  end
 end

@@ -19,10 +19,11 @@ set -ex
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 NEMESIS_PUPPET_ROOT=${BASEDIR}/../../..
+
 if [[ "$#" -ge 1 ]]; then
     DIST_VOLUME_MOUNT=$1
 else
-    DIST_VOLUME_MOUNT="${NEMESIS_PUPPET_ROOT}/dist"
+    DIST_VOLUME_MOUNT="${NEMESIS_PUPPET_ROOT}/dist/packages"
 fi
 
 docker build -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
