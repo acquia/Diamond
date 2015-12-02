@@ -45,7 +45,7 @@ docker run -it --rm \
 docker rmi -f nemesis/grid-api
 
 # Package the build in a minimal scratch container
-docker build -t grid-api -f ${BASEDIR}/Dockerfile.release ${BASEDIR}
+docker build -t acquia/grid-api -f ${BASEDIR}/Dockerfile.release ${BASEDIR}
 
 # Cleanup
 rm grid-api

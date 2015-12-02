@@ -10,7 +10,17 @@ FORGE
     puppetlabs-java (1.4.1)
       puppetlabs-stdlib (< 5.0.0, >= 2.4.0)
     puppetlabs-vcsrepo (1.3.1)
-    stahnma-epel (1.1.1)
+    stahnma-epel (1.2.0)
+
+GIT
+  remote: https://github.com/acquia/garethr-docker.git
+  ref: master
+  sha: c867de79cc85c96c922807a681855ff062fefef7
+  specs:
+    acquia-garethr-docker (4.1.1)
+      puppetlabs-apt (<= 3.0.0, >= 1.8.0)
+      puppetlabs-stdlib (>= 4.1.0)
+      stahnma-epel (>= 0.0.6)
 
 GIT
   remote: https://github.com/acquia/puppet-aurora.git
@@ -37,16 +47,6 @@ GIT
   specs:
     example42-puppet-yum (2.1.24)
       example42-puppi (>= 2.0.0)
-
-GIT
-  remote: https://github.com/garethr/garethr-docker.git
-  ref: 654739d83eb8677fe7e3f360c2da5b9cc88b13d4
-  sha: 654739d83eb8677fe7e3f360c2da5b9cc88b13d4
-  specs:
-    garethr-garethr-docker (4.1.1)
-      puppetlabs-apt (<= 3.0.0, >= 1.8.0)
-      puppetlabs-stdlib (>= 4.1.0)
-      stahnma-epel (>= 0.0.6)
 
 GIT
   remote: https://github.com/jenkinsci/puppet-jenkins.git
@@ -123,10 +123,10 @@ GIT
     puppet-sysctl (1.0.2)
 
 DEPENDENCIES
+  acquia-garethr-docker (>= 0)
   acquia-puppet-aurora (>= 0)
   deric-puppet-mesos (>= 0)
   example42-puppet-yum (>= 0)
-  garethr-garethr-docker (>= 0)
   puppet-community-puppet-unattended_upgrades (>= 0)
   puppet-sysctl (>= 0)
   puppetlabs-ntp (>= 0)

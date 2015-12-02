@@ -1,0 +1,3 @@
+script: Dockerfile
+output:
+  - acquia/rpm_packaging

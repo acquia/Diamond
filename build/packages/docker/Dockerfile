@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-# docker run --env AWS_ACCESS_KEY_ID='' --env AWS_SECRET_ACCESS_KEY='' tools/aws-cli aws s3 ls
+FROM acquia/rpm_packaging
 
-all: build
+ADD resources/package.sh $HOME/package.sh
+RUN chmod +x $HOME/package.sh
 
-build: 
-	docker build -t tools/aws-cli .
+WORKDIR $HOME
+CMD ./package.sh

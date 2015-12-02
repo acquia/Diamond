@@ -1,0 +1,4 @@
+script: build.sh
+version: v0.4.0 
+output: 
+  - acquia/mesos-dns
