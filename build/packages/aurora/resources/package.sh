@@ -3,7 +3,7 @@ set -ex
 
 : ${AURORA_VERSION:=0.9.0}
 : ${AURORA_GIT_TAG:=aurora-1095}
-: ${AURORA_PACKAGING_GIT_TAG:=master}
+: ${AURORA_PACKAGING_GIT_TAG:=74fce5aff2a08c54a0360b5b04727135ec43344d}
 
 BASEDIR=/tmp
 
@@ -23,7 +23,7 @@ export AURORA_VERSION=${AURORA_VERSION}
 cd ${BASEDIR} && tar -czf /src.tar.gz apache-aurora-${AURORA_VERSION}
 cd ${BASEDIR}/aurora-packaging/specs/rpm
 make srpm
-yum-builddep -y ${DIST_DIR}/rpmbuild/SRPMS/*
+# yum-builddep -y ${DIST_DIR}/rpmbuild/SRPMS/*
 make rpm
 
 if [ -d "/dist/" ]; then

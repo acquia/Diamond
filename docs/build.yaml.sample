@@ -1,0 +1,8 @@
+# package and container configuration file used by build script for
+# each individual build
+
+script: build.sh   # One of [Dockerfile, build.sh, Makefile, Rakefile]
+version: v0.4.0
+skip: false
+output:
+  - acquia/example-app

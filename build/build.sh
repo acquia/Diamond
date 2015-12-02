@@ -158,7 +158,7 @@ build_time = Time.now - start_time
 puts "Build Time: #{build_time.duration}" unless options[:list]
 
 # Purge any exited containers that have been left hanging around
-if File.exists?('/var/run/docker.sock')
+if ENV['DOCKER_HOST'] || File.exists?('/var/run/docker.sock')
   exited_containers = `docker ps -a | grep Exited | wc -l`.to_i
   if exited_containers > 0
     puts "Cleaning up #{exited_containers} exited containers"
