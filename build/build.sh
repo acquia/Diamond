@@ -80,7 +80,7 @@ end
 
 # Run through all builds in a list and execute their script process.
 def build(build_dir, basedir, list, config, options)
-  puts "Starting build for: containers" unless options[:list]
+  puts "Starting build for: #{build_dir}" unless options[:list]
   list.uniq.each do |package_config_file|
     name = File.dirname(package_config_file)
     package_build_dir = File.join(basedir, name)
