@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+#
+# Copyright 2015 Acquia, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+#
+
+require 'pathname'
+require 'fileutils'
+
+nemesis_puppet_root = File.expand_path(File.join(__FILE__, '..', '..'))
+dist_root = File.join(nemesis_puppet_root, 'dist')
+bin_dir = File.join(nemesis_puppet_root, 'bin')
+
+def update_package(dist_root, bin_dir, package, repo)
+
+  Dir.glob(File.join("#{dist_root}", "**", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
+
+  commands = [
+   "#{bin_dir}/repo delete #{repo}",
+   "#{bin_dir}/build -p #{package}",
+   "#{bin_dir}/repo create",
+   "#{bin_dir}/repo upload #{repo}"
+  ]
+
+  commands.each do |cmd|
+    puts `#{cmd}`
+    if $?.exitstatus != 0 
+      puts "Package update failed with exitcode #{$?.exitstatus}"
+    exit 1
+    end
+  end
+
+end
+
+action = ARGV.shift
+package = ARGV.shift
+repo = ARGV.shift
+
+case action.downcase
+when 'update-package'
+  update_package(dist_root, bin_dir, package, repo)
+else
+  puts 'Usage: dev [ACTION] [PACKAGE] [REPO]'
+end
