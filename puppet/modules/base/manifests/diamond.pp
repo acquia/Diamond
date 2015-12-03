@@ -25,7 +25,7 @@ class base::diamond {
   }
 
   package { 'diamond':
-    ensure  => '4.0.325-0',
+    ensure  => '4.0.0-0',
     require => User['diamond'],
   }
 

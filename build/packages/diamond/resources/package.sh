@@ -1,9 +1,13 @@
 #!/bin/bash
 
+set -ex
+
+: ${DIAMOND_VERSION:=v4.0}
+
 BASEDIR=/tmp
 
 cd ${BASEDIR}
-git clone https://github.com/python-diamond/Diamond.git diamond
+git clone -b ${DIAMOND_VERSION} https://github.com/acquia/Diamond.git diamond
 cd ${BASEDIR}/diamond
 make rpm
 
