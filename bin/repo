@@ -18,7 +18,7 @@
 # Utility to manage creating a rpm repository from packages built for nemesis-puppet
 #
 
-require 'aws-sdk-v1'
+require 'aws-sdk'
 require 'fileutils'
 require 'pathname'
 require 'tempfile'
@@ -28,14 +28,16 @@ dist_root = File.join(nemesis_puppet_root, 'dist')
 repo_root = File.join(dist_root, 'repo/')
 
 def get_s3_bootstrap_repo_bucket(repo_stackname)
-  cf = AWS::CloudFormation.new
-  stack = cf.stacks[repo_stackname]
-  repo = stack.resources['repo']
-  repo.physical_resource_id
+  Aws::CloudFormation::Resource.new.stack(repo_stackname).resource('repo').physical_resource_id
 end
 
-def get_aws_creds()
-  "-e AWS_ACCESS_KEY_ID='#{ENV['AWS_ACCESS_KEY_ID']}' -e AWS_SECRET_ACCESS_KEY='#{ENV['AWS_SECRET_ACCESS_KEY']}'"
+# @return [Aws::Credentials] Currently set Aws credentials, or nil if they are not set.
+def aws_creds
+  @creds ||= Aws::S3::Client.new.config.credentials
+end
+
+def docker_aws_creds
+  "-e AWS_ACCESS_KEY_ID='#{aws_creds.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.secret_access_key}'"
 end
 
 def create(dist_root)
@@ -81,7 +83,7 @@ def delete(repo_root, stackname)
   if system('which aws')
     cmd = "aws s3 rm s3://#{bucket}/repo --recursive"
   else
-    cmd = "docker run -i --rm #{get_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 rm s3://#{bucket}/repo --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 rm s3://#{bucket}/repo --recursive"
   end
   system(cmd)
 end
@@ -92,7 +94,7 @@ def upload(repo_root, stackname)
   if system('which aws')
     cmd = "aws s3 cp #{repo_root}/repo s3://#{bucket}/repo --recursive"
   else
-    cmd = "docker run -i --rm #{get_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 cp /dist s3://#{bucket}/repo --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 cp /dist s3://#{bucket}/repo --recursive"
   end
   system(cmd)
 end
@@ -105,17 +107,29 @@ def download(repo_root, stackname)
   if system('which aws')
     cmd = "aws s3 cp s3://#{bucket}/repo #{repo_root} --recursive"
   else
-    cmd = "docker run -i --rm #{get_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 cp s3://#{bucket}/repo /dist --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 cp s3://#{bucket}/repo /dist --recursive"
   end
   system(cmd)
+end
+
+def print_usage_and_exit
+  puts 'Usage: repo [ACTION] [REPO] [OPTION]'
+  exit(1)
 end
 
 action = ARGV.shift
 stackname = ''
 
+print_usage_and_exit if action.nil?
+
 unless action == 'create'
-  unless ENV['AWS_ACCESS_KEY_ID'] && ENV['AWS_SECRET_ACCESS_KEY']
-    puts 'Error: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables required'
+  begin
+    unless aws_creds
+      puts 'Error: You must configure AWS access credentials.'
+      exit 1
+    end
+  rescue Aws::Errors::MissingRegionError => e
+    puts "Error: #{e.message}"
     exit 1
   end
   stackname = ARGV.shift
@@ -131,5 +145,5 @@ when 'upload'
 when 'download'
   download(dist_root, stackname)
 else
-  puts 'Usage: repo [ACTION] [REPO] [OPTION]'
+  print_usage_and_exit
 end

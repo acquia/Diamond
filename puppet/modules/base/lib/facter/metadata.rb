@@ -2,7 +2,7 @@
 # Also store a copy of the Acquia metadata as 'acquia_metadata'
 require 'facter'
 require 'json'
-require 'nemesis_aws_client'
+require 'aws_helper'
 
 module AcquiaFacts
   def self.snakecase(str)
@@ -30,13 +30,9 @@ module AcquiaFacts
   end
 end
 
-ec2 = NemesisAwsClient::EC2.new
-cf = NemesisAwsClient::CloudFormation.new
-
-tags = ec2.instances[Facter.value('ec2_instance_id')].tags.to_h
-stack = cf.stacks[tags['aws:cloudformation:stack-name']]
-metadata = stack.resources[tags['aws:cloudformation:logical-id']].metadata
-if metadata
-  metadata = JSON.load(metadata)
-  AcquiaFacts.add_facts(metadata)
+stack_name_tag = AwsHelper.instance.tag('aws:cloudformation:stack-name')
+logical_id_tag = AwsHelper.instance.tag('aws:cloudformation:logical-id')
+if stack_name_tag && logical_id_tag
+  metadata = AwsHelper::CloudFormation.stack(stack_name_tag).resource(logical_id_tag).metadata
+  AcquiaFacts.add_facts(JSON.load(metadata)) if metadata
 end

@@ -19,8 +19,9 @@ group :development, :test do
   gem 'puppetlabs_spec_helper', '0.10.3',  require: false
   gem 'puppet-lint', '1.1.0',              require: false
   gem 'rubocop', '0.31.0',                 require: false
+  gem 'pry',                               require: false
 end
 
+gem 'aws-sdk', '~> 2.2'
 gem 'puppet', '3.8.4'
 gem 'librarian-puppet'
-gem 'aws-sdk-v1'

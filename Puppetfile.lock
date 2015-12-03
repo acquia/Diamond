@@ -62,6 +62,14 @@ GIT
       puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
 
 GIT
+  remote: https://github.com/jfryman/puppet-selinux.git
+  ref: master
+  sha: a8d930fd83afcee99b62406c12b47a13b679f6b3
+  specs:
+    jfryman-puppet-selinux (0.2.6)
+      puppetlabs-stdlib (>= 0)
+
+GIT
   remote: https://github.com/puppet-community/puppet-unattended_upgrades.git
   ref: 1.0.3
   sha: 3d9fc146909eb3c90361263bfbbfc8a9293a603f
@@ -127,6 +135,7 @@ DEPENDENCIES
   acquia-puppet-aurora (>= 0)
   deric-puppet-mesos (>= 0)
   example42-puppet-yum (>= 0)
+  jfryman-puppet-selinux (>= 0)
   puppet-community-puppet-unattended_upgrades (>= 0)
   puppet-sysctl (>= 0)
   puppetlabs-ntp (>= 0)
