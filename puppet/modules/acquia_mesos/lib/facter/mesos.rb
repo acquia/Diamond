@@ -146,4 +146,14 @@ if AwsHelper.server_type_is?('mesos')
       Facter.value('processorcount').to_i
     end
   end
+
+  # Check if stack was launched with reference to kinesis log stream
+  logstream_stack_name = stack.parameter('LogStreamStack')
+  if logstream_stack_name
+    Facter.add(:logstream_name) do
+      setcode do
+        AwsHelper::CloudFormation.stack(logstream_stack_name).output('NemesisKinesisStreamName')
+      end
+    end
+  end
 end

@@ -19,16 +19,36 @@ class acquia_mesos::master_api {
     force     => true,
   }
 
-  docker::run { 'grid-api':
-    image            => 'acquia/grid-api',
-    env              => [
+  # Pass logstream name to grid-api so it can launch containers with correctly routed
+  # logs
+  if $logstream_name {
+    $env = [
       "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
       'AG_REMOTE_SCHEDULER_PORT=8081',
-    ],
+      'AG_LOGSTREAM=1',
+      'AG_LOGSTREAM_DRIVER=fluentd',
+      'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
+      'AG_LOGSTREAM_TAG_PREFIX=grid',
+    ]
+  }
+  else {
+    $env = [
+      "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
+      'AG_REMOTE_SCHEDULER_PORT=8081',
+    ]
+  }
+
+  docker::run { 'grid-api':
+    image            => 'acquia/grid-api',
+    env              => $env,
     ports            => ['2114'],
     expose           => ['2114'],
     restart          => always,
-    extra_parameters => ['--restart=always', '-d'],
+    extra_parameters => [
+      '--restart=always',
+      '-d',
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="grid-api"'
+    ],
     privileged       => false,
     require          => [
       Docker::Image['acquia/grid-api'],

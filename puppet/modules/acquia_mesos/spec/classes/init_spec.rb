@@ -17,6 +17,7 @@ describe 'acquia_mesos', :type => :class do
       :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
       :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181',
+      :ec2_placement_availability_zone => 'us-east-1a',
       :osfamily => 'redhat',
     }
   }
@@ -82,6 +83,21 @@ describe 'acquia_mesos', :type => :class do
           'missingok' => true,
         }
       )
+    }
+  end
+
+  context 'contains logstream when kinesis enabled' do
+    let(:facts) {
+      super().merge({ :logstream_name => 'TESTSTREAM' })
+    }
+    it {
+      should contain_class('acquia_mesos::logstream')
+    }
+  end
+
+  context 'does not contain logstream when kinesis is disabled' do
+    it {
+      should_not contain_class('acquia_mesos::logstream')
     }
   end
 end

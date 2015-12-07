@@ -115,6 +115,16 @@ module AwsHelper
         p = parameters.find { |x| x.parameter_key == key }
         p.nil? ? nil : p.parameter_value
       end
+
+      # Return the value of the given output, or nil if the output is
+      # not defined on the stack.
+      #
+      # @param key [string] Key for a stack output.
+      # @return [string] Value of the output, or nil.
+      def output(key)
+        o = outputs.find { |x| x.output_key == key }
+        o.nil? ? nil : o.output_value
+      end
     end
   end
 
