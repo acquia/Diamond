@@ -37,12 +37,8 @@ describe 'acquia_registry::server', :type => :class do
     end
 
     context 'starts a docker registry' do
-       it {
-        should contain_docker__run('registry').with(
-          {
-            'image' => 'registry:2.2.0',
-          }
-        )
+      it {
+        should contain_docker__run('registry').with_image('registry:2.2.0')
       }
     end
   end
