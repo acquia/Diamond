@@ -62,7 +62,7 @@ describe 'acquia_zookeeper', :type => :class do
   end
 
   context 'installs the correct zookeeper version' do
-    let(:version) { '3.4.6-1' }
+    let(:version) { '3.4.7-1' }
     it {
       should contain_package('zookeeper')
         .with_ensure(version)
