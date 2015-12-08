@@ -1,7 +1,9 @@
 #!/bin/bash
 
+set -e
+
 NAME="zookeeper"
-VERSION="3.4.6"
+VERSION="3.4.7"
 EXHIBITOR_VERSION="1.5.5"
 EXHIBITOR_BRANCH="v1.5.5"
 
