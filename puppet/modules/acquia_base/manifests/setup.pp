@@ -1,4 +1,4 @@
-class base::setup {
+class acquia_base::setup {
   file { '/mnt/log':
     ensure => directory,
   }

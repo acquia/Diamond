@@ -1,8 +1,8 @@
-class base::puppet {
-  require base::cron
+class acquia_base::puppet {
+  require acquia_base::cron
 
-  # TODO This ensures that Puppet 3.8 is installed
-  # Upgrade to Puppet 4 at some point
+  # Ensures that Puppet 3.8 is installed
+  # @todo: Upgrade to Puppet 4 at some point
   package { 'puppetlabs-release':
     source => 'https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm'
   }
@@ -21,6 +21,6 @@ class base::puppet {
 
   file { '/etc/puppet/puppet.conf':
     ensure => present,
-    source => 'puppet:///modules/base/puppet/puppet.conf',
+    source => 'puppet:///modules/acquia_base/puppet/puppet.conf',
   }
 }

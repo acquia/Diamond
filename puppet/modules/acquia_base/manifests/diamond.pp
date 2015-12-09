@@ -1,4 +1,4 @@
-class base::diamond {
+class acquia_base::diamond {
   group { 'diamond':
     ensure => present,
   }

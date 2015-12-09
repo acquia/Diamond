@@ -1,5 +1,5 @@
-class base::docker(
-  $docker_gc_grace_period=hiera('base::docker_gc::grace_period', 3600)
+class acquia_base::docker(
+  $docker_gc_grace_period=hiera('acquia_base::docker_gc::grace_period', 3600)
 ) {
   class { '::docker':
     package_name                => 'docker-engine',
@@ -25,7 +25,7 @@ class base::docker(
 
   file { '/etc/docker-gc-exclude':
     mode      => '0400',
-    source    => 'puppet:///modules/base/docker/docker-gc/docker-gc-exclude',
+    source    => 'puppet:///modules/acquia_base/docker/docker-gc/docker-gc-exclude',
     show_diff => false,
     owner     => root,
     group     => root,
@@ -33,7 +33,7 @@ class base::docker(
 
   file { '/usr/sbin/docker-gc':
     mode      => '0500',
-    source    => 'puppet:///modules/base/docker/docker-gc/docker-gc',
+    source    => 'puppet:///modules/acquia_base/docker/docker-gc/docker-gc',
     show_diff => false,
     owner     => root,
     group     => root,
@@ -50,7 +50,7 @@ class base::docker(
 
   file { '/usr/sbin/docker-gc-volume':
     mode      => '0755',
-    source    => 'puppet:///modules/base/docker/docker-gc-volume/docker-gc-volume',
+    source    => 'puppet:///modules/acquia_base/docker/docker-gc-volume/docker-gc-volume',
     show_diff => false,
     owner     => root,
     group     => root,

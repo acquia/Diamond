@@ -116,6 +116,3 @@ DEPENDENCIES
   puppetlabs_spec_helper (= 0.10.3)
   rake (~> 10.0)
   rubocop (= 0.31.0)
-
-BUNDLED WITH
-   1.10.6

@@ -15,7 +15,7 @@ module Puppet::Parser::Functions
     other_devices = blockdevices.split(',').reject { |dev| %w(xvda xvdb).include? dev }
 
     index = 1
-    logical_vols = other_devices.reduce({}) do |acc, device|
+    logical_vols = other_devices.reduce({}) do |acc, _device|
       acc["ephemeral#{index}"] = {
         'mountpath' => "#{mountpath}/ephemeral#{index}",
         'fs_type' => fs_type,

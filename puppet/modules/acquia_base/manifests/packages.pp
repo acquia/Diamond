@@ -1,4 +1,4 @@
-class base::packages {
+class acquia_base::packages {
   $common_packages = [
     'byobu',
     'grep',

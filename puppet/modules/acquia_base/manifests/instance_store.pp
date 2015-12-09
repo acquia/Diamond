@@ -7,7 +7,7 @@
 # AWS currently exposes the root fs as /dev/xvda
 # Instance stores are exposed as /dev/xvd* and /dev/xvdb is the device that
 # some instances pre-format and mount
-class base::instance_store (
+class acquia_base::instance_store (
   $base_block_device = '/dev/xvdb',
   $mount_path   = '/mnt',
   $ephemeral_path = '/vol',

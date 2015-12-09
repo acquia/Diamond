@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'base::docker' do
+describe 'acquia_base::docker' do
   let(:facts) do |_|
     {
       osfamily: 'RedHat',
@@ -10,7 +10,7 @@ describe 'base::docker' do
 
   describe 'docker puppet module' do
     it {
-      should contain_class('base::docker')
+      should contain_class('acquia_base::docker')
       should contain_package('device-mapper')
     }
   end
@@ -35,14 +35,14 @@ describe 'base::docker' do
       )
 
       should contain_file('/usr/sbin/docker-gc').with(
-        'source' => 'puppet:///modules/base/docker/docker-gc/docker-gc',
+        'source' => 'puppet:///modules/acquia_base/docker/docker-gc/docker-gc',
         'mode' => '0500',
         'owner' => 'root',
         'group' => 'root'
       )
 
       should contain_file('/etc/docker-gc-exclude').with(
-        'source' => 'puppet:///modules/base/docker/docker-gc/docker-gc-exclude',
+        'source' => 'puppet:///modules/acquia_base/docker/docker-gc/docker-gc-exclude',
         'mode' => '0400',
         'owner' => 'root',
         'group' => 'root'
@@ -66,7 +66,7 @@ describe 'base::docker' do
   describe 'docker-gc-volume script' do
     it {
       should contain_file('/usr/sbin/docker-gc-volume').with(
-        'source' => 'puppet:///modules/base/docker/docker-gc-volume/docker-gc-volume',
+        'source' => 'puppet:///modules/acquia_base/docker/docker-gc-volume/docker-gc-volume',
         'mode' => '0755',
         'owner' => 'root',
         'group' => 'root'
