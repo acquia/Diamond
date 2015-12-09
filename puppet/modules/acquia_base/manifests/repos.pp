@@ -1,4 +1,4 @@
-class base::repos {
+class acquia_base::repos {
   if !defined(Class['yum']) {
     class { 'yum': }
   }
@@ -10,7 +10,7 @@ class base::repos {
 
     file { '/etc/yum.repos.d/nemesis.repo':
       ensure  => present,
-      content => template('base/nemesis.repo.erb'),
+      content => template('acquia_base/nemesis.repo.erb'),
     }
   }
 
@@ -21,6 +21,6 @@ class base::repos {
   file { '/etc/yum/yum-cron.conf':
     ensure  => present,
     require => Package['yum-cron'],
-    source  => 'puppet:///modules/base/yum_cron',
+    source  => 'puppet:///modules/acquia_base/yum_cron',
   }
 }

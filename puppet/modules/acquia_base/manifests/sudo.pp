@@ -1,4 +1,4 @@
-class base::sudo {
+class acquia_base::sudo {
   package {'sudo':
     ensure => installed,
   }
@@ -10,7 +10,7 @@ class base::sudo {
 
   file {'/etc/sudoers/':
     mode      => '0440',
-    source    => 'puppet:///modules/base/sudoers',
+    source    => 'puppet:///modules/acquia_base/sudoers',
     show_diff => false,
     owner     => 'root',
     group     => 'root',

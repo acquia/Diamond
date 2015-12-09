@@ -1,4 +1,4 @@
-define base::admin_users::create(
+define acquia_base::admin_users::create(
   $ensure         = present,
   $groups         = ['wheel'],
   $key            = undef,
@@ -8,7 +8,7 @@ define base::admin_users::create(
 
   # To create an admin user you need to add information to hiera
   #
-  # base::admin_users::accounts:
+  # acquia_base::admin_users::accounts:
   #   admin:
   #     key: asdfkjhasdfjasdflkjhasdfj
   #   pleb:

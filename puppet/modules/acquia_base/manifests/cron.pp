@@ -1,8 +1,8 @@
-class base::cron {
+class acquia_base::cron {
   file { 'puppet_cron_script':
     path   => '/usr/local/bin/run_puppet',
     mode   => '0755',
-    source => 'puppet:///modules/base/puppet/run_puppet',
+    source => 'puppet:///modules/acquia_base/puppet/run_puppet',
   }
 
   # Run Puppet once an hour at a random time

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'base::instance_store' do
+describe 'acquia_base::instance_store' do
   let(:facts) do |_|
     {
       blockdevices: 'xvda,xvdb,xvdc',
@@ -17,7 +17,7 @@ describe 'base::instance_store' do
 
   describe 'by default' do
     it { should compile.with_all_deps }
-    it { should contain_class('base::instance_store') }
+    it { should contain_class('acquia_base::instance_store') }
     it { should contain_physical_volume('/dev/xvdb') }
     it { should_not contain_physical_volume('/dev/xvdc') }
     it {

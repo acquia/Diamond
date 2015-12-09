@@ -46,7 +46,7 @@ end
 # Attempt to read the Github OAuth token from the global .gitconfig and make it
 # available in ENV
 if ENV['GITHUB_OAUTH_TOKEN'].nil? || ENV['GITHUB_OAUTH_TOKEN'] == ""
-  github_oauth_token = `git config --global github.token`
+  github_oauth_token = `git config --global github.token`.strip
   if github_oauth_token == ""
     puts 'Error: GITHUB_OAUTH_TOKEN environment variable not set'
     exit 1
