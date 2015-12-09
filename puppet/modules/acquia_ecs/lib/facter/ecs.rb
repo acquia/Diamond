@@ -13,51 +13,45 @@
 # limitations under the License.
 
 require 'facter'
-require 'aws-sdk'
+require 'aws_helper'
 
-ec2 = AWS::EC2.new
-if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'ecs'
-
-  cf = AWS::CloudFormation.new
-  stack = cf.stack_resource(Facter.value('ec2_instance_id'))
-  stack_name = stack.stack_name
-  params = stack.stack.parameters
+if AwsHelper.server_type_is?('ecs')
+  stack = AwsHelper.stack
 
   # Return the name of the cluster
   Facter.add(:ecs_cluster_name) do
     setcode do
-      stack_name
+      stack.stack_name
     end
   end
 
   Facter.add('docker_registry_url') do
     setcode do
-      params['DockerRegistryURL']
+      stack.parameter('DockerRegistryURL')
     end
   end
 
   Facter.add('docker_registry_auth') do
     setcode do
-      params['DockerRegistryAuthToken']
+      stack.parameter('DockerRegistryAuthToken')
     end
   end
 
   Facter.add('docker_registry_email') do
     setcode do
-      params['DockerRegistryEmail']
+      stack.parameter('DockerRegistryEmail')
     end
   end
 
   Facter.add('docker_min_port') do
     setcode do
-      params['DockerMinPort']
+      stack.parameter('DockerMinPort')
     end
   end
 
   Facter.add('docker_max_port') do
     setcode do
-      params['DockerMaxPort']
+      stack.parameter('DockerMaxPort')
     end
   end
-
 end

@@ -32,7 +32,8 @@ Rake::Task[:lint].clear
 PuppetLint::RakeTask.new :lint do |config|
   config.ignore_paths = [
     'puppet/third_party/**/*.pp',
-    'puppet/**/spec/fixtures/modules/**/*.pp'
+    'puppet/**/spec/fixtures/modules/**/*.pp',
+    'vendor/**/*.pp'
   ]
   config.fail_on_warnings = true
   config.disable_checks = [
@@ -85,7 +86,7 @@ namespace :style do
     task.patterns = [
       'lib/**/*.rb',
       'puppet/modules/**/*.rb',
-      'puppet/lib/**/*.rb',
+      'puppet/lib/**/*.rb'
     ]
     task.options = ['-D', '--force-exclusion', '-c', "#{File.expand_path(File.dirname(__FILE__))}/.rubocop.yml"]
   end

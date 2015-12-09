@@ -1,11 +1,8 @@
 require 'facter'
-require 'nemesis_aws_client'
+require 'aws_helper'
 
 Facter.add(:custom_repo) do
   setcode do
-    cf = NemesisAwsClient::CloudFormation.new
-    stack = cf.stack_resource(Facter.value('ec2_instance_id'))
-    params = stack.stack.parameters
-    params['RepoS3']
+    AwsHelper.stack.parameter('RepoS3')
   end
 end
