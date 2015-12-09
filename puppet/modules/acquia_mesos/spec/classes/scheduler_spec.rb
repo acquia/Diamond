@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'acquia_mesos::aurora', :type => :class do
+describe 'acquia_mesos::scheduler', :type => :class do
   let(:facts) do
     {
       :osfamily => 'redhat',
@@ -24,7 +24,7 @@ EOF
 
   it { should compile }
 
-  it { should contain_class('acquia_mesos::aurora') }
+  it { should contain_class('acquia_mesos::scheduler') }
 
   it {
     should contain_file('/etc/aurora')

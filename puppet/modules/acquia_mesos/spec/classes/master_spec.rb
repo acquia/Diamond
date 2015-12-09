@@ -26,12 +26,8 @@ describe 'acquia_mesos::master', :type => :class do
     }
 
     it {
-      should contain_service('mesos-master').with(
-        :enable => true
-      )
-      should contain_service('mesos-slave').with(
-        :enable => false
-      )
+      should contain_service('mesos-master').with_enable(true)
+      should contain_service('mesos-slave').with_enable(false)
     }
 
     context 'configures mesos options' do
@@ -53,15 +49,17 @@ describe 'acquia_mesos::master', :type => :class do
     end
   end
 
-  context 'includes grid-api' do
-    it {
-      should contain_class('acquia_mesos::master_api')
+  context 'includes all services' do
+    let(:params) {
+      {
+        :api => '1.0',
+        :mesos_dns => '1.0',
+      }
     }
-  end
 
-  context 'includes mesos-dns' do
     it {
-      should contain_class('acquia_mesos::mesos_dns')
+      should contain_class('acquia_mesos::services::api')
+      should contain_class('acquia_mesos::services::mesos_dns')
     }
   end
 end

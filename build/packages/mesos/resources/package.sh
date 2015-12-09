@@ -10,13 +10,16 @@
 
 BASE_URL="http://downloads.mesosphere.io/master/centos"
 OS_REL="7"
-MESOS_VERSION="0.23.0-1.0.centos701406"
+ARCH="x86_64"
+MESOS_VERSION="0.23.0"
+RPM_BUILD="1.0.centos701406"
 
+RPM_NAME="mesos-${MESOS_VERSION}-${RPM_BUILD}.${ARCH}.rpm"
 BASEDIR=/tmp
 
 cd ${BASEDIR}
-/usr/bin/curl -sSL -OJ ${BASE_URL}/${OS_REL}/mesos-${MESOS_VERSION}.x86_64.rpm
+/usr/bin/curl -sSL -OJ ${BASE_URL}/${OS_REL}/${RPM_NAME}
 
 if [ -d "/dist/" ]; then
-  mv -f ${BASEDIR}/mesos-*.rpm /dist/
+  mv -f ${BASEDIR}/${RPM_NAME} /dist/
 fi

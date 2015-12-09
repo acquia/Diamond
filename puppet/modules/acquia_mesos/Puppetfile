@@ -26,5 +26,4 @@ mod 'deric/puppet-mesos',
   :ref => 'v0.6.3'
 
 mod 'acquia/puppet-aurora',
-  :git => 'https://github.com/acquia/puppet-aurora.git',
-  :ref => '0.0.1'
+  :git => 'https://github.com/acquia/puppet-aurora.git'

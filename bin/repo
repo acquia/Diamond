@@ -33,7 +33,7 @@ end
 
 # @return [Aws::Credentials] Currently set Aws credentials, or nil if they are not set.
 def aws_creds
-  @creds ||= Aws::S3::Client.new.config.credentials
+  @creds ||= ENV['AWS_PROFILE'] ? Aws::SharedCredentials.new.credentials : Aws::S3::Client.new.config.credentials
 end
 
 def docker_aws_creds

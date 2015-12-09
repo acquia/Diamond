@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::mesos_dns_client {
-
-  file { '/etc/resolvconf/resolv.conf.d/head':
-    ensure  => present,
-    content => template('acquia_mesos/resolv.conf.d.head.erb'),
-    notify  => Exec['resolvconf'],
+class acquia_mesos::scheduler (
+  $cluster_name = $::mesos_cluster_name,
+  $zookeeper_servers = $::aurora_zookeeper_connection_string,
+  $scheduler_zk_path = '/aurora/scheduler',
+  $slave_root = '/mnt/lib/mesos',
+  $slave_run_directory = 'latest',
+  $auth_mechanism = 'UNAUTHENTICATED',
+){
+  file { '/etc/aurora':
+    ensure => directory,
   }
 
-  exec { 'resolvconf':
-    command     => '/sbin/resolvconf -u',
-    refreshonly => true,
-    require     => File['/etc/resolvconf/resolv.conf.d/head'],
+  file { '/etc/aurora/clusters.json':
+    ensure  => present,
+    content => template('acquia_mesos/clusters.json.erb'),
+    require => File['/etc/aurora'],
   }
 }

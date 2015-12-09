@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::mesos_dns(
-  $mesos_dns_version = 'latest',
+class acquia_mesos::services::mesos_dns(
+  $version = 'latest'
 ) {
   file { '/etc/mesos-dns':
     ensure    => directory,
@@ -26,21 +26,23 @@ class acquia_mesos::mesos_dns(
     notify  => Docker::Run['mesos-dns'],
   }
 
-  if $registry_endpoint {
-    $registry_prefix = "${registry_endpoint}/"
-    } else {
-    $registry_prefix = ''
+  docker::image { 'acquia/mesos-dns':
+    image     => "${registry_endpoint}acquia/mesos-dns",
+    image_tag => "${version}",
+    force     => true,
   }
+
   docker::run { 'mesos-dns':
-    image            => "${registry_prefix}acquia/mesos-dns:${mesos_dns_version}",
+    image            => "${registry_endpoint}acquia/mesos-dns:${version}",
     command          => '-config=/etc/mesos-dns.json -logtostderr=true -v 0',
-    use_name         => true,
     volumes          => ['/etc/mesos-dns:/etc'],
     ports            => ['0.0.0.0:53:53', '0.0.0.0:8123:8123'],
     extra_parameters => ['--restart=always', '-d', '--net=host'],
     privileged       => false,
     restart_service  => true,
-    pull_on_start    => true,
-    require          => [ File['/etc/mesos-dns/mesos-dns.json'], ],
+    require          => [
+      Docker::Image['acquia/mesos-dns'],
+      File['/etc/mesos-dns/mesos-dns.json'],
+    ],
   }
 }
