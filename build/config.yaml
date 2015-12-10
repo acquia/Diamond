@@ -1,0 +1,9 @@
+packages:
+  # Array of packages to skip the build for
+  skip:
+    - docker
+    - puppet
+
+containers:
+  # Array of containers to skip the build for
+  skip:

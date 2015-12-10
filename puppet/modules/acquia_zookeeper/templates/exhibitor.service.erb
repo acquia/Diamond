@@ -1,0 +1,28 @@
+[Unit]
+Description=Netflix Exhibitor
+ConditionPathExists=/opt/exhibitor/web.xml
+ConditionPathExists=/opt/exhibitor/defaults.conf
+ConditionPathExists=/opt/exhibitor/realm
+
+[Service]
+LimitNOFILE=64000
+PIDFile=/var/run/exhibitor.pid
+Restart=always
+RestartSec=20
+Restart=on-failure
+SyslogIdentifier=exhibitor
+TimeoutStartSec=0
+WorkingDirectory=/opt/exhibitor
+ExecStart=/usr/bin/java -jar /opt/exhibitor/exhibitor.jar \
+	--port 8181 \
+	--defaultconfig /opt/exhibitor/defaults.conf \
+	--configtype s3 \
+	--s3config <%= @zk_config_location %>:<%= @zk_s3_prefix %> \
+	--s3backup true \
+	--hostname <%= hostname %> \
+	--security /opt/exhibitor/web.xml \
+	--realm Zookeeper:/opt/exhibitor/realm \
+	--remoteauth basic:admin
+
+[Install]
+WantedBy=multi-user.target

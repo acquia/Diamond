@@ -1,11 +1,11 @@
 #!/bin/bash
-set -e
+set -ex
 
 BASEDIR=/dist
 GPG_HOMEDIR=${BASEDIR}/.gnupg
-REPO_PATH=${BASEDIR}/repo/main/centos/7
 
 # Setup the repo structure and copy all packages into it
+REPO_PATH=${BASEDIR}/repo/main/centos/7
 mkdir -p ${REPO_PATH}/x86_64/
 cp -a ${BASEDIR}/packages/*.rpm ${REPO_PATH}/x86_64/
 
@@ -14,7 +14,7 @@ cp -a ${BASEDIR}/packages/*.rpm ${REPO_PATH}/x86_64/
 if [ -d "${GPG_HOMEDIR}" ]; then
   echo "Signing packages"
   # Export the GPG public key to be imported by yum
-  gpg --export -a "Acquia Engineering <engineering@acquia.com>" --homedir=${GPG_HOMEDIR} > ${BASEDIR}/RPM-GPG-KEY-nemesis
+  gpg --export --homedir=${GPG_HOMEDIR} -a "Acquia Engineering <engineering@acquia.com>" > ${BASEDIR}/repo/gpg
   # Sign all the packages
   /sign-rpm-packages.sh ${REPO_PATH}/x86_64/*.rpm
 fi

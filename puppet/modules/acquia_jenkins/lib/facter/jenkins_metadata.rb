@@ -13,7 +13,7 @@
 # limitations under the License.
 
 require 'facter'
-require 'nemesis_aws_client'
+require 'aws_helper'
 
 # The jenkins_cli_pub_key fact reports the contents of the public key that is
 # used to execute jenkins cli commands as admin. This fact will create the key
@@ -29,27 +29,24 @@ Facter.add('jenkins_cli_pub_key') do
   end
 end
 
-ec2 = NemesisAwsClient::EC2.new
-if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'jenkins'
-  cf = NemesisAwsClient::CloudFormation.new
-  stack = cf.stack_resource(Facter.value('ec2_instance_id'))
-  params = stack.stack.parameters
+if AwsHelper.server_type_is?('jenkins')
+  stack = AwsHelper.stack
 
   Facter.add('jenkins_password') do
     setcode do
-      params['JenkinsPassword']
+      stack.parameter('JenkinsPassword')
     end
   end
 
   Facter.add('jenkins_email') do
     setcode do
-      params['JenkinsEmail']
+      stack.parameter('JenkinsEmail')
     end
   end
 
   Facter.add('jenkins_url') do
     setcode do
-      params['JenkinsURL'] ? params['JenkinsURL'] : Facter.value('ec2_public_hostname')
+      stack.parameter('JenkinsURL') || Facter.value('ec2_public_hostname')
     end
   end
 end

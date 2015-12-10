@@ -25,6 +25,7 @@
 
 require 'fileutils'
 require 'optparse'
+require 'yaml'
 
 # Monkey patch to help convert build time result to a more readable format
 class Numeric
@@ -45,7 +46,7 @@ end
 # Attempt to read the Github OAuth token from the global .gitconfig and make it
 # available in ENV
 if ENV['GITHUB_OAUTH_TOKEN'].nil? || ENV['GITHUB_OAUTH_TOKEN'] == ""
-  github_oauth_token = `git config --global github.token`
+  github_oauth_token = `git config --global github.token`.strip
   if github_oauth_token == ""
     puts 'Error: GITHUB_OAUTH_TOKEN environment variable not set'
     exit 1
@@ -56,80 +57,68 @@ end
 basedir=File.expand_path(File.dirname(__FILE__))
 $distdir=File.join(basedir, '..', 'dist', 'packages')
 
-# Run through all listed container builds in a list and execute their build process.
-def run_container_build(basedir, list)
-  puts "Starting build for: containers"
-  list.each do |script|
-    name = File.dirname(script)
-    package_build_dir = File.join(basedir, name)
-    next if File.exist?(File.join(package_build_dir, 'skip'))
-    puts "Building: #{name}"
-    Dir.chdir(package_build_dir) do
-      case File.basename(script)
-      when "Dockerfile"
-        tag = 'latest'
-        puts "docker build -t #{name}:#{tag} ."
-        system("docker build -t #{name}:#{tag} .")
-      when "build.sh"
-        system("/bin/bash build.sh")
-      when "Makefile"
-        system("make && make clean")
-      end
-    end
+# Run the given container and when finished remove it
+def run_container_build(name, tag, package_build_dir)
+  env_file = File.join(package_build_dir, 'env.conf')
+
+  flags = []
+  flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
+  flags << " --env-file #{env_file}" if File.exist?(env_file)
+  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
+  flags.concat(global_env_flags) if global_env_flags
+
+  # Run the container
+  puts "Running build container: #{name}:#{tag}"
+  unless system("docker run -i --rm #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}")
+    puts "Error: unable to run #{name}:#{tag}"
+    exit 1
+  else
+    puts "Deleting build container: #{name}:#{tag}"
+    system("docker rmi -f #{name}:#{tag}")
   end
 end
 
-# Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
-# building that package and second a package.sh script with is the command entrypoint for the container.
-# This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
-# for the resulting package to be created.
-def run_package_build(basedir, list)
-  puts "Starting build for: packages"
-  list.each do |script|
-    name = File.dirname(script)
+# Run through all builds in a list and execute their script process.
+def build(build_dir, basedir, list, config, options)
+  puts "Starting build for: #{build_dir}" unless options[:list]
+  list.uniq.each do |package_config_file|
+    name = File.dirname(package_config_file)
     package_build_dir = File.join(basedir, name)
-    next if File.exist?(File.join(package_build_dir, 'skip'))
-    env_file = File.join(package_build_dir, 'env.conf')
-    puts "Building: #{name}"
-    Dir.chdir(package_build_dir) do
-      case File.basename(script)
-      when "Dockerfile"
-        tag = 'latest'
-        system("docker build -t #{name}:latest .")
+    build_config = YAML.load_file(package_config_file)
 
-        # Add custom env flags
-        flags = []
-        flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
-        flags << " --env-file #{env_file}" if File.exist?(env_file)
-        global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
-        flags.concat(global_env_flags) if global_env_flags
+    unless build_config['output']
+      build_config['output'] = [name]
+    end
 
-        # Run the container
-        container_id=`docker run -d #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}`
-        exit_code=`docker wait #{container_id}`.to_i
-        system("docker rm -f #{container_id}")
+    next if ((config && config['skip']) || build_config['skip'] || '').include?(name)
 
-        if exit_code != 0
-          puts "Error: #{name}:#{tag} build exited with code #{exit_code}"
-          exit 1
-        else
-          system("docker rmi -f #{name}:#{tag}")
+    if options[:list]
+      build_config['output'].each { |x| puts x }
+    else
+      puts "Building: #{name}"
+      Dir.chdir(package_build_dir) do
+        case build_config['script']
+        when 'Dockerfile'
+          tag = 'latest'
+          system("docker build -t #{name}:#{tag} .")
+
+          # Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
+          # building that package and second a package.sh script with is the command entrypoint for the container.
+          # This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
+          # for the resulting package to be created.
+          run_container_build(name, tag, package_build_dir) if build_dir == 'packages'
+        when 'build.sh'
+          system("/bin/bash build.sh #{$distdir}")
+        when 'Makefile'
+          system("make")
+        when 'Rakefile'
+          system("bundle install")
+          system("bundle exec rake")
         end
-      when "build.sh"
-        system("/bin/bash build.sh")
-      when "Makefile"
-        system("make")
       end
     end
   end
 end
-
-# Map of build directories to build type
-build_directories={
-  'bootstrap' => 'container',
-  'packages' => 'package',
-  'containers' => 'container',
-}
 
 build_list=[]
 options = {}
@@ -139,11 +128,15 @@ OptionParser.new do |opts|
   opts.on('-c', 'Build Containers') { build_list=['containers'] }
   opts.on('-p', 'Build Packages') { build_list=['packages'] }
   opts.on('-d', '--dist DIR', String) { |v| $distdir = v }
+  opts.on('-l', '--list') { options[:list] = true }
 end.parse!
 
-build_list = build_directories.keys if build_list.empty?
+build_list = ['bootstrap', 'containers', 'packages'] if build_list.empty?
 
 regex_pattern = ARGV[0] || '**'
+
+# Load build config
+build_config = YAML.load_file(File.join(basedir, 'config.yaml'))
 
 FileUtils.mkdir_p($distdir)
 start_time = Time.now
@@ -153,17 +146,22 @@ Dir.chdir(basedir) do
   build_list.sort.each do |build_dir|
     # Change into the specific build directory and search for any files matching the regex_pattern to be built
     Dir.chdir(build_dir) do
-      files = Dir.glob("#{regex_pattern}/{Dockerfile,Makefile,build.sh}")
+      files = Dir.glob("#{regex_pattern}/build.yaml")
       path = File.join(basedir, build_dir)
-      send("run_#{build_directories[build_dir]}_build", path, files) unless files.size == 0
+      config = build_config[build_dir]
+      build(build_dir, path, files, config, options) unless files.size == 0
     end
   end
 end
 
 build_time = Time.now - start_time
-puts "Build Time: #{build_time.duration}"
+puts "Build Time: #{build_time.duration}" unless options[:list]
 
-if `docker ps -a | grep Exited | wc -l`.to_i > 0
-  system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
+# Purge any exited containers that have been left hanging around
+if ENV['DOCKER_HOST'] || File.exists?('/var/run/docker.sock')
+  exited_containers = `docker ps -a | grep Exited | wc -l`.to_i
+  if exited_containers > 0
+    puts "Cleaning up #{exited_containers} exited containers"
+    system("docker rm $(docker ps -a | grep Exited | awk '{print $1}')")
+  end
 end
-

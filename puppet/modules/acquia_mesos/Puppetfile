@@ -14,14 +14,17 @@ forge 'https://forgeapi.puppetlabs.com'
 
 mod 'puppetlabs/stdlib', '>= 4.5.1'
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git',
-  :ref => 'ac6dbe42277c96b4131fcda19a869711ad03a4d7'
+mod 'acquia/garethr-docker',
+  :git => 'https://github.com/acquia/garethr-docker.git'
 
 mod 'rodjek/logrotate',
-  :git => 'git@github.com:rodjek/puppet-logrotate.git',
+  :git => 'https://github.com/rodjek/puppet-logrotate.git',
   :ref => '1.1.1'
 
 mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos.git',
   :ref => 'v0.6.3'
+
+mod 'acquia/puppet-aurora',
+  :git => 'https://github.com/acquia/puppet-aurora.git',
+  :ref => '0.0.1'

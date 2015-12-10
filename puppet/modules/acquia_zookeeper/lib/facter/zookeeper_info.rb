@@ -1,28 +1,24 @@
 require 'facter'
-require 'nemesis_aws_client'
+require 'aws_helper'
 
-ec2 = NemesisAwsClient::EC2.new
-
-if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'zookeeper'
-  cf = NemesisAwsClient::CloudFormation.new
-  stack = cf.stack_resource(Facter.value('ec2_instance_id'))
-  stack_name = stack.stack_name
+if AwsHelper.server_type_is?('zookeeper')
+  stack = AwsHelper.stack
 
   Facter.add('zk_config_location') do
     setcode do
-      cf.stacks[stack_name].resources['NemesisZookeeperS3Bucket'].physical_resource_id
+      stack.resource('NemesisZookeeperS3Bucket').physical_resource_id
     end
   end
 
   Facter.add('zk_exhibitor_aws_access_key_id') do
     setcode do
-      AWS.config.credentials[:access_key_id]
+      AwsHelper.credentials.access_key_id
     end
   end
 
   Facter.add('zk_exhibitor_aws_secret_access_key') do
     setcode do
-      AWS.config.credentials[:secret_access_key]
+      AwsHelper.credentials.secret_access_key
     end
   end
 
@@ -34,7 +30,7 @@ if ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'z
 
   Facter.add('zk_exhibitor_ui_password') do
     setcode do
-      stack.stack.parameters['ExhibitorUiPassword']
+      stack.parameter('ExhibitorUiPassword')
     end
   end
 end

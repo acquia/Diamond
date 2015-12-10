@@ -27,7 +27,7 @@ class acquia_registry::server {
     require => File["/etc/docker/certs.d/${registry_endpoint}/domain.crt"],
   }
 
-  package { 'apache2-utils':
+  package { 'httpd-tools':
     ensure => present
   }
 
@@ -35,13 +35,13 @@ class acquia_registry::server {
     command => "/usr/bin/htpasswd -Bbc /etc/docker/certs.d/${registry_endpoint}/htpasswd admin ${registry_admin_password}",
     creates => "/etc/docker/certs.d/${registry_endpoint}/htpasswd",
     require =>  [
-                  Package['apache2-utils'],
+                  Package['httpd-tools'],
                   File["/etc/docker/certs.d/${registry_endpoint}"],
                 ]
   }
 
   docker::run { 'registry':
-    image            => 'registry:2.1.1',
+    image            => 'registry:2.2.0',
     ports            => ['0.0.0.0:443:5000'],
     use_name         => true,
     volumes          => ["/etc/docker/certs.d/${registry_endpoint}:/certs"],
@@ -49,9 +49,8 @@ class acquia_registry::server {
                           'REGISTRY_STORAGE=s3',
                           'REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt',
                           'REGISTRY_HTTP_TLS_KEY=/certs/domain.key',
-                          'REGISTRY_STORAGE_PATH=registry',
                           'REGISTRY_AUTH=htpasswd',
-                          'REGISTRY_AUTH_HTPASSWD_REALM="Registry Realm"',
+                          'REGISTRY_AUTH_HTPASSWD_REALM="Registry\ Realm"',
                           'REGISTRY_AUTH_HTPASSWD_PATH=/certs/htpasswd',
                           'REGISTRY_STORAGE_S3_ENCRYPT=true',
                           'REGISTRY_STORAGE_S3_SECURE=true',

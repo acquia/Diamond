@@ -12,5 +12,5 @@
 
 forge 'https://forgeapi.puppetlabs.com'
 
-mod 'garethr/garethr-docker',
-  :git => 'git@github.com:garethr/garethr-docker.git'
+mod 'acquia/garethr-docker',
+  :git => 'https://github.com/acquia/garethr-docker.git'

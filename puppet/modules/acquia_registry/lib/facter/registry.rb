@@ -13,55 +13,51 @@
 # limitations under the License.
 
 require 'facter'
-require 'nemesis_aws_client'
+require 'aws_helper'
 
-ec2 = AWS::EC2.new
-cf = NemesisAwsClient::CloudFormation.new
-stack = cf.stack_resource(Facter.value('ec2_instance_id')).stack
+stack = AwsHelper.stack
 
-if !stack.parameters['RegistryStack'].nil? || ec2.instances[Facter.value('ec2_instance_id')].tags.to_h['server_type'] == 'docker-registry'
+if stack.parameter('RegistryStack') || AwsHelper.server_type_is?('docker-registry')
+  registry_stack = AwsHelper::CloudFormation.stack(stack.parameter('RegistryStack')) || stack
 
-  s3 = NemesisAwsClient::S3.new
-  registry_stack_name = stack.parameters['RegistryStack'] || stack.name
-  registry_stack = cf.stacks[registry_stack_name]
-  parameters = registry_stack.parameters
-  registry_certificates_bucket = s3.buckets[parameters['RepoS3']]
-  registry_endpoint = parameters['RegistryEndpoint']
+  registry_certificates_bucket = ::Aws::S3::Resource.new.bucket(registry_stack.parameter('RepoS3'))
 
   Facter.add('registry_endpoint') do
     setcode do
-      registry_endpoint
+      registry_stack.parameter('RegistryEndpoint')
     end
   end
 
   Facter.add('registry_storage_bucket') do
     setcode do
-      registry_stack.resources['NemesisDockerRegistryBucket'].physical_resource_id
+      registry_stack.resource('NemesisDockerRegistryBucket').physical_resource_id
     end
   end
 
   Facter.add('registry_storage_region') do
     setcode do
-      s3.config.region
+      AwsHelper.region
     end
   end
 
+  endpoint = registry_stack.parameter('RegistryEndpoint')
+
   Facter.add('registry_ssl_certificate') do
     setcode do
-      registry_certificates_bucket.objects["certs/#{registry_endpoint}/domain.crt"].read
+      registry_certificates_bucket.object("certs/#{endpoint}/domain.crt").get.body.read
     end
   end
 
   Facter.add('registry_admin_password') do
     setcode do
-      parameters['RegistryAdminPassword']
+      registry_stack.parameter('RegistryAdminPassword')
     end
   end
 
   if Facter.value('server_type') == 'docker-registry'
     Facter.add('registry_ssl_key') do
       setcode do
-        registry_certificates_bucket.objects["certs/#{registry_endpoint}/domain.key"].read
+        registry_certificates_bucket.object("certs/#{endpoint}/domain.key").get.body.read
       end
     end
   end

@@ -14,14 +14,20 @@
 
 FROM acquia/rpm_packaging
 
-RUN yum install -y \
+RUN rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm \
+&& yum install -y \
   git \
+  puppet \
 && yum clean all \
 && rm -rf /tmp/* \
 && rm -rf /var/tmp/*
 
 ADD resources/package.sh $HOME/package.sh
 RUN chmod +x $HOME/package.sh
+
+ENV LIBRARIAN_PUPPET_PATH '/tmp/puppet/third_party'
+ENV LIBRARIAN_PUPPET_DESTRUCTIVE 'false'
+ENV LIBRARIAN_PUPPET_USE_V1_API '1'
 
 WORKDIR $HOME
 CMD ./package.sh

@@ -2,10 +2,10 @@ classes:
   - roles::mesos
 
 acquia_mesos::mesos_base_dir: '/mnt'
-acquia_mesos::mesos_dns_version: v0.4.0
+acquia_mesos::mesos_dns: false
 acquia_mesos::master::master_api: false
 
-aurora::version: '0.9.0'
+aurora::version: '0.10.0-1.el7.centos.aurora'
 aurora::configure_repo: false
 aurora::manage_package: true
 # You can't use regular automatic parameter lookups here since hashes can't

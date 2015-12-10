@@ -1,4 +1,0 @@
----
-# Value represents number of seconds that exited container and unused image is kept
-# before being removed by docker-gc scriptgrace_period: 3600
-base::docker_gc::grace_period: 3600
