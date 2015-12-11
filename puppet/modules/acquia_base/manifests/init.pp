@@ -1,11 +1,10 @@
 class acquia_base {
-  include acquia_base::admin_users
-  include acquia_base::sudo
-  include acquia_base::puppet
-  include acquia_base::docker
-  include acquia_base::diamond
-
   contain acquia_base::selinux
+  contain acquia_base::admin_users
+  contain acquia_base::sudo
+  contain acquia_base::puppet
+  contain acquia_base::docker
+  contain acquia_base::diamond
   contain acquia_base::repos
   contain acquia_base::packages
   contain acquia_base::instance_store
