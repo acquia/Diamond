@@ -29,14 +29,14 @@ CURDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 : ${MESOS_DNS_BUILDER_TAG:=mesos-dns-builder}
 
 # Create the builder container
-docker build -t ${MESOS_DNS_BUILDER_TAG} -f ${CURDIR}/Dockerfile.build ${CURDIR}
+docker build --no-cache -t ${MESOS_DNS_BUILDER_TAG} -f ${CURDIR}/Dockerfile.build ${CURDIR}
 
 # Run the build
 docker run -it --rm -v ${CURDIR}:/dist ${MESOS_DNS_BUILDER_TAG} /bin/bash package.sh ${MESOS_DNS_RELEASE}
 docker rmi -f ${MESOS_DNS_BUILDER_TAG}
 
 # Package the build in a minimal scratch container
-docker build -t ${MESOS_DNS_TAG} -f ${CURDIR}/Dockerfile.release ${CURDIR}
+docker build --no-cache -t ${MESOS_DNS_TAG} -f ${CURDIR}/Dockerfile.release ${CURDIR}
 
 # Clean up intermediate file
 rm ${CURDIR}/mesos-dns

@@ -26,4 +26,4 @@ CURDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 : ${FLUENTD_TAG:="acquia/fluentd"}
 
 # Create the builder container
-docker build -t ${FLUENTD_TAG} -f ${CURDIR}/Dockerfile .
+docker build --no-cache -t ${FLUENTD_TAG} -f ${CURDIR}/Dockerfile .

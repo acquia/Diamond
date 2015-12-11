@@ -100,7 +100,7 @@ def build(build_dir, basedir, list, config, options)
         case build_config['script']
         when 'Dockerfile'
           tag = 'latest'
-          system("docker build -t #{name}:#{tag} .")
+          system("docker build --no-cache -t #{name}:#{tag} .")
 
           # Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
           # building that package and second a package.sh script with is the command entrypoint for the container.

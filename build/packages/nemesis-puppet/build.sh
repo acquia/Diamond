@@ -26,6 +26,6 @@ else
     DIST_VOLUME_MOUNT="${NEMESIS_PUPPET_ROOT}/dist/packages"
 fi
 
-docker build -t nemesis-puppet --no-cache -f  Dockerfile.release ${BASEDIR}
+docker build --no-cache -t nemesis-puppet -f  Dockerfile.release ${BASEDIR}
 docker run -i --rm -v ${NEMESIS_PUPPET_ROOT}:/nemesis-puppet -v ${DIST_VOLUME_MOUNT}:/dist nemesis-puppet
 docker rmi -f nemesis-puppet

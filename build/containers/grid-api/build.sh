@@ -34,7 +34,7 @@ fi
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 # Create the builder container
-docker build -t nemesis/grid-api -f ${BASEDIR}/Dockerfile.build ${BASEDIR}
+docker build --no-cache -t nemesis/grid-api -f ${BASEDIR}/Dockerfile.build ${BASEDIR}
 
 # Run the build
 docker run -it --rm \
@@ -45,7 +45,7 @@ docker run -it --rm \
 docker rmi -f nemesis/grid-api
 
 # Package the build in a minimal scratch container
-docker build -t acquia/grid-api -f ${BASEDIR}/Dockerfile.release ${BASEDIR}
+docker build --no-cache -t acquia/grid-api -f ${BASEDIR}/Dockerfile.release ${BASEDIR}
 
 # Cleanup
 rm grid-api
