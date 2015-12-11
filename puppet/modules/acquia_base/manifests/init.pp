@@ -1,5 +1,4 @@
 class acquia_base {
-  include acquia_base::selinux
   include acquia_base::admin_users
   include acquia_base::sudo
   include acquia_base::puppet
