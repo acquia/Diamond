@@ -1,5 +1,5 @@
 class acquia_base::selinux {
-  class { 'selinux':
+  class { '::selinux':
     mode => 'permissive',
   }
 }
