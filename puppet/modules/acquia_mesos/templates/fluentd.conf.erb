@@ -1,0 +1,26 @@
+<source>
+  type forward
+  port 24224
+  bind 0.0.0.0
+</source>
+
+<match grid.**>
+  type kinesis
+  stream_name <%= @logstream_name %>
+  region <%= @ec2_placement_availability_zone[0..-2] %>
+  # TODO(mhrabovcin): Figure out partition once we'll figure how what tags we can provide from outside of docker container
+  random_partition_key
+
+  # Backup in case of kinesis going down will queue and re-try sending data to kinesis.
+  # Data are stored on instance level and are available after container restart.
+  # Buffer is set to 2GB (16m chunk size * 128 chunks)
+  buffer_type file
+  buffer_path /var/log/fluent/logstream*.buffer
+  buffer_chunk_limit 16m
+  buffer_queue_limit 128
+  flush_interval 60s
+  flush_at_shutdown true
+  disable_retry_limit false
+  retry_limit 17
+  retry_wait 1s
+</match>

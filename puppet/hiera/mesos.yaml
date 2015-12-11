@@ -19,5 +19,6 @@ aurora::options:
     - "--announcer-enable"
     - "--announcer-ensemble %{::aurora_zookeeper_connection_string}"
     - "--announcer-serverset-path /aurora/services"
+    - "--log_to_std"
   extra_scheduler_args:
     - '-allow_docker_parameters=true'

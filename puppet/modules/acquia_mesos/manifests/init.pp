@@ -63,6 +63,9 @@ class acquia_mesos (
       mesos_dns_version => $mesos_dns_version,
     }
     contain acquia_mesos::agent
+    if $logstream_name {
+      contain acquia_mesos::logstream
+    }
   }
 
   logrotate::rule { 'mesos':
