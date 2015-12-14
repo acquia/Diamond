@@ -2,7 +2,7 @@
 
 set -ex
 
-: ${DIAMOND_VERSION:=v4.0}
+: ${DIAMOND_VERSION:=master}
 
 BASEDIR=/tmp
 

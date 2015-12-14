@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM centos:centos7
+FROM centos:7
 
 ENV HOME /root
 
@@ -37,8 +37,19 @@ RUN yum install -y \
   tar \
   unzip \
   zlib-devel \
-&& yum clean all \
-&& rm -rf /tmp/*
+
+  # Workaround for issue with centos:7 containers and packages
+  # using systemd-libs. Centos 7.2 will have unified systemd and
+  # will make this workaround obsolete.
+  #
+  # https://github.com/CentOS/sig-cloud-instance-images/issues/26
+  #
+  # @todo: remove this when centos 7.2 is available
+  && yum -y install systemd-container-devel \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/*
 
 ADD resources/.rpmmacros $HOME/.rpmmacros
 

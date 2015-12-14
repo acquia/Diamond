@@ -44,13 +44,14 @@ describe 'acquia_zookeeper', :type => :class do
     }
 
     it {
-      should contain_file('/etc/init.d/exhibitor')
+      should contain_file('/usr/lib/systemd/system/exhibitor.service')
         .with_ensure('present')
-        .with_content(/S3CONFIG=#{zk_config_location}:#{zk_s3_prefix}/)
-        .with_content(%r{SECURITY="--security /opt/exhibitor/web.xml --realm Zookeeper:/opt/exhibitor/realm})
-        .with_content(%r{java -jar /opt/exhibitor/exhibitor.jar .*--configtype s3})
-        .with_content(%r{java -jar /opt/exhibitor/exhibitor.jar .*--s3backup true})
+        .with_content(/--s3config #{zk_config_location}:#{zk_s3_prefix}/)
         .that_comes_before('Service[exhibitor]')
+
+      should contain_exec('exhibitor_systemctl_reload')
+        .with_refreshonly(true)
+        .that_notifies('Service[exhibitor]')
     }
 
     it {

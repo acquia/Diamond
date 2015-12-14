@@ -88,21 +88,21 @@ if AwsHelper.server_type_is?('mesos')
     # Returns a list of mesos masters
     Facter.add(:mesos_masters) do
       setcode do
-        mesos_masters.map(&:public_ip_address).join(',')
+        mesos_masters.instances.map(&:public_ip_address).join(',')
       end
     end
 
     # Returns a list of mesos master private ips
     Facter.add(:mesos_masters_private_ips) do
       setcode do
-        mesos_masters.map(&:private_ip_address).join(',')
+        mesos_masters.instances.map(&:private_ip_address).join(',')
       end
     end
 
     # Mesos Master quorum value
     Facter.add(:mesos_quorum) do
       setcode do
-        mesos_masters.count / 2 + 1
+        mesos_masters.instances.count / 2 + 1
       end
     end
 
