@@ -25,4 +25,7 @@ build_root = File.join(nemesis_puppet_root, 'build')
 
 Dir.chdir(build_root) do
   system("./build.sh #{ARGV.join(' ')}")
+  if $?.exitstatus != 0
+    exit $?.exitstatus
+  end
 end

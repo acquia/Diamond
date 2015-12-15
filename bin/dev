@@ -39,7 +39,7 @@ def update_package(dist_root, bin_dir, package, repo)
     puts `#{cmd}`
     if $?.exitstatus != 0 
       puts "Package update failed with exitcode #{$?.exitstatus}"
-    exit 1
+      exit 1
     end
   end
 
