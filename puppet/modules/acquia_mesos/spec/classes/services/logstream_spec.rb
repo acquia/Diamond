@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'acquia_mesos::logstream', :type => :class do
+describe 'acquia_mesos::services::logstream', :type => :class do
   let(:facts) {
     {
       :logstream_name => 'TESTKINESIS-NAME',
@@ -42,7 +42,7 @@ EOF
 
   it { should compile }
 
-  it { should contain_class('acquia_mesos::logstream') }
+  it { should contain_class('acquia_mesos::services::logstream') }
 
   it {
     should contain_file('/etc/fluentd/logstream')

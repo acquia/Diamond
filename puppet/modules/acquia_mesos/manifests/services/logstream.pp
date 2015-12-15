@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::logstream(
+class acquia_mesos::services::logstream(
   $fluentd_version = 'latest',
   $docker_command = $docker::params::docker_command,
 ) {

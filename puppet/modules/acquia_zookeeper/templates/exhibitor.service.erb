@@ -19,7 +19,7 @@ ExecStart=/usr/bin/java -jar /opt/exhibitor/exhibitor.jar \
 	--configtype s3 \
 	--s3config <%= @zk_config_location %>:<%= @zk_s3_prefix %> \
 	--s3backup true \
-	--hostname <%= hostname %> \
+	--hostname <%= @hostname %> \
 	--security /opt/exhibitor/web.xml \
 	--realm Zookeeper:/opt/exhibitor/realm \
 	--remoteauth basic:admin

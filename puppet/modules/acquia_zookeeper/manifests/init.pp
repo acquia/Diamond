@@ -28,12 +28,17 @@ class acquia_zookeeper (
     notify  => Service['exhibitor'],
   }
 
-  file { '/etc/init.d/exhibitor':
+  file { '/usr/lib/systemd/system/exhibitor.service':
     ensure  => present,
-    content => template('acquia_zookeeper/init.d.erb'),
+    content => template('acquia_zookeeper/exhibitor.service.erb'),
     mode    => '0755',
     require => Package['zookeeper-exhibitor'],
     notify  => Service['exhibitor'],
+  } ->
+  exec { 'exhibitor_systemctl_reload':
+    command     => '/usr/bin/systemctl daemon-reload',
+    refreshonly => true,
+    notify      => Service['exhibitor']
   }
 
   file { '/opt/exhibitor/realm':
@@ -47,7 +52,7 @@ class acquia_zookeeper (
   service { 'exhibitor':
     ensure  => 'running',
     require =>  [
-                  File['/etc/init.d/exhibitor'],
+                  File['/usr/lib/systemd/system/exhibitor.service'],
                   File['/opt/exhibitor/realm'],
                   File['/opt/exhibitor/web.xml'],
                   File['/opt/exhibitor/defaults.conf'],

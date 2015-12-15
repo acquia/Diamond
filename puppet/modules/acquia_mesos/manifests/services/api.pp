@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::master_api {
+class acquia_mesos::services::api(
+  $version = 'latest'
+){
   docker::image { 'acquia/grid-api':
-    image     => 'acquia/grid-api',
-    image_tag => 'latest',
+    image     => "${registry_endpoint}acquia/grid-api",
+    image_tag => "${version}",
     force     => true,
   }
 
-  # Pass logstream name to grid-api so it can launch containers with correctly routed
-  # logs
+  # Pass logstream name to grid-api so it can launch containers with correctly routed logs
   if $logstream_name {
     $env = [
       "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
@@ -30,8 +31,7 @@ class acquia_mesos::master_api {
       'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
       'AG_LOGSTREAM_TAG_PREFIX=grid',
     ]
-  }
-  else {
+  } else {
     $env = [
       "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
       'AG_REMOTE_SCHEDULER_PORT=8081',
@@ -39,7 +39,7 @@ class acquia_mesos::master_api {
   }
 
   docker::run { 'grid-api':
-    image            => 'acquia/grid-api',
+    image            => "${registry_endpoint}acquia/grid-api:${version}",
     env              => $env,
     ports            => ['2114'],
     expose           => ['2114'],

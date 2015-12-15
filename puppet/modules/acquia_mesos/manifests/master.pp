@@ -15,17 +15,20 @@
 class acquia_mesos::master (
   $mesos_log_dir = '/var/log/mesos',
   $mesos_lib_dir = '/var/lib/mesos',
-  $master_api = true,
-  $mesos_dns_version = 'latest'
+  $api = undef,
+  $mesos_dns = undef
 ) {
-  include acquia_mesos::aurora
-  if $master_api {
-    include acquia_mesos::master_api
+  include acquia_mesos::scheduler
+
+  if $api {
+    class { 'acquia_mesos::services::api':
+      version => $api,
+    }
   }
 
-  if $mesos_dns_version {
-    class { 'acquia_mesos::mesos_dns':
-      mesos_dns_version => $mesos_dns_version,
+  if $mesos_dns {
+    class { 'acquia_mesos::services::mesos_dns':
+      version => $mesos_dns,
     }
   }
 
@@ -45,7 +48,7 @@ class acquia_mesos::master (
       'root_submissions'         => true,
       'slave_removal_rate_limit' => '100/1mins',
     },
-    force_provider => 'upstart',
+    force_provider => 'systemd',
   }
 
   class {'::mesos::slave':

@@ -25,7 +25,7 @@ class acquia_base::diamond {
   }
 
   package { 'diamond':
-    ensure  => '4.0.0-0',
+    ensure  => '4.0.337-0',
     require => User['diamond'],
   }
 

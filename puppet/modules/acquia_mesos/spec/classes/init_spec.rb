@@ -88,16 +88,20 @@ describe 'acquia_mesos', :type => :class do
 
   context 'contains logstream when kinesis enabled' do
     let(:facts) {
-      super().merge({ :logstream_name => 'TESTSTREAM' })
+      super().merge(
+        {
+          :logstream_name => 'TESTSTREAM'
+        }
+      )
     }
     it {
-      should contain_class('acquia_mesos::logstream')
+      should contain_class('acquia_mesos::services::logstream')
     }
   end
 
   context 'does not contain logstream when kinesis is disabled' do
     it {
-      should_not contain_class('acquia_mesos::logstream')
+      should_not contain_class('acquia_mesos::services::logstream')
     }
   end
 end

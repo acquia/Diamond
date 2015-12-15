@@ -14,11 +14,10 @@
 
 class acquia_mesos::agent(
   $mesos_lib_dir = '/var/lib/mesos',
-  $mesos_dns_version = 'latest',
+  $mesos_dns = undef
 ) {
-
-  if $mesos_dns_version {
-    include acquia_mesos::mesos_dns_client
+  if $mesos_dns {
+    # @todo: Update resolv.conf for centos
   }
 
   class {'::mesos::slave':

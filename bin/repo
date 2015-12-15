@@ -33,7 +33,7 @@ end
 
 # @return [Aws::Credentials] Currently set Aws credentials, or nil if they are not set.
 def aws_creds
-  @creds ||= Aws::S3::Client.new.config.credentials
+  @creds ||= ENV['AWS_PROFILE'] ? Aws::SharedCredentials.new.credentials : Aws::S3::Client.new.config.credentials
 end
 
 def docker_aws_creds
@@ -81,9 +81,9 @@ def delete(repo_root, stackname)
   bucket = get_s3_bootstrap_repo_bucket(stackname)
 
   if system('which aws')
-    cmd = "aws s3 rm s3://#{bucket}/repo --recursive"
+    cmd = "aws s3 rm --recursive s3://#{bucket}/repo"
   else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 rm s3://#{bucket}/repo --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 rm --recursive s3://#{bucket}/repo"
   end
   system(cmd)
 end
@@ -92,9 +92,9 @@ def upload(repo_root, stackname)
   bucket = get_s3_bootstrap_repo_bucket(stackname)
 
   if system('which aws')
-    cmd = "aws s3 cp #{repo_root}/repo s3://#{bucket}/repo --recursive"
+    cmd = "aws s3 sync --delete #{repo_root}/repo s3://#{bucket}/repo"
   else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 cp /dist s3://#{bucket}/repo --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 sync --delete /dist s3://#{bucket}/repo "
   end
   system(cmd)
 end
@@ -105,9 +105,9 @@ def download(repo_root, stackname)
   system("rm -rf #{repo_root}")
 
   if system('which aws')
-    cmd = "aws s3 cp s3://#{bucket}/repo #{repo_root} --recursive"
+    cmd = "aws s3 sync --delete s3://#{bucket}/repo #{repo_root}"
   else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 cp s3://#{bucket}/repo /dist --recursive"
+    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 sync --delete s3://#{bucket}/repo /dist"
   end
   system(cmd)
 end
