@@ -38,15 +38,6 @@ RUN yum install -y \
   unzip \
   zlib-devel \
 
-  # Workaround for issue with centos:7 containers and packages
-  # using systemd-libs. Centos 7.2 will have unified systemd and
-  # will make this workaround obsolete.
-  #
-  # https://github.com/CentOS/sig-cloud-instance-images/issues/26
-  #
-  # @todo: remove this when centos 7.2 is available
-  && yum -y install systemd-container-devel \
-
   # Clean up
   && yum clean all \
   && rm -rf /tmp/*
