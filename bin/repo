@@ -40,10 +40,12 @@ def docker_aws_creds
   "-e AWS_ACCESS_KEY_ID='#{aws_creds.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.secret_access_key}'"
 end
 
-def create(dist_root)
+def create(dist_root, sign_packages=false)
   gpg_homedir = "#{dist_root}/.gnupg"
   FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
-  FileUtils.mkdir_p(gpg_homedir)
+
+  if sign_packages
+    FileUtils.mkdir_p(gpg_homedir)
 
   default_gpg_key_params= <<PARAMS
 Key-Type: RSA
@@ -55,13 +57,14 @@ Expire-Date: 0
 %echo done
 PARAMS
 
-  begin
-    gpg_params_file = Tempfile.new('gpg_key_params.conf')
-    gpg_params_file.write(default_gpg_key_params)
-    gpg_params_file.close
-    system("gpg --homedir #{gpg_homedir} --batch --gen-key #{gpg_params_file.path}")
-  ensure
-     gpg_params_file.unlink
+    begin
+      gpg_params_file = Tempfile.new('gpg_key_params.conf')
+      gpg_params_file.write(default_gpg_key_params)
+      gpg_params_file.close
+      system("gpg --homedir #{gpg_homedir} --batch --gen-key #{gpg_params_file.path}")
+    ensure
+       gpg_params_file.unlink
+    end
   end
 
   container_id=`docker run -d -v #{dist_root}:/dist acquia/rpm_repo:latest`
@@ -119,10 +122,13 @@ end
 
 action = ARGV.shift
 stackname = ''
+sign_packages = false
 
 print_usage_and_exit if action.nil?
 
-unless action == 'create'
+if action == 'create'
+  sign_packages = ARGV.shift
+else
   begin
     unless aws_creds
       puts 'Error: You must configure AWS access credentials.'
@@ -137,7 +143,7 @@ end
 
 case action.downcase
 when 'create'
-  create(dist_root)
+  create(dist_root, sign_packages)
 when 'delete'
   delete(repo_root, stackname)
 when 'upload'

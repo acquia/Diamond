@@ -24,12 +24,12 @@ GIT
 
 GIT
   remote: https://github.com/acquia/puppet-aurora.git
-  ref: 0.0.1
-  sha: 1e076c05db690a233ba731a3c647aa556cdc3325
+  ref: master
+  sha: 03e40e6a7d1b2cf2872faffe38112f1dd0031d68
   specs:
     acquia-puppet-aurora (0.1.0)
-      puppetlabs-apt (>= 0, >= 2.0.1)
-      puppetlabs-stdlib (>= 0, >= 1.0.0)
+      puppetlabs-apt (>= 2.0.0, >= 2.0.1)
+      puppetlabs-stdlib (>= 1.0.0, >= 4.5.1)
 
 GIT
   remote: https://github.com/deric/puppet-mesos.git
