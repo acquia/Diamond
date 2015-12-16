@@ -1,8 +1,7 @@
 forge "https://forgeapi.puppetlabs.com"
 
 mod 'acquia/puppet-aurora',
-  :git => 'https://github.com/acquia/puppet-aurora.git',
-  :ref => '0.0.1'
+  :git => 'https://github.com/acquia/puppet-aurora.git'
 
 mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos.git',

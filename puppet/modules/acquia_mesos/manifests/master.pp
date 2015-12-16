@@ -39,6 +39,8 @@ class acquia_mesos::master (
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {
+      'hostname'                 => $ec2_public_ipv4,
+      # 'advertise_ip'             => $ec2_public_ipv4, # TODO: enable when running mesos 0.26
       'external_log_file'        => "${mesos_log_dir}/mesos-master.INFO",
       'log_auto_initialize'      => true,
       # 'max_executors_per_slave'  => '24', # TODO: enable when compiled --with-network-isolator
