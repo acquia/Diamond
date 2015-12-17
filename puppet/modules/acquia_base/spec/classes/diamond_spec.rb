@@ -20,7 +20,6 @@ describe 'acquia_base::diamond' do
         .with_groups(['diamond', 'docker'])
 
       should contain_package('diamond')
-      should contain_package('diamond')
       should contain_python__pip('docker-py')
     }
   end
