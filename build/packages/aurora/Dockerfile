@@ -26,6 +26,7 @@ RUN yum install -y \
   python-devel \
   subversion-devel \
   wget \
+  which \
   zlib-devel \
 && yum clean all \
 && rm -rf /tmp/* \
