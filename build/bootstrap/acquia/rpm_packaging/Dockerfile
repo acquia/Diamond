@@ -36,6 +36,7 @@ RUN yum install -y \
   rpm-sign \
   tar \
   unzip \
+  which \
   zlib-devel \
 
   # Clean up
