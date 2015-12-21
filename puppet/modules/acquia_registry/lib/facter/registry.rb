@@ -16,48 +16,48 @@ require 'facter'
 require 'aws_helper'
 
 stack = AwsHelper.stack
+if stack
+  if stack.parameter('RegistryStack') || AwsHelper.server_type_is?('docker-registry')
+    registry_stack = AwsHelper::CloudFormation.stack(stack.parameter('RegistryStack')) || stack
+    registry_certificates_bucket = ::Aws::S3::Resource.new.bucket(registry_stack.parameter('RepoS3'))
 
-if stack.parameter('RegistryStack') || AwsHelper.server_type_is?('docker-registry')
-  registry_stack = AwsHelper::CloudFormation.stack(stack.parameter('RegistryStack')) || stack
-
-  registry_certificates_bucket = ::Aws::S3::Resource.new.bucket(registry_stack.parameter('RepoS3'))
-
-  Facter.add('registry_endpoint') do
-    setcode do
-      registry_stack.parameter('RegistryEndpoint')
-    end
-  end
-
-  Facter.add('registry_storage_bucket') do
-    setcode do
-      registry_stack.resource('NemesisDockerRegistryBucket').physical_resource_id
-    end
-  end
-
-  Facter.add('registry_storage_region') do
-    setcode do
-      AwsHelper.region
-    end
-  end
-
-  endpoint = registry_stack.parameter('RegistryEndpoint')
-
-  Facter.add('registry_ssl_certificate') do
-    setcode do
-      registry_certificates_bucket.object("certs/#{endpoint}/domain.crt").get.body.read
-    end
-  end
-
-  Facter.add('registry_admin_password') do
-    setcode do
-      registry_stack.parameter('RegistryAdminPassword')
-    end
-  end
-
-  if Facter.value('server_type') == 'docker-registry'
-    Facter.add('registry_ssl_key') do
+    Facter.add('registry_endpoint') do
       setcode do
-        registry_certificates_bucket.object("certs/#{endpoint}/domain.key").get.body.read
+        registry_stack.parameter('RegistryEndpoint')
+      end
+    end
+
+    Facter.add('registry_storage_bucket') do
+      setcode do
+        registry_stack.resource('NemesisDockerRegistryBucket').physical_resource_id
+      end
+    end
+
+    Facter.add('registry_storage_region') do
+      setcode do
+        AwsHelper.region
+      end
+    end
+
+    Facter.add('registry_admin_password') do
+      setcode do
+        registry_stack.parameter('RegistryAdminPassword')
+      end
+    end
+
+    Facter.add('registry_ssl_certificate') do
+      setcode do
+        endpoint = Facter.value('registry_endpoint')
+        registry_certificates_bucket.object("certs/#{endpoint}/domain.crt").get.body.read
+      end
+    end
+
+    if Facter.value('server_type') == 'docker-registry'
+      Facter.add('registry_ssl_key') do
+        setcode do
+          endpoint = Facter.value('registry_endpoint')
+          registry_certificates_bucket.object("certs/#{endpoint}/domain.key").get.body.read
+        end
       end
     end
   end

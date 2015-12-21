@@ -92,6 +92,11 @@ Lint/UselessAssignment:
     - 'puppet/modules/server_hooks/files/cloudwatch_alarms.rb'
     - 'puppet/modules/server_hooks/files/nemesis_server_hooks.rb'
 
+Metrics/LineLength:
+  Max: 200
+  Exclude:
+    - 'puppet/modules/acquia_base/spec/classes/admin_users_spec.rb'
+
 Metrics/ModuleLength:
   Exclude:
     - 'lib/nemesis_ops/common.rb'
