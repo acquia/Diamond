@@ -24,7 +24,7 @@ class acquia_registry::common {
 
   file { "/etc/docker/certs.d/${registry_endpoint}/ca.crt":
     ensure  => 'link',
-    target  => '/etc/ssl/certs/ca-certificates.crt',
+    target  => '/etc/pki/tls/certs/ca-bundle.crt',
     require => File['/etc/docker/certs.d'],
   }
 
