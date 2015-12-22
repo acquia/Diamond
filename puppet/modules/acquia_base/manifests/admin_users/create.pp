@@ -5,7 +5,6 @@ define acquia_base::admin_users::create(
   $shell          = '/bin/bash',
   $type           = 'ssh-rsa',
 ){
-
   # To create an admin user you need to add information to hiera
   #
   # acquia_base::admin_users::accounts:
