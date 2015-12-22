@@ -85,4 +85,23 @@ describe 'acquia_base::docker' do
       )
     }
   end
+
+  describe 'docker registry endpoint' do
+    let(:facts) {
+      super().merge(
+        {
+          :docker_registry_endpoint => 'example.dkr.registry.com',
+          :docker_registry_username => 'AWS',
+          :docker_registry_password => 'password1',
+        }
+      )
+    }
+
+    it {
+      should contain_docker__registry('example.dkr.registry.com').with(
+        'username' => 'AWS',
+        'password' => 'password1',
+      )
+    }
+  end
 end

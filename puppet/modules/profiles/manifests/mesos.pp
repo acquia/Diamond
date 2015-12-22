@@ -14,7 +14,6 @@
 
 class profiles::mesos {
   contain profiles::java
-  include ::acquia_registry
   include ::acquia_mesos
   include aurora::params
 
@@ -33,7 +32,5 @@ class profiles::mesos {
     scheduler_options => $hash,
   }
 
-  # The acquia_mesos class will start a Mesos-DNS container, so the registry
-  # client configuration must happen first.
-  Class['::acquia_registry'] -> Class['::acquia_mesos'] -> Class['aurora']
+  Class['::acquia_mesos'] -> Class['aurora']
 }

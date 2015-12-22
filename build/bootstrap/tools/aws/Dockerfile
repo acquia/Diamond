@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_registry {
-  # In this context clients are consumers of the registry
-  if $server_type == 'docker-registry' {
-    contain acquia_registry::server
-  } else {
-    contain acquia_registry::client
-  }
-}
+FROM centos:7
+MAINTAINER Acquia Engineering <hosting-eng@acquia.com>
+
+RUN yum install -y epel-release \
+  # Install dependencies
+  && yum install -y python-pip \
+
+  # Install aws cli
+  && pip install awscli \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
+
+ENTRYPOINT ['/usr/bin/aws']

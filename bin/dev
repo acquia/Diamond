@@ -15,43 +15,55 @@
 # limitations under the License.
 #
 #
-#
+# Development utility to help with commonly used commands
 
-require 'pathname'
 require 'fileutils'
+require 'open3'
+require 'pathname'
+require 'thor'
 
 nemesis_puppet_root = File.expand_path(File.join(__FILE__, '..', '..'))
-dist_root = File.join(nemesis_puppet_root, 'dist')
-bin_dir = File.join(nemesis_puppet_root, 'bin')
+$dist_root = File.join(nemesis_puppet_root, 'dist')
+$bin_dir = File.join(nemesis_puppet_root, 'bin')
 
-def update_package(dist_root, bin_dir, package, repo)
+class PackageCommand < Thor
+  desc "update PACKAGE REPO", "Build and upload a package to a bootstrap repository stack"
+  def update(package, repo)
+    Dir.glob(File.join("#{$dist_root}", "**", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
 
-  Dir.glob(File.join("#{dist_root}", "**", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
+    commands = [
+     "#{$bin_dir}/build -c list",
+     "#{$bin_dir}/repo create",
+     "#{$bin_dir}/repo upload #{repo}"
+    ]
 
-  commands = [
-   "#{bin_dir}/repo delete #{repo}",
-   "#{bin_dir}/build -p #{package}",
-   "#{bin_dir}/repo create",
-   "#{bin_dir}/repo upload #{repo}"
-  ]
-
-  commands.each do |cmd|
-    puts `#{cmd}`
-    if $?.exitstatus != 0 
-      puts "Package update failed with exitcode #{$?.exitstatus}"
-      exit 1
+    commands.each do |cmd|
+      unless system("#{cmd}")
+        puts "Package update failed with exitcode #{$?.exitstatus}"
+        exit 1
+      end
     end
   end
-
 end
 
-action = ARGV.shift
-package = ARGV.shift
-repo = ARGV.shift
-
-case action.downcase
-when 'update-package'
-  update_package(dist_root, bin_dir, package, repo)
-else
-  puts 'Usage: dev [ACTION] [PACKAGE] [REPO]'
+class ContainerCommand < Thor
+  desc "update", "Build and push all containers to the set AWS Docker registry"
+  method_option :tag, :aliases => '-t', :type => :string, :default => 'latest', :desc => "Container image tag. [Default: 'latest']"
+  method_option :stage, :type => :string, :default => ENV['USER'], :desc => "Stage prefix for the repository. [Default: '#{ENV['USER']}']"
+  def update
+    stdout, stderr, status = Open3.capture3("#{$bin_dir}/build -c --list")
+    stdout.split("\n").each do |container|
+      system("#{$bin_dir}/registry push #{container} --tag #{options[:tag]} --stage #{options[:stage]}")
+    end
+  end
 end
+
+class DevCommand < Thor
+  desc "package SUBCOMMAND ...ARGS", "Commands to help with package management"
+  subcommand "package", PackageCommand
+
+  desc "container SUBCOMMAND ...ARGS", "Commands to help with container management"
+  subcommand "container", ContainerCommand
+end
+
+DevCommand.start(ARGV)

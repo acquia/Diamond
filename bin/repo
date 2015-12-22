@@ -22,10 +22,11 @@ require 'aws-sdk'
 require 'fileutils'
 require 'pathname'
 require 'tempfile'
+require 'thor'
 
 nemesis_puppet_root = File.expand_path(File.join(Pathname.new(__FILE__).realpath, '..', '..'))
-dist_root = File.join(nemesis_puppet_root, 'dist')
-repo_root = File.join(dist_root, 'repo/')
+$dist_root = File.join(nemesis_puppet_root, 'dist')
+$repo_root = File.join(dist_root, 'repo/')
 
 def get_s3_bootstrap_repo_bucket(repo_stackname)
   Aws::CloudFormation::Resource.new.stack(repo_stackname).resource('repo').physical_resource_id
@@ -40,116 +41,111 @@ def docker_aws_creds
   "-e AWS_ACCESS_KEY_ID='#{aws_creds.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.secret_access_key}'"
 end
 
-def create(dist_root, sign_packages=false)
-  gpg_homedir = "#{dist_root}/.gnupg"
-  FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
+class RepoManager < Thor
+  desc "create", "Initialize and create a package repository."
+  method_option :dist, :type => :string, :default => $dist_root, :desc => "Dist output directory. [Default: '#{$dist_root}']"
+  method_option :sign, :type => :boolean, :default => false, :desc => "Sign packages. [Default: false]"
+  def create
+    dist_root = options[:dist]
+    gpg_homedir = "#{dist_root}/.gnupg"
+    FileUtils.rm_rf(gpg_homedir) if Dir.exists?(gpg_homedir)
 
-  if sign_packages
-    FileUtils.mkdir_p(gpg_homedir)
+    if options[:sign] == true
+      FileUtils.mkdir_p(gpg_homedir)
 
-  default_gpg_key_params= <<PARAMS
-Key-Type: RSA
-Key-Length: 2048
-Name-Real: Acquia Engineering
-Name-Email: engineering@acquia.com
-Expire-Date: 0
-%commit
-%echo done
-PARAMS
+      default_gpg_key_params = [
+        'Key-Type: RSA',
+        'Key-Length: 2048',
+        'Name-Real: Acquia Engineering',
+        'Name-Email: engineering@acquia.com',
+        'Expire-Date: 0',
+        '%commit',
+        '%echo done'
+      ].join("\n")
 
-    begin
-      gpg_params_file = Tempfile.new('gpg_key_params.conf')
-      gpg_params_file.write(default_gpg_key_params)
-      gpg_params_file.close
-      system("gpg --homedir #{gpg_homedir} --batch --gen-key #{gpg_params_file.path}")
-    ensure
-       gpg_params_file.unlink
+      begin
+        gpg_params_file = Tempfile.new('gpg_key_params.conf')
+        gpg_params_file.write(default_gpg_key_params)
+        gpg_params_file.close
+        system("gpg --homedir #{gpg_homedir} --batch --gen-key #{gpg_params_file.path}")
+      ensure
+         gpg_params_file.unlink
+      end
     end
-  end
 
-  container_id=`docker run -d -v #{dist_root}:/dist acquia/rpm_repo:latest`
-  exit_code=`docker wait #{container_id}`.to_i
-  system("docker rm -f #{container_id}")
+    container_id=`docker run -d -v #{dist_root}:/dist acquia/rpm_repo:latest`
+    exit_code=`docker wait #{container_id}`.to_i
+    system("docker rm -f #{container_id}")
 
-  if exit_code != 0
-    puts "Error: unable to create repo, exited with code #{exit_code}"
-    exit 1
-  end
-  puts "Repository created at: #{dist_root}/repo"
-end
-
-def delete(repo_root, stackname)
-  system("rm -rf #{repo_root}")
-
-  bucket = get_s3_bootstrap_repo_bucket(stackname)
-
-  if system('which aws')
-    cmd = "aws s3 rm --recursive s3://#{bucket}/repo"
-  else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 rm --recursive s3://#{bucket}/repo"
-  end
-  system(cmd)
-end
-
-def upload(repo_root, stackname)
-  bucket = get_s3_bootstrap_repo_bucket(stackname)
-
-  if system('which aws')
-    cmd = "aws s3 sync --delete #{repo_root}/repo s3://#{bucket}/repo"
-  else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}/repo:/dist tools/aws-cli aws s3 sync --delete /dist s3://#{bucket}/repo "
-  end
-  system(cmd)
-end
-
-def download(repo_root, stackname)
-  bucket = get_s3_bootstrap_repo_bucket(stackname)
-
-  system("rm -rf #{repo_root}")
-
-  if system('which aws')
-    cmd = "aws s3 sync --delete s3://#{bucket}/repo #{repo_root}"
-  else
-    cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_root}:/dist tools/aws-cli aws s3 sync --delete s3://#{bucket}/repo /dist"
-  end
-  system(cmd)
-end
-
-def print_usage_and_exit
-  puts 'Usage: repo [ACTION] [REPO] [OPTION]'
-  exit(1)
-end
-
-action = ARGV.shift
-stackname = ''
-sign_packages = false
-
-print_usage_and_exit if action.nil?
-
-if action == 'create'
-  sign_packages = ARGV.shift
-else
-  begin
-    unless aws_creds
-      puts 'Error: You must configure AWS access credentials.'
+    if exit_code != 0
+      puts "Error: unable to create repo, exited with code #{exit_code}"
       exit 1
     end
-  rescue Aws::Errors::MissingRegionError => e
-    puts "Error: #{e.message}"
-    exit 1
+    puts "Repository created at: #{dist_root}/repo"
   end
-  stackname = ARGV.shift
+
+  desc "delete STACKNAME", "Delete a package repository."
+  method_option :repo_dir, :type => :string, :default => $repo_root, :desc => "Dist output directory. [Default: '#{$repo_root}']"
+  def delete(stackname)
+    repo_dir = options[:repo_dir]
+    bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+    unless system("rm -rf #{repo_dir}")
+      puts "Error: unable to remove #{repo_dir}"
+      exit 1
+    end
+
+    if system('which aws')
+      cmd = "aws s3 rm --recursive s3://#{bucket}/repo"
+    else
+      cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_dir}:/dist tools/aws s3 rm --recursive s3://#{bucket}/repo"
+    end
+    system(cmd)
+  end
+
+
+  desc "upload STACKNAME", "Upload a package repository."
+  method_option :repo_dir, :type => :string, :default => $repo_root, :desc => "Dist output directory. [Default: '#{$repo_root}']"
+  def upload(stackname)
+    repo_dir = options[:repo_dir]
+    bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+    if system('which aws')
+      cmd = "aws s3 sync --delete #{repo_dir}/repo s3://#{bucket}/repo"
+    else
+      cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_dir}/repo:/dist tools/aws s3 sync --delete /dist s3://#{bucket}/repo "
+    end
+    system(cmd)
+  end
+
+  desc "upload STACKNAME", "Download a package repository."
+  method_option :repo_dir, :type => :string, :default => $repo_root, :desc => "Dist output directory. [Default: '#{$repo_root}']"
+  def download(stackname)
+    repo_dir = options[:repo_dir]
+    bucket = get_s3_bootstrap_repo_bucket(stackname)
+
+    unless system("rm -rf #{repo_dir}")
+      puts "Error: unable to remove #{repo_dir}"
+      exit 1
+    end
+
+    if system('which aws')
+      cmd = "aws s3 sync --delete s3://#{bucket}/repo #{repo_dir}"
+    else
+      cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_dir}:/dist tools/aws s3 sync --delete s3://#{bucket}/repo /dist"
+    end
+    system(cmd)
+  end
 end
 
-case action.downcase
-when 'create'
-  create(dist_root, sign_packages)
-when 'delete'
-  delete(repo_root, stackname)
-when 'upload'
-  upload(dist_root, stackname)
-when 'download'
-  download(dist_root, stackname)
-else
-  print_usage_and_exit
+begin
+  unless aws_creds
+    puts 'Error: You must configure AWS access credentials.'
+    exit 1
+  end
+rescue Aws::Errors::MissingRegionError => e
+  puts "Error: #{e.message}"
+  exit 1
 end
+
+RepoManager.start(ARGV)

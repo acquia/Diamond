@@ -15,7 +15,6 @@
 class profiles::jenkins {
   contain profiles::java
   include ::acquia_jenkins
-  include ::acquia_registry
   contain ::docker
 
   Class['::docker'] -> Class['::acquia_jenkins']
