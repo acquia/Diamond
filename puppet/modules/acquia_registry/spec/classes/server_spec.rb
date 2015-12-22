@@ -34,6 +34,12 @@ describe 'acquia_registry::server', :type => :class do
           .with_ensure('link')
           .with_target("/etc/docker/certs.d/#{facts[:registry_endpoint]}/domain.crt")
       }
+
+      it {
+        should contain_file("/etc/docker/certs.d/#{facts[:registry_endpoint]}/ca.crt")
+          .with_ensure('link')
+          .with_target('/etc/pki/tls/certs/ca-bundle.crt')
+      }
     end
 
     context 'starts a docker registry' do
