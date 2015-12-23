@@ -1,8 +1,21 @@
 ---
 language: ruby
-sudo: false
+sudo: required
+services:
+  - docker
 rvm:
   - 2.1.5
+before_install:
+  # Download and install libsodium
+  - mkdir -p libsodium
+  - curl -sSL https://github.com/jedisct1/libsodium/releases/download/1.0.7/libsodium-1.0.7.tar.gz | tar -xz --strip-components 1 -C libsodium
+  - cd libsodium
+  - ./autogen.sh
+  - ./configure --disable-dependency-tracking --enable-minimal
+  - sudo make install
+  - sudo /sbin/ldconfig
+  - cd ..
+  - sudo rm -rf libsodium
 script:
   - bundle install
   - bundle exec rake
