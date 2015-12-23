@@ -22,6 +22,7 @@ group :development, :test do
   gem 'pry',                               require: false
 end
 
-gem 'aws-sdk', '~> 2.2'
+gem 'aws-sdk', '>=2.2.8'
+gem 'thor'
 gem 'puppet', '3.8.4'
 gem 'librarian-puppet'

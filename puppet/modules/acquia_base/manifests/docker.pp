@@ -62,4 +62,12 @@ class acquia_base::docker(
     hour    => fqdn_rand(23),
     require => File['/usr/sbin/docker-gc-volume'],
   }
+
+  if $docker_registry_endpoint {
+    docker::registry { "${docker_registry_endpoint}":
+      username => "${docker_registry_username}",
+      password => "${docker_registry_password}",
+      require  => Class['::docker'],
+    }
+  }
 }
