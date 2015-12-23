@@ -123,6 +123,13 @@ class acquia_jenkins (
     path    => '/usr/bin',
   }
 
+  if $jenkins_github_oauth_key {
+    exec { 'github-oauth-token-global-setting':
+      commmand => "git config --global github.token ${jenkins_github_oauth_key}",
+      path     => '/bin:/usr/bin',
+    }
+  }
+
   class { 'jenkins':
     require         => [
       Exec['create-jenkins-cli-key'],

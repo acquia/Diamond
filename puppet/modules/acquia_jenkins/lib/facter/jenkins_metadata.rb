@@ -14,6 +14,7 @@
 
 require 'facter'
 require 'aws_helper'
+require 'secrets_helper'
 
 # The jenkins_cli_pub_key fact reports the contents of the public key that is
 # used to execute jenkins cli commands as admin. This fact will create the key
@@ -31,6 +32,15 @@ end
 
 if AwsHelper.server_type_is?('jenkins')
   stack = AwsHelper.stack
+
+  secrets = SecretsHelper.new(stack)
+  if secrets.enabled?
+    Facter.add('jenkins_github_oauth_key') do
+      setcode do
+        secrets.get('jenkins/github-oauth-key')
+      end
+    end
+  end
 
   Facter.add('jenkins_password') do
     setcode do
