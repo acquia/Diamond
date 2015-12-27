@@ -54,8 +54,22 @@ if ENV['GITHUB_OAUTH_TOKEN'].nil? || ENV['GITHUB_OAUTH_TOKEN'] == ""
   ENV['GITHUB_OAUTH_TOKEN'] = github_oauth_token
 end
 
+# Defaults
 basedir=File.expand_path(File.dirname(__FILE__))
 $distdir=File.join(basedir, '..', 'dist', 'packages')
+
+# Initialized the dist folder and a volume container for other container builds
+# to mount and use via the --volumes-from
+# If there is no dist container running then pull the latest centos version
+# and create a dist container
+def init_dist_container
+  FileUtils.mkdir_p($distdir)
+
+  unless system("docker ps -a --filter='name=nemesis-dist' | grep nemesis-dist")
+    system("docker pull centos:7")
+    system("docker create -v #{$distdir}:/dist --name nemesis-dist centos:7 /bin/true")
+  end
+end
 
 # Run the given container and when finished remove it
 def run_container_build(name, tag, package_build_dir)
@@ -69,7 +83,7 @@ def run_container_build(name, tag, package_build_dir)
 
   # Run the container
   puts "Running build container: #{name}:#{tag}"
-  unless system("docker run -i --rm #{flags.join(' ')} -v #{$distdir}:/dist #{name}:#{tag}")
+  unless system("docker run -i --rm #{flags.join(' ')} --volumes-from nemesis-dist #{name}:#{tag}")
     puts "Error: unable to run #{name}:#{tag}"
     exit 1
   else
@@ -108,7 +122,7 @@ def build(build_dir, basedir, list, config, options)
           # for the resulting package to be created.
           run_container_build(name, tag, package_build_dir) if build_dir == 'packages'
         when 'build.sh'
-          system("/bin/bash build.sh #{$distdir}")
+          system("/bin/bash build.sh")
         when 'Makefile'
           system("make")
         when 'Rakefile'
@@ -138,7 +152,9 @@ regex_pattern = ARGV[0] || '**'
 # Load build config
 build_config = YAML.load_file(File.join(basedir, 'config.yaml'))
 
-FileUtils.mkdir_p($distdir)
+# Initialize the dist folder and data container
+init_dist_container
+
 start_time = Time.now
 # Change to where the build script is since there are hardcoded paths and assumptions for the build
 Dir.chdir(basedir) do

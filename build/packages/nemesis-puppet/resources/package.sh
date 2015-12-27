@@ -179,7 +179,7 @@ unless Dir.exists?(basedir)
   @log.error("GITHUB_OAUTH_TOKEN environment variable is not set") unless options[:github_oauth_token]
   FileUtils.mkdir_p(basedir)
   cmd = "curl -H 'Authorization: token ${options[:github_oauth_token]}' -sSL #{options[:repo]}/tarball/#{options[:branch]} | tar -xz --strip 1 -C #{basedir}"
-  @log.info("Cloning down #{options[repo]}:#{options[:branch]} to #{basedir}")
+  @log.info("Cloning down #{options[:repo]}:#{options[:branch]} to #{basedir}")
   system(cmd)
 end
 
