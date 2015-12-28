@@ -16,7 +16,7 @@ class acquia_mesos::services::api(
   $version = 'latest'
 ){
   docker::image { 'acquia/grid-api':
-    image     => "${registry_endpoint}acquia/grid-api",
+    image     => "${private_docker_registry}acquia/grid-api",
     image_tag => "${version}",
     force     => true,
   }
@@ -39,7 +39,7 @@ class acquia_mesos::services::api(
   }
 
   docker::run { 'grid-api':
-    image            => "${registry_endpoint}acquia/grid-api:${version}",
+    image            => "${private_docker_registry}acquia/grid-api:${version}",
     env              => $env,
     ports            => ['2114'],
     expose           => ['2114'],

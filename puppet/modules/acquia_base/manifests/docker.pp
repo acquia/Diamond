@@ -67,6 +67,7 @@ class acquia_base::docker(
     docker::registry { "${docker_registry_endpoint}":
       username => "${docker_registry_username}",
       password => "${docker_registry_password}",
+      email    => "${docker_registry_email}",
       require  => Class['::docker'],
     }
   }

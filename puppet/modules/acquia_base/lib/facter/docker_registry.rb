@@ -25,6 +25,7 @@ if stack
     user, token = Base64.decode64(data.authorization_token).split(':')
     endpoint = data.proxy_endpoint.gsub!(%r{^https:\/\/}, '')
 
+    # Facts to login to a given private ECR docker registry
     Facter.add('docker_registry_endpoint') do
       setcode do
         endpoint
@@ -40,6 +41,28 @@ if stack
     Facter.add('docker_registry_password') do
       setcode do
         token
+      end
+    end
+
+    Facter.add('docker_registry_email') do
+      setcode do
+        'none'
+      end
+    end
+
+    # Fact to be used for all privately pushed Docker containers to ECR
+    #
+    # Usage:
+    #   docker::image { 'example/image':
+    #     image     => "${private_docker_registry}example/image",
+    #     image_tag => "${version}",
+    #     force     => true,
+    #   }
+    #
+    Facter.add('private_docker_registry') do
+      setcode do
+        stage = AwsHelper.instance.tag('stage') || ''
+        stage.empty? ? "#{endpoint}/" : "#{endpoint}/#{stage}/"
       end
     end
   end

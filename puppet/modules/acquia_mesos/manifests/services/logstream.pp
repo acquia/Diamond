@@ -31,16 +31,10 @@ class acquia_mesos::services::logstream(
     ensure  => directory,
   }
 
-  if $registry_endpoint {
-    $registry_prefix = "${registry_endpoint}/"
-    } else {
-    $registry_prefix = ''
-  }
-
   # TODO(mhrabovcin): Do we need some cgroups limits on this container in terms of resource usage? This is running out of
   #                   mesos/aurora eye and its taking instance resources
   docker::run { 'logstream':
-    image            => "${registry_prefix}acquia/fluentd:${fluentd_version}",
+    image            => "${private_docker_registry}acquia/fluentd:${fluentd_version}",
     use_name         => true,
     volumes          => [
       '/etc/fluentd/logstream:/etc/td-agent',
