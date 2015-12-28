@@ -27,13 +27,13 @@ class acquia_mesos::services::mesos_dns(
   }
 
   docker::image { 'acquia/mesos-dns':
-    image     => "${registry_endpoint}acquia/mesos-dns",
+    image     => "${private_docker_registry}acquia/mesos-dns",
     image_tag => "${version}",
     force     => true,
   }
 
   docker::run { 'mesos-dns':
-    image            => "${registry_endpoint}acquia/mesos-dns:${version}",
+    image            => "${private_docker_registry}acquia/mesos-dns:${version}",
     command          => '-config=/etc/mesos-dns.json -logtostderr=true -v 0',
     volumes          => ['/etc/mesos-dns:/etc'],
     ports            => ['0.0.0.0:53:53', '0.0.0.0:8123:8123'],

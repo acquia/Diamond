@@ -58,12 +58,12 @@ EOF
 
   describe 'runs correct fluentd container' do
     let(:facts) {
-      super().merge({ :registry_endpoint => 'private-registry' })
+      super().merge({ :private_docker_registry => 'registry.example.com/' })
     }
     it {
       should contain_docker__run('logstream')
         .with({
-                'image'            => 'private-registry/acquia/fluentd:latest',
+                'image'            => 'registry.example.com/acquia/fluentd:latest',
                 'volumes'          => [
                   '/etc/fluentd/logstream:/etc/td-agent',
                   '/mnt/log/logstream:/var/log/fluent/',

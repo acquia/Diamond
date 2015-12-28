@@ -7,9 +7,11 @@ require 'optparse'
 require 'pathname'
 require 'tempfile'
 
+is_release = (ENV['NEMESIS_PUPPET_RELEASE'].nil? || ENV['NEMESIS_PUPPET_RELEASE'].empty?) ? false : true
+
 options = {
-  :release => ENV['NEMESIS_PUPPET_RELEASE'] || false,
-  :repo => ENV['NEMESIS_PUPPET_REPO']  || 'https://github.com/acquia/nemesis-puppet.git',
+  :release => is_release,
+  :repo => ENV['NEMESIS_PUPPET_REPO']  || 'acquia/nemesis-puppet',
   :branch => ENV['NEMESIS_PUPPET_BRANCH'] || 'master',
   :github_oauth_token => ENV['GITHUB_OAUTH_TOKEN'],
   :basedir => '/nemesis-puppet',
@@ -17,7 +19,7 @@ options = {
 }
 
 OptionParser.new do |opt|
-  opt.on('--release VERSION', 'Release version string') { |o| options[:release] = o }
+  opt.on('--[no-]release', 'Perform release build') { |o| options[:release] = o }
   opt.on('--dir PATH', 'Base directory containing nemesis-puppet checkout') { |o| options[:basedir] = o }
   opt.on('--dist PATH', 'Dist directory to place build packages') { |o| options[:distdir] = o }
 
@@ -106,10 +108,10 @@ end
 
 # Build a .rpm package containing all of the Puppet modules in the project
 #
-# @param basedir [string] - path to nemesis-puppet
+# @param builddir [string] - path to nemesis-puppet
 # @param distdir [string] - path to output packages
 # @param version [string] - version string, must be semver
-def build(basedir, distdir, version, build_time)
+def build(builddir, distdir, version, build_time)
   @log.info("Bumping version to #{version}")
 
   @log.info("Installing dependencies")
@@ -127,7 +129,7 @@ def build(basedir, distdir, version, build_time)
   Dir.mktmpdir do |dir|
     # Copy over third party and puppet modules
     @log.info('Preparing to build nemesis-puppet package')
-    FileUtils.cp_r(basedir.join('puppet'), dir)
+    FileUtils.cp_r(builddir.join('puppet'), dir)
     librar_puppet_files = Pathname.new(ENV['LIBRARIAN_PUPPET_PATH'])
     files = Dir.glob("#{librar_puppet_files}*")
     dest = File.join(dir, 'puppet', 'modules')
@@ -163,9 +165,7 @@ end
 # @return [String] the version to apply to the package
 def package_version(build_time, release = false)
   version = Version.new(`git describe --abbrev=0 --tags`.strip)
-  if release
-    version = version.increment!(:patch)
-  else
+  unless release
     version = Version.new("#{version}+#{build_time.strftime('%s')}")
   end
   version
@@ -173,18 +173,42 @@ end
 
 basedir = Pathname.new(options[:basedir])
 distdir = Pathname.new(options[:distdir])
+builddir = Pathname.new('/tmp/nemesis-puppet')
 
-# Clone the repo down unless the directory all ready exists
-unless Dir.exists?(basedir)
-  @log.error("GITHUB_OAUTH_TOKEN environment variable is not set") unless options[:github_oauth_token]
-  FileUtils.mkdir_p(basedir)
-  cmd = "curl -H 'Authorization: token ${options[:github_oauth_token]}' -sSL #{options[:repo]}/tarball/#{options[:branch]} | tar -xz --strip 1 -C #{basedir}"
-  @log.info("Cloning down #{options[repo]}:#{options[:branch]} to #{basedir}")
-  system(cmd)
+if File.exist?(builddir)
+  @log.info('removing existing copy of #{builddir}')
+  FileUtils.rm_rf(builddir)
+end
+FileUtils.mkdir_p(builddir)
+
+# Error Checks
+# Do not allow releases to be built off master
+if options[:release] == true && options[:branch] == 'master'
+  @log.error('Releases can not be built off master branch. Please set NEMESIS_PUPPET_BRANCH to a specific tag')
+  exit 1
 end
 
-Dir.chdir(basedir) do
+# Clone the repo from github is performing a release, otherwise use the local /nemesis-puppet mount to clone from
+if options[:release]
+  @log.error("GITHUB_OAUTH_TOKEN environment variable is not set") unless options[:github_oauth_token]
+  cmd = "git clone -b #{options[:branch]} https://#{options[:github_oauth_token]}:x-oauth-basic@github.com/#{options[:repo]}.git #{builddir}"
+  @log.info("Cloning down #{options[:repo]}:#{options[:branch]} to #{builddir}")
+  unless system(cmd)
+    @log.error("Error cloning #{options[:repo]}:#{options[:branch]} to #{builddir}")
+    @log.error("#{cmd}")
+    exit 1
+  end
+else
+  @log.info("Copying source from #{basedir} to #{builddir}")
+  # exclude dist content from the copy
+  unless system("/usr/bin/rsync -a --exclude=.tmp --exclude=dist #{basedir}/ #{builddir}")
+    @log.error("Error copying #{basedir} to #{builddir}")
+    exit 1
+  end
+end
+
+Dir.chdir(builddir) do
   build_time = DateTime.now
   version = package_version(build_time, options[:release])
-  build(basedir, distdir, version, build_time)
+  build(builddir, distdir, version, build_time)
 end

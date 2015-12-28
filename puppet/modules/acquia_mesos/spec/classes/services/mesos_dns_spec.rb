@@ -31,7 +31,7 @@ describe 'acquia_mesos::services::mesos_dns', :type => :class do
     let(:facts) {
       super().merge(
         {
-          :registry_endpoint => 'registry.example.com/'
+          :private_docker_registry => 'registry.example.com/'
         }
       )
     }

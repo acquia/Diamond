@@ -26,7 +26,7 @@ require 'thor'
 
 nemesis_puppet_root = File.expand_path(File.join(Pathname.new(__FILE__).realpath, '..', '..'))
 $dist_root = File.join(nemesis_puppet_root, 'dist')
-$repo_root = File.join($dist_root, 'repo/')
+$repo_root = File.join($dist_root, 'repo')
 
 def get_s3_bootstrap_repo_bucket(repo_stackname)
   Aws::CloudFormation::Resource.new.stack(repo_stackname).resource('repo').physical_resource_id

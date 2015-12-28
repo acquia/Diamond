@@ -17,15 +17,21 @@
 
 set -ex
 
+: ${NEMESIS_PUPPET_RELEASE:=""}
+: ${NEMESIS_PUPPET_REPO:="acquia/nemesis-puppet"}
+: ${NEMESIS_PUPPET_BRANCH:="master"}
+: ${GITHUB_OAUTH_TOKEN:=""}
+
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
-NEMESIS_PUPPET_ROOT=${BASEDIR}/../../..
 
-if [[ "$#" -ge 1 ]]; then
-    DIST_VOLUME_MOUNT=$1
-else
-    DIST_VOLUME_MOUNT="${NEMESIS_PUPPET_ROOT}/dist/packages"
-fi
+docker build --no-cache -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
 
-docker build --no-cache -t nemesis-puppet -f  Dockerfile.release ${BASEDIR}
-docker run -i --rm -v ${NEMESIS_PUPPET_ROOT}:/nemesis-puppet -v ${DIST_VOLUME_MOUNT}:/dist nemesis-puppet
+docker run -i --rm \
+  -e "NEMESIS_PUPPET_RELEASE=${NEMESIS_PUPPET_RELEASE}" \
+  -e "NEMESIS_PUPPET_REPO=${NEMESIS_PUPPET_REPO}" \
+  -e "NEMESIS_PUPPET_BRANCH=${NEMESIS_PUPPET_BRANCH}" \
+  -e "GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN}" \
+  --volumes-from nemesis-puppet-volumes \
+  nemesis-puppet
+
 docker rmi -f nemesis-puppet
