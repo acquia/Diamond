@@ -32,7 +32,8 @@ class PackageCommand < Thor
     Dir.glob(File.join("#{$dist_root}", "**", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
 
     commands = [
-     "#{$bin_dir}/build -c list",
+     "#{$bin_dir}/repo delete #{repo}",
+     "#{$bin_dir}/build -p #{package}",
      "#{$bin_dir}/repo create",
      "#{$bin_dir}/repo upload #{repo}"
     ]

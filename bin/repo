@@ -111,9 +111,9 @@ class RepoManager < Thor
     bucket = get_s3_bootstrap_repo_bucket(stackname)
 
     if system('which aws')
-      cmd = "aws s3 sync --delete #{repo_dir}/repo s3://#{bucket}/repo"
+      cmd = "aws s3 sync --delete #{repo_dir} s3://#{bucket}/repo"
     else
-      cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_dir}/repo:/dist tools/aws s3 sync --delete /dist s3://#{bucket}/repo "
+      cmd = "docker run -i --rm #{docker_aws_creds()} -v #{repo_dir}:/dist tools/aws s3 sync --delete /dist s3://#{bucket}/repo "
     end
     system(cmd)
   end
