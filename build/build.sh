@@ -56,18 +56,21 @@ end
 
 # Defaults
 basedir=File.expand_path(File.dirname(__FILE__))
-$distdir=File.join(basedir, '..', 'dist', 'packages')
+$nemesis_puppet_root=File.join(basedir, '..')
+$distdir=File.join($nemesis_puppet_root, 'dist', 'packages')
+
+$volumes_container_name = 'nemesis-puppet-volumes'
 
 # Initialized the dist folder and a volume container for other container builds
 # to mount and use via the --volumes-from
 # If there is no dist container running then pull the latest centos version
 # and create a dist container
-def init_dist_container
+def init_volumes_container
   FileUtils.mkdir_p($distdir)
 
-  unless system("docker ps -a --filter='name=nemesis-dist' | grep nemesis-dist")
+  unless system("docker ps -a --filter='name=#{$volumes_container_name}' | grep '#{$volumes_container_name}'")
     system("docker pull centos:7")
-    system("docker create -v #{$distdir}:/dist --name nemesis-dist centos:7 /bin/true")
+    system("docker create -v #{$nemesis_puppet_root}:/nemesis-puppet:ro -v #{$distdir}:/dist --name #{$volumes_container_name} centos:7 /bin/true")
   end
 end
 
@@ -83,7 +86,7 @@ def run_container_build(name, tag, package_build_dir)
 
   # Run the container
   puts "Running build container: #{name}:#{tag}"
-  unless system("docker run -i --rm #{flags.join(' ')} --volumes-from nemesis-dist #{name}:#{tag}")
+  unless system("docker run -i --rm #{flags.join(' ')} --volumes-from #{$volumes_container_name} #{name}:#{tag}")
     puts "Error: unable to run #{name}:#{tag}"
     exit 1
   else
@@ -152,8 +155,8 @@ regex_pattern = ARGV[0] || '**'
 # Load build config
 build_config = YAML.load_file(File.join(basedir, 'config.yaml'))
 
-# Initialize the dist folder and data container
-init_dist_container
+# Initialize the volumes container for dist and nemesis-puppet root
+init_volumes_container
 
 start_time = Time.now
 # Change to where the build script is since there are hardcoded paths and assumptions for the build
