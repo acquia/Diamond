@@ -19,7 +19,7 @@
 # are available on the system performing the build.
 set -ex
 
-: ${GIT_TAG:=master}
+: ${GRID_API_GIT_TAG:=master}
 
 # Attempt to read the Github OAuth token from the global .gitconfig
 GITHUB_OAUTH_TOKEN=$(git config --global github.token) || true
@@ -39,7 +39,7 @@ docker build --no-cache -t nemesis/grid-api -f ${BASEDIR}/Dockerfile.build ${BAS
 # Run the build
 docker run -it --rm \
   -e GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN} \
-  -e GIT_TAG=${GIT_TAG} \
+  -e GRID_API_GIT_TAG=${GRID_API_GIT_TAG} \
   -v ${BASEDIR}:/dist nemesis/grid-api /package.sh
 
 docker rmi -f nemesis/grid-api

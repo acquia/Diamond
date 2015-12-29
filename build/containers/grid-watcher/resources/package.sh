@@ -11,7 +11,7 @@ git config --global url."https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/
 
 # Download the source and build it
 mkdir -p ${SRC_DIR}
-curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/${GRID_WATCHER_GIT_REPO}/tarball/${GRID_WATCHER_GIT_TAG} | tar -xz --strip 1 -C ${SRC_DIR}
+git clone -b ${GRID_WATCHER_GIT_TAG} https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/${GRID_WATCHER_GIT_REPO}.git ${SRC_DIR}
 cd ${SRC_DIR}
 make grid-watcher
 
