@@ -1,0 +1,46 @@
+# Copyright 2015 Acquia, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+FROM centos:7
+MAINTAINER Acquia Engineering <engineering@acquia.com>
+
+COPY resources/nginx.repo /etc/yum.repos.d/nginx.repo
+
+RUN yum install -y epel-release \
+  # Install dependencies
+  && yum install -y \
+    java-1.8.0-openjdk-headless \
+    nginx-1.9.9-1.el7.ngx \
+    python-devel \
+    python-setuptools \
+
+  # Setup supervisor
+  && easy_install supervisor \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
+
+# Setup env
+ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0
+ENV PATH ${PATH}:${JAVA_HOME}/bin
+
+# Setup Baragon and its config
+COPY resources/baragon/etc /etc
+COPY resources/baragon/baragon-start-agent.sh /etc/baragon/start.sh
+COPY baragon-agent.jar /etc/baragon/baragon-agent.jar
+
+CMD ['/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf']

@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class acquia_mesos::services::baragon_service {
+class acquia_mesos::services::baragon(
+  $version = 'latest'
+){
 
   file { '/etc/baragon':
     ensure  => directory,
@@ -24,19 +26,27 @@ class acquia_mesos::services::baragon_service {
     require => File['/etc/baragon'],
   }
 
-  docker::run { 'baragon-service':
-    image            => 'hubspot/baragonservice:latest',
+  docker::image { 'acquia/baragon-master':
+    image     => "${private_docker_registry}acquia/baragon-master",
+    image_tag => "${version}",
+    force     => true,
+  }
+
+  docker::run { 'baragon-master':
+    image            => "${private_docker_registry}acquia/baragon-master:${version}",
     ports            => ['0.0.0.0:8080:8080'],
     volumes          => ['/etc/baragon/baragon_service_config.yaml:/etc/baragon/baragon_service_config.yaml'],
     command          => 'java -jar /etc/baragon/BaragonService.jar server /etc/baragon/baragon_service_config.yaml',
+    restart          => always,
     extra_parameters => [
-                          '--restart=always',
-                          '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="baragonservice-master"',
-                        ],
+      '--restart=always',
+      '-d',
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="baragonservice-master"'
+    ],
     privileged       => false,
-    pull_on_start    => true,
     require          => [
-                          File['/etc/baragon/baragon_service_config.yaml'],
-                        ],
+      File['/etc/baragon/baragon_service_config.yaml'],
+      Docker::Image['acquia/baragon-master'],
+    ],
   }
 }

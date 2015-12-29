@@ -1,23 +1,19 @@
 #!/usr/bin/env bash
 set -ex
 
+: ${BARAGON_GIT_TAG:=master}
+
 export BARAGON_TMPDIR=/tmp
 
-mkdir baragon
-curl -sSL https://api.github.com/repos/hubspot/baragon/tarball/${GIT_TAG} | tar -xz --strip 1 -C baragon
+BUILDDIR=/tmp/baragon
 
-cd baragon
+mkdir -p ${BUILDDIR}
+curl -sSL https://api.github.com/repos/acquia/baragon/tarball/${BARAGON_GIT_TAG} | tar -xz --strip 1 -C ${BUILDDIR}
 
-# Try a few times because npm is flakey
-n=0
-until [ $n -ge 5 ]
-do
-  mvn package && break
-  n=$[$n+1]
-  sleep 5
-done
+cd ${BUILDDIR}
+mvn package
 
 if [ -d "/dist/" ]; then
-  cp  BaragonService/target/BaragonService*-shaded.jar /dist/BaragonService.jar
-  cp  BaragonAgentService/target/BaragonAgentService*-shaded.jar /dist/BaragonAgentService.jar
+  cp  BaragonService/target/BaragonService*-shaded.jar /dist/baragon-master.jar
+  cp  BaragonAgentService/target/BaragonAgentService*-shaded.jar /dist/baragon-agent.jar
 fi

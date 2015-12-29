@@ -15,4 +15,4 @@ args+=( -Xmx512m )
 
 CONFIG_FILE="${BARAGON_CONFIG_FILE:=/etc/baragon/baragon.yaml}"
 
-exec java "${args[@]}" -jar "/etc/baragon/BaragonAgentService.jar" server $CONFIG_FILE
+exec java "${args[@]}" -jar "/etc/baragon/baragon-agent.jar" server $CONFIG_FILE

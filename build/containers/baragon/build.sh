@@ -14,35 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# Build Baragon
-
+#
+# Build Baragon and its release containers
 set -ex
 
-: ${GIT_TAG:=master}
-
-GITHUB_OAUTH_TOKEN=$(git config --global github.token) || true
-
-if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
- echo "Error: GITHUB_OAUTH_TOKEN environment variable not set"
- exit 1
-else
-  export GITHUB_OAUTH_TOKEN="${GITHUB_OAUTH_TOKEN}"
-fi
+: ${BARAGON_GIT_TAG:=master}
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
-docker build -t acquia/baragonagentbase-aurora:latest -f Dockerfile-base .
+# Build the baragon jars
+docker build --no-cache -t nemesis/baragon -f Dockerfile.build ${BASEDIR}
+docker run -i --rm -v $BASEDIR:/dist -e "BARAGON_GIT_TAG=${BARAGON_GIT_TAG}" nemesis/baragon /package.sh
 
-docker run --rm -it  -v $BASEDIR:/dist \
-                     -v $(pwd)/resources/package.sh:/package.sh \
-                     -e GIT_TAG=$GIT_TAG \
-                     -e GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN} \
-                     acquia/baragonagentbase-aurora:latest /package.sh
-
-docker build -t acquia/baragonservice-master:latest -f Dockerfile-master-release $BASEDIR
-docker build -t acquia/baragonservice-agent:latest  -f Dockerfile-agent-release  $BASEDIR
+# Build the final baragon containers
+docker build --no-cache -t acquia/baragon-master -f Dockerfile.baragon-master ${BASEDIR}
+docker build --no-cache -t acquia/baragon-agent -f Dockerfile.baragon-agent ${BASEDIR}
 
 # Cleanup
-docker rmi acquia/baragonagentbase-aurora:latest
-rm Baragon*.jar
+docker rmi -f nemesis/baragon
+rm -f baragon-*.jar

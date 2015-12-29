@@ -18,7 +18,7 @@ class acquia_mesos::master (
   $api = undef,
   $watcher = undef,
   $mesos_dns = undef,
-  $install_baragon = undef,
+  $baragon = undef,
 ) {
   include acquia_mesos::scheduler
 
@@ -40,8 +40,10 @@ class acquia_mesos::master (
     }
   }
 
-  if $install_baragon {
-    include acquia_mesos::baragon_service
+  if $baragon {
+    class { 'acquia_mesos::services::baragon':
+      version => $baragon,
+    }
   }
 
   class {'::mesos::master':
