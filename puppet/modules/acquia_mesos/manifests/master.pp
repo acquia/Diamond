@@ -16,6 +16,7 @@ class acquia_mesos::master (
   $mesos_log_dir = '/var/log/mesos',
   $mesos_lib_dir = '/var/lib/mesos',
   $api = undef,
+  $watcher = undef,
   $mesos_dns = undef
 ) {
   include acquia_mesos::scheduler
@@ -23,6 +24,12 @@ class acquia_mesos::master (
   if $api {
     class { 'acquia_mesos::services::api':
       version => $api,
+    }
+  }
+
+  if $watcher {
+    class { 'acquia_mesos::services::watcher':
+      version => $watcher,
     }
   }
 
