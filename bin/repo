@@ -118,7 +118,7 @@ class RepoManager < Thor
     system(cmd)
   end
 
-  desc "upload STACKNAME", "Download a package repository."
+  desc "download STACKNAME", "Download a package repository."
   method_option :repo_dir, :type => :string, :default => $repo_root, :desc => "Dist output directory. [Default: '#{$repo_root}']"
   def download(stackname)
     repo_dir = options[:repo_dir]
