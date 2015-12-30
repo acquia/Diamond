@@ -24,7 +24,8 @@ class acquia_mesos::master (
 
   if $api {
     class { 'acquia_mesos::services::api':
-      version => $api,
+      version         => $api,
+      baragon_version => $baragon,
     }
   }
 

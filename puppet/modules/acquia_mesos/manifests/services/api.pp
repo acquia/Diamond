@@ -13,36 +13,38 @@
 # limitations under the License.
 
 class acquia_mesos::services::api(
-  $version = 'latest'
+  $version = 'latest',
+  $remote_scheduler_host = $ec2_public_ipv4,
+  $remote_scheduler_port = 8081,
+  $api_port = 2114,
+  $baragon_version = undef,
 ){
+  $default_env = [
+    "AG_REMOTE_SCHEDULER_HOST=${remote_scheduler_host}",
+    "AG_REMOTE_SCHEDULER_PORT=${remote_scheduler_port}",
+  ]
+
+  if $baragon_version {
+    $baragon_env = [
+      'AG_LOADBALANCERS=1',
+      "AG_LOADBALANCER_ZK_SERVERS=${aurora_zookeeper_connection_string}",
+      "AG_LOADBALANCER_SOURCE=${private_docker_registry}acquia/baragon-agent:${baragon_version}"
+    ]
+  } else {
+    $baragon_env = []
+  }
+
   docker::image { 'acquia/grid-api':
     image     => "${private_docker_registry}acquia/grid-api",
     image_tag => "${version}",
     force     => true,
   }
 
-  # Pass logstream name to grid-api so it can launch containers with correctly routed logs
-  if $logstream_name {
-    $env = [
-      "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
-      'AG_REMOTE_SCHEDULER_PORT=8081',
-      'AG_LOGSTREAM=1',
-      'AG_LOGSTREAM_DRIVER=fluentd',
-      'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
-      'AG_LOGSTREAM_TAG_PREFIX=grid',
-    ]
-  } else {
-    $env = [
-      "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
-      'AG_REMOTE_SCHEDULER_PORT=8081',
-    ]
-  }
-
   docker::run { 'grid-api':
     image            => "${private_docker_registry}acquia/grid-api:${version}",
-    env              => $env,
-    ports            => ['2114'],
-    expose           => ['2114'],
+    env              => concat($default_env, $baragon_env, $api_docker_env),
+    ports            => ["${api_port}"],
+    expose           => ["${api_port}"],
     restart          => always,
     extra_parameters => [
       '--restart=always',
