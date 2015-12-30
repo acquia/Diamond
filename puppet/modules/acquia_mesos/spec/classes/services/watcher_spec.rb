@@ -48,4 +48,33 @@ describe 'acquia_mesos::services::watcher', :type => :class do
         .with_ports(['6677'])
     }
   end
+
+  context 'adds baragon to grid-watcher docker env' do
+    let(:facts) {
+      super().merge(
+        {
+          :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
+        }
+      )
+    }
+
+    let(:params) {
+      {
+        :watcher_host => '10.0.0.1',
+        :watcher_port => 8081,
+        :baragon_host => '10.0.0.2',
+        :baragon_port => 8080,
+      }
+    }
+
+    it {
+      should contain_docker__run('grid-watcher')
+        .with_env([
+          'ALB_HOST=10.0.0.1',
+          'ALB_PORT=8081',
+          'ALB_ZK_SERVERS=10.0.0.1:2181,10.0.0.2:2181',
+          'ALB_BARAGON_API=http://10.0.0.2:8080/baragon/v2',
+        ])
+    }
+  end
 end
