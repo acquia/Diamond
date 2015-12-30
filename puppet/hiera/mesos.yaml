@@ -4,7 +4,7 @@ classes:
 acquia_mesos::mesos_base_dir: '/mnt'
 acquia_mesos::mesos_dns: false
 acquia_mesos::master::api: 0.1.2
-acquia_mesos::master::watcher: false
+acquia_mesos::master::watcher: 0.1.0
 acquia_mesos::master::baragon: false
 
 aurora::version: '0.10.0-1.el7.centos.aurora'
