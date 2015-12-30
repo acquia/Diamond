@@ -35,13 +35,12 @@ class acquia_mesos::services::logstream(
   #                   mesos/aurora eye and its taking instance resources
   docker::run { 'logstream':
     image            => "${private_docker_registry}acquia/fluentd:${fluentd_version}",
-    use_name         => true,
     volumes          => [
       '/etc/fluentd/logstream:/etc/td-agent',
       # Used to store failed log messages and out_file plugin. @see fluentd.conf.erb
       '/mnt/log/logstream:/var/log/fluent/'
     ],
-    ports            => ['0.0.0.0:24224:24224'],
+    ports            => ['24224'],
     extra_parameters => [
       '--restart=always',
       '-d',

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
 
-DEFAULT_URI_BASE="http://${HOST_IP:=localhost}:${BARAGON_PORT:=8080}${BARAGON_UI_BASE:=/baragon/v2}"
+DEFAULT_URI_BASE="http://${HOST_IP:=localhost}:${BARAGON_PORT:=6060}${BARAGON_UI_BASE:=/baragon/v2}"
 
 [[ ! ${BARAGON_ZK_NAMESPACE:-} ]] || args+=( -Ddw.zookeeper.zkNamespace="$BARAGON_ZK_NAMESPACE" )
 [[ ! ${BARAGON_ZK_QUORUM:-} ]] || args+=( -Ddw.zookeeper.quorum="$BARAGON_ZK_QUORUM" )

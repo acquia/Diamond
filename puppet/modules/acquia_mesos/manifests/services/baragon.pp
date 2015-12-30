@@ -13,16 +13,17 @@
 # limitations under the License.
 
 class acquia_mesos::services::baragon(
-  $version = 'latest'
+  $version = 'latest',
+  $baragon_port = 6060,
 ){
 
   file { '/etc/baragon':
     ensure  => directory,
   }
 
-  file { '/etc/baragon/baragon_service_config.yaml':
+  file { '/etc/baragon/baragon.yaml':
     ensure  => present,
-    content => template('acquia_mesos/baragon_service_config.yaml.erb'),
+    content => template('acquia_mesos/baragon.yaml.erb'),
     require => File['/etc/baragon'],
   }
 
@@ -34,9 +35,14 @@ class acquia_mesos::services::baragon(
 
   docker::run { 'baragon-master':
     image            => "${private_docker_registry}acquia/baragon-master:${version}",
-    ports            => ['0.0.0.0:8080:8080'],
-    volumes          => ['/etc/baragon/baragon_service_config.yaml:/etc/baragon/baragon_service_config.yaml'],
-    command          => 'java -jar /etc/baragon/BaragonService.jar server /etc/baragon/baragon_service_config.yaml',
+    ports            => ["${baragon_port}"],
+    expose           => ["${baragon_port}"],
+    env              => [
+      "BARAGON_PORT=${baragon_port}",
+      "BARAGON_HOSTNAME=${ec2_local_ipv4}",
+    ],
+    volumes          => ['/etc/baragon/baragon.yaml:/etc/baragon/baragon.yaml'],
+    command          => "/usr/bin/java -Ddw.hostname=${ec2_local_ipv4} -Ddw.server.connector.port=${baragon_port} -jar /etc/baragon/baragon-master.jar server /etc/baragon/baragon.yaml",
     restart          => always,
     extra_parameters => [
       '--restart=always',
@@ -45,7 +51,7 @@ class acquia_mesos::services::baragon(
     ],
     privileged       => false,
     require          => [
-      File['/etc/baragon/baragon_service_config.yaml'],
+      File['/etc/baragon/baragon.yaml'],
       Docker::Image['acquia/baragon-master'],
     ],
   }
