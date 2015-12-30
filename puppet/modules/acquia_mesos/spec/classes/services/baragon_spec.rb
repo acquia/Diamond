@@ -11,10 +11,26 @@ describe 'acquia_mesos::services::baragon', :type => :class do
 
   it { should contain_acquia_mesos__services__baragon }
 
-  it {
-    should contain_file('/etc/baragon')
-    should contain_file('/etc/baragon/baragon_service_config.yaml')
-  }
+  context 'sets up baragon configuration files' do
+    let(:facts) {
+      super().merge(
+        {
+          :ec2_local_ipv4 => '10.0.0.1',
+        }
+      )
+    }
+    let(:params) {
+      {
+        :baragon_port => 6060,
+      }
+    }
+    it {
+      should contain_file('/etc/baragon')
+      should contain_file('/etc/baragon/baragon.yaml')
+        .with_content(/hostname: 10.0.0.1/)
+        .with_content(/port: 6060/)
+    }
+  end
 
   context 'installs and runs the baragon docker container' do
     it {

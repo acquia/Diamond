@@ -68,7 +68,7 @@ EOF
                   '/etc/fluentd/logstream:/etc/td-agent',
                   '/mnt/log/logstream:/var/log/fluent/',
                 ],
-                'ports'            => ['0.0.0.0:24224:24224'],
+                'ports'            => ['24224'],
                 'extra_parameters' => ['--restart=always', '-d', '--net=host', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'],
                 'privileged'       => false,
                 'restart_service'  => true,

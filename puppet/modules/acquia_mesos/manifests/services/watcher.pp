@@ -21,26 +21,8 @@ class acquia_mesos::services::watcher(
     force     => true,
   }
 
-  # Pass logstream name to grid-watcher so it can launch containers with correctly routed logs
-  if $logstream_name {
-    $env = [
-      "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
-      'AG_REMOTE_SCHEDULER_PORT=8081',
-      'AG_LOGSTREAM=1',
-      'AG_LOGSTREAM_DRIVER=fluentd',
-      'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
-      'AG_LOGSTREAM_TAG_PREFIX=grid',
-    ]
-  } else {
-    $env = [
-      "AG_REMOTE_SCHEDULER_HOST=${ec2_public_ipv4}",
-      'AG_REMOTE_SCHEDULER_PORT=8081',
-    ]
-  }
-
   docker::run { 'grid-watcher':
     image            => "${private_docker_registry}acquia/grid-watcher:${version}",
-    env              => $env,
     ports            => ['6677'],
     expose           => ['6677'],
     restart          => always,

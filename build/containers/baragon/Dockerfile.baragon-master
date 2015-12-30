@@ -19,7 +19,7 @@ MAINTAINER Acquia Engineering <engineering@acquia.com>
 RUN yum install -y epel-release \
   # Install dependencies
   && yum install -y \
-    java-1.8.0-openjdk-headless
+    java-1.8.0-openjdk-headless \
 
   # Clean up
   && yum clean all \
@@ -34,5 +34,7 @@ ENV PATH ${PATH}:${JAVA_HOME}/bin
 COPY resources/baragon/etc/baragon /etc/baragon
 COPY resources/baragon/baragon-start-master.sh /etc/baragon/master.sh
 COPY baragon-master.jar /etc/baragon/baragon-master.jar
+
+EXPOSE 6060
 
 CMD ['/etc/baragon/start.sh']
