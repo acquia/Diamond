@@ -11,22 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-FROM ubuntu:trusty
+FROM centos:7
 MAINTAINER Acquia Engineering <engineering@acquia.com>
 
-ENV GOLANG_VERSION=1.5 \
-    DEBIAN_FRONTEND=noninteractive \
-    GOROOT=/usr/lib/go \
-    GOPATH=/usr/share/go
+RUN yum install -y epel-release \
+  # Install dependencies
+  && yum install -y \
+    gcc \
+    java-1.8.0-openjdk \
+    java-1.8.0-openjdk-devel \
+    make \
+    python-devel \
+    python-setuptools \
 
-ENV PATH=${GOROOT}/bin:${GOPATH}/bin:$PATH
+  # Download maven
+  && mkdir -p /usr/lib/maven \
+  && curl -sSL http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar -xz -C /usr/lib/maven \
 
-RUN apt-get update && \
-    apt-get install -y curl git ca-certificates && \
-    apt-get clean && rm -rf /var/cache/apt/* /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    curl -sSL https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/lib/ -xz && \
-    go get github.com/tools/godep
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
+
+# Setup env
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0
+ENV M2_HOME /usr/lib/maven/apache-maven-3.3.9
+ENV M2 ${M2_HOME}/bin
+ENV PATH ${PATH}:${JAVA_HOME}/bin:${M2}
 
 ADD resources/package.sh /package.sh
 RUN chmod +x /package.sh

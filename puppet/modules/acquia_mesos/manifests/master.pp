@@ -17,7 +17,8 @@ class acquia_mesos::master (
   $mesos_lib_dir = '/var/lib/mesos',
   $api = undef,
   $watcher = undef,
-  $mesos_dns = undef
+  $mesos_dns = undef,
+  $baragon = undef,
 ) {
   include acquia_mesos::scheduler
 
@@ -36,6 +37,12 @@ class acquia_mesos::master (
   if $mesos_dns {
     class { 'acquia_mesos::services::mesos_dns':
       version => $mesos_dns,
+    }
+  }
+
+  if $baragon {
+    class { 'acquia_mesos::services::baragon':
+      version => $baragon,
     }
   }
 

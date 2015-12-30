@@ -36,6 +36,7 @@ ENV PATH ${GOROOT}/bin:${GOPATH}/bin:$PATH
 RUN go get github.com/mattn/gom
 
 ADD resources/package.sh /package.sh
+RUN chmod +x /package.sh
 
 WORKDIR /usr/share/go/src/github.com/acquia/grid-api
-CMD ["/bin/package.sh"]
+CMD ["/package.sh"]

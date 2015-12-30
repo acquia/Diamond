@@ -38,4 +38,4 @@ RUN go get github.com/mattn/gom
 ADD resources/package.sh /package.sh
 
 WORKDIR /usr/share/go/src/github.com/acquia/grid-watcher
-CMD ["/bin/package.sh"]
+CMD ["/package.sh"]

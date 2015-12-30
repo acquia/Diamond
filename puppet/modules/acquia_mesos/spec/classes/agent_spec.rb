@@ -29,13 +29,12 @@ describe 'acquia_mesos::agent', :type => :class do
     }
 
     context 'configures mesos options' do
-      let(:ec2_public_hostname) { 'test' }
+      let(:ec2_hostname) { 'test' }
 
       let(:facts) {
         {
           :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
-          :hostname => ec2_public_hostname,
-          :ec2_public_hostname => 'test',
+          :ec2_local_ipv4 => '12.34.56.78',
         }
       }
 
@@ -44,7 +43,7 @@ describe 'acquia_mesos::agent', :type => :class do
         should contain_mesos__property('docker_sandbox_directory').with_value('/mnt/mesos/sandbox')
         should contain_mesos__property('enforce_container_disk_quota').with_value(true)
         should contain_mesos__property('executor_registration_timeout').with_value('5mins')
-        should contain_mesos__property('hostname').with_value(ec2_public_hostname)
+        should contain_mesos__property('hostname').with_value('12.34.56.78')
         should contain_mesos__property('perf_events').with_value(/cycles,instructions,task-clock/)
         should contain_mesos__property('registration_backoff_factor').with_value('10secs')
         should contain_mesos__property('slave_subsystems').with_value('memory,cpuacct')
