@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-: ${GRID_WATCHER_GIT_REPO:="kasisnu/grid-watcher"}
+: ${GRID_WATCHER_GIT_REPO:="acquia/grid-watcher"}
 : ${GRID_WATCHER_GIT_TAG:=master}
 
 SRC_DIR=/usr/share/go/src/github.com/acquia/grid-watcher

@@ -25,12 +25,12 @@ if AwsHelper.server_type_is?('mesos')
         # Add logstream env options to grid-api so it can launch containers with correctly routed logs
         if Facter.value('logstream_name')
           logstream_env = [
-              'AG_LOGSTREAM=1',
-              'AG_LOGSTREAM_DRIVER=fluentd',
-              'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
-              'AG_LOGSTREAM_TAG_PREFIX=grid',
-            ]
-            env.concat(logstream_env)
+            'AG_LOGSTREAM=1',
+            'AG_LOGSTREAM_DRIVER=fluentd',
+            'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
+            'AG_LOGSTREAM_TAG_PREFIX=grid',
+          ]
+          env.concat(logstream_env)
         end
 
         # Add bugsnag key if one is available
@@ -43,4 +43,3 @@ if AwsHelper.server_type_is?('mesos')
     end
   end
 end
-

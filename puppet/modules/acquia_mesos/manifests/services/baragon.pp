@@ -14,9 +14,9 @@
 
 class acquia_mesos::services::baragon(
   $version = 'latest',
+  $baragon_host = $ec2_local_ipv4,
   $baragon_port = 6060,
 ){
-
   file { '/etc/baragon':
     ensure  => directory,
   }
@@ -39,10 +39,10 @@ class acquia_mesos::services::baragon(
     expose           => ["${baragon_port}"],
     env              => [
       "BARAGON_PORT=${baragon_port}",
-      "BARAGON_HOSTNAME=${ec2_local_ipv4}",
+      "BARAGON_HOSTNAME=${baragon_host}",
     ],
     volumes          => ['/etc/baragon/baragon.yaml:/etc/baragon/baragon.yaml'],
-    command          => "/usr/bin/java -Ddw.hostname=${ec2_local_ipv4} -Ddw.server.connector.port=${baragon_port} -jar /etc/baragon/baragon-master.jar server /etc/baragon/baragon.yaml",
+    command          => "/usr/bin/java -Ddw.hostname=${baragon_host} -Ddw.server.connector.port=${baragon_port} -jar /etc/baragon/baragon-master.jar server /etc/baragon/baragon.yaml",
     restart          => always,
     extra_parameters => [
       '--restart=always',

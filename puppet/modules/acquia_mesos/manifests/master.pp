@@ -24,14 +24,18 @@ class acquia_mesos::master (
 
   if $api {
     class { 'acquia_mesos::services::api':
-      version         => $api,
-      baragon_version => $baragon,
+      version               => $api,
+      remote_scheduler_host => $ec2_public_ipv4,
+      baragon_version       => $baragon,
     }
   }
 
   if $watcher {
     class { 'acquia_mesos::services::watcher':
-      version => $watcher,
+      version      => $watcher,
+      watcher_host => $ec2_local_ipv4,
+      baragon_host => $ec2_local_ipv4,
+      baragon_port => 6060,
     }
   }
 
@@ -43,7 +47,9 @@ class acquia_mesos::master (
 
   if $baragon {
     class { 'acquia_mesos::services::baragon':
-      version => $baragon,
+      version      => $baragon,
+      baragon_host => $ec2_local_ipv4,
+      baragon_port => 6060,
     }
   }
 

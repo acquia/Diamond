@@ -13,8 +13,19 @@
 # limitations under the License.
 
 class acquia_mesos::services::watcher(
-  $version = 'latest'
+  $version = 'latest',
+  $watcher_host = '0.0.0.0',
+  $watcher_port = 6677,
+  $baragon_host = '0.0.0.0',
+  $baragon_port = 6060,
 ){
+  $env = [
+    "ALB_HOST=${watcher_host}",
+    "ALB_PORT=${watcher_port}",
+    "ALB_ZK_SERVERS=${aurora_zookeeper_connection_string}",
+    "ALB_BARAGON_API=http://${baragon_host}:${baragon_port}/baragon/v2"
+  ]
+
   docker::image { 'acquia/grid-watcher':
     image     => "${private_docker_registry}acquia/grid-watcher",
     image_tag => "${version}",
@@ -23,8 +34,9 @@ class acquia_mesos::services::watcher(
 
   docker::run { 'grid-watcher':
     image            => "${private_docker_registry}acquia/grid-watcher:${version}",
-    ports            => ['6677'],
-    expose           => ['6677'],
+    env              => $env,
+    ports            => ["${watcher_port}"],
+    expose           => ["${watcher_port}"],
     restart          => always,
     extra_parameters => [
       '--restart=always',

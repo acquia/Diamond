@@ -14,7 +14,7 @@
 
 class acquia_mesos::services::api(
   $version = 'latest',
-  $remote_scheduler_host = $ec2_public_ipv4,
+  $remote_scheduler_host = '0.0.0.0',
   $remote_scheduler_port = 8081,
   $api_port = 2114,
   $baragon_version = undef,

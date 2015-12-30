@@ -65,6 +65,13 @@ describe 'acquia_mesos::services::api', :type => :class do
       )
     }
 
+    let(:params) {
+      {
+        :remote_scheduler_host => '10.0.0.1',
+        :remote_scheduler_port => 8081,
+      }
+    }
+
     it {
       should contain_docker__run('grid-api')
         .with_env([
@@ -82,9 +89,7 @@ describe 'acquia_mesos::services::api', :type => :class do
     let(:facts) {
       super().merge(
         {
-          :private_docker_registry => "registry.example.com/",
-          :ec2_public_ipv4 => '10.0.0.1',
-          :remote_scheduler_port => 8081,
+          :private_docker_registry => 'registry.example.com/',
           :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
           :api_docker_env => [],
         }
@@ -93,6 +98,8 @@ describe 'acquia_mesos::services::api', :type => :class do
 
     let(:params) {
       {
+        :remote_scheduler_host => '10.0.0.1',
+        :remote_scheduler_port => 8081,
         :baragon_version => 'latest'
       }
     }
@@ -103,8 +110,8 @@ describe 'acquia_mesos::services::api', :type => :class do
           'AG_REMOTE_SCHEDULER_HOST=10.0.0.1',
           'AG_REMOTE_SCHEDULER_PORT=8081',
           'AG_LOADBALANCERS=1',
-          "AG_LOADBALANCER_ZK_SERVERS=10.0.0.1:2181,10.0.0.2:2181",
-          "AG_LOADBALANCER_SOURCE=registry.example.com/acquia/baragon-agent:latest",
+          'AG_LOADBALANCER_ZK_SERVERS=10.0.0.1:2181,10.0.0.2:2181',
+          'AG_LOADBALANCER_SOURCE=registry.example.com/acquia/baragon-agent:latest',
         ])
     }
   end
