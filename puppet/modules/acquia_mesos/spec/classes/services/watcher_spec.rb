@@ -45,7 +45,7 @@ describe 'acquia_mesos::services::watcher', :type => :class do
     it {
       should contain_docker__run('grid-watcher')
         .with_image('acquia/grid-watcher:1.0')
-        .with_ports(['6677'])
+        .with_ports(['6677:6677'])
     }
   end
 

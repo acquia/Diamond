@@ -49,7 +49,7 @@ class acquia_ecs {
       '/var/lib/ecs/data:/data',
     ],
     env_file         => '/etc/ecs/ecs.config',
-    ports            => ['51678'],
+    ports            => ['51678:51678'],
     expose           => ['51678'],
     restart          => always,
     extra_parameters => ['--restart=always', '-d'],

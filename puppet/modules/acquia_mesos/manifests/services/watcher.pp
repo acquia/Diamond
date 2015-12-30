@@ -35,7 +35,7 @@ class acquia_mesos::services::watcher(
   docker::run { 'grid-watcher':
     image            => "${private_docker_registry}acquia/grid-watcher:${version}",
     env              => $env,
-    ports            => ["${watcher_port}"],
+    ports            => ["${watcher_port}:${watcher_port}"],
     expose           => ["${watcher_port}"],
     restart          => always,
     extra_parameters => [
