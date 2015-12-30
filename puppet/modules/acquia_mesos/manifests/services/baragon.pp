@@ -35,7 +35,7 @@ class acquia_mesos::services::baragon(
 
   docker::run { 'baragon-master':
     image            => "${private_docker_registry}acquia/baragon-master:${version}",
-    ports            => ["${baragon_port}"],
+    ports            => ["${baragon_port}:${baragon_port}"],
     expose           => ["${baragon_port}"],
     env              => [
       "BARAGON_PORT=${baragon_port}",

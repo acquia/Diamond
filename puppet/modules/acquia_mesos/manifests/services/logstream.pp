@@ -40,7 +40,7 @@ class acquia_mesos::services::logstream(
       # Used to store failed log messages and out_file plugin. @see fluentd.conf.erb
       '/mnt/log/logstream:/var/log/fluent/'
     ],
-    ports            => ['24224'],
+    ports            => ['24224:24224'],
     extra_parameters => [
       '--restart=always',
       '-d',
