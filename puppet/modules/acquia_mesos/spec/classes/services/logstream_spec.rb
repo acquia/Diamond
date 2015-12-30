@@ -45,6 +45,9 @@ EOF
   it { should contain_class('acquia_mesos::services::logstream') }
 
   it {
+    should contain_file('/etc/fluentd')
+      .with({ 'ensure' => 'directory' })
+
     should contain_file('/etc/fluentd/logstream')
       .with({ 'ensure' => 'directory' })
 

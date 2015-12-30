@@ -16,7 +16,7 @@ class acquia_mesos::services::logstream(
   $fluentd_version = 'latest',
   $docker_command = $docker::params::docker_command,
 ) {
-  file { '/etc/fluentd/logstream':
+  file { ['/etc/fluentd', '/etc/fluentd/logstream']:
     ensure    => directory,
   }
 
