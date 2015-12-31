@@ -64,6 +64,13 @@ EOF
       super().merge({ :private_docker_registry => 'registry.example.com/' })
     }
     it {
+      should contain_docker__image('acquia/fluentd')
+        .with({
+                'image'     => 'registry.example.com/acquia/fluentd',
+                'image_tag' => 'latest',
+                'force'     => true,
+              })
+
       should contain_docker__run('logstream')
         .with({
                 'image'            => 'registry.example.com/acquia/fluentd:latest',
@@ -74,8 +81,7 @@ EOF
                 'ports'            => ['24224:24224'],
                 'extra_parameters' => ['--restart=always', '-d', '--net=host', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'],
                 'privileged'       => false,
-                'restart_service'  => true,
-                'pull_on_start'    => true,
+                'restart'          => 'always',
               })
         .that_requires('File[/etc/fluentd/logstream/td-agent.conf]')
     }
