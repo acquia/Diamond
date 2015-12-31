@@ -81,6 +81,7 @@ class acquia_mesos (
       'thermos_executor_flags'  => [
         '--announcer-enable',
         "--announcer-ensemble ${aurora_zookeeper_connection_string}",
+        '--announcer-serverset-path /aurora/services',
         '--log_to_std',
         '--preserve_env',
       ],
