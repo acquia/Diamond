@@ -13,24 +13,11 @@
 # limitations under the License.
 
 class profiles::mesos {
+  contain profiles::base
   contain profiles::java
   include ::acquia_mesos
-  include aurora::params
 
-  # This gets around the fact that you can't merge data using
-  # automated parameter lookup in hiera
-  # Ideally the puppet-aurora class would have a better mechanism for handling
-  # this
-  $opts = hiera('aurora::options', {})
-  $hash = merge($aurora::params::scheduler_options, $opts)
-
-  class { 'aurora':
-    version           => hiera('aurora::version'),
-    configure_repo    => hiera('aurora::configure_repo'),
-    manage_package    => hiera('aurora::manage_package'),
-    master            => $::mesos_master,
-    scheduler_options => $hash,
-  }
-
-  Class['::acquia_mesos'] -> Class['aurora']
+  Class['profiles::base'] ->
+  Class['profiles::java'] ->
+  Class['::acquia_mesos']
 }
