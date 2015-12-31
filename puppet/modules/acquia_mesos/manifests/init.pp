@@ -16,6 +16,7 @@ class acquia_mesos (
   $mesos_version = '0.23.0-1.0.centos701406',
   $mesos_base_dir = '/var',
   $mesos_dns = undef,
+  $aurora_version = '0.10.0-1.el7.centos.aurora',
 ) {
   $mesos_log_dir = "${mesos_base_dir}/log/mesos"
   $mesos_lib_dir = "${mesos_base_dir}/lib/mesos"
@@ -67,6 +68,41 @@ class acquia_mesos (
     if $logstream_name {
       contain acquia_mesos::services::logstream
     }
+  }
+
+  class { 'aurora':
+    version           => $aurora_version,
+    configure_repo    => false,
+    master            => $mesos_master,
+    scheduler_options => {
+      'cluster_name'            => "${mesos_cluster_name}",
+      'quorum_size'             => "${mesos_quorum}",
+      'zookeeper'               => "${aurora_zookeeper_connection_string}",
+      'thermos_executor_flags'  => [
+        '--announcer-enable',
+        "--announcer-ensemble ${aurora_zookeeper_connection_string}",
+        '--log_to_std',
+        '--preserve_env',
+      ],
+      'extra_scheduler_args'    => [
+        '-allow_docker_parameters=true',
+      ],
+      # @todo: fix puppet-aurora params to use defaults for scheduler options. copied over for now.
+      'log_level'               => 'INFO',
+      'libmesos_log_verbosity'  => 0,
+      'libprocess_port'         => '8083',
+      'libprocess_ip'           => "${ec2_local_ipv4}",
+      'java_opts'               => [
+                                      '-server',
+                                      "-Djava.library.path='/usr/lib;/usr/lib64'",
+                                    ],
+      'http_port'               => '8081',
+      'zookeeper_mesos_path'    => 'mesos',
+      'zookeeper_aurora_path'   => 'aurora',
+      'aurora_home'             => '/var/lib/aurora',
+      'thermos_executor_path'   => '/usr/bin/thermos_executor',
+      'allowed_container_types' => ['DOCKER','MESOS'],
+    },
   }
 
   logrotate::rule { 'mesos':
