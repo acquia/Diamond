@@ -49,6 +49,7 @@ class acquia_mesos::services::api(
     extra_parameters => [
       '--restart=always',
       '-d',
+      '--net=host',
       '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="grid-api"'
     ],
     privileged       => false,
