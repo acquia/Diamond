@@ -27,4 +27,5 @@ RUN yum install -y epel-release \
   && rm -rf /tmp/* \
   && rm -rf /var/tmp/*
 
-ENTRYPOINT ['/usr/bin/aws']
+ENTRYPOINT ["/usr/bin/aws"]
+CMD ["--help"]
