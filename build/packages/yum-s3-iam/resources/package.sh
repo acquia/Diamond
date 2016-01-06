@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+: ${PACKAGE_DIST_DIR:=/dist}
+
 BASEDIR=/tmp
 
 cd ${BASEDIR}
@@ -22,6 +24,6 @@ git clone https://github.com/acquia/yum-s3-iam.git
 cd ${BASEDIR}/yum-s3-iam
 make rpm
 
-if [ -d "/dist/" ]; then
-  mv -f $HOME/rpmbuild/RPMS/noarch/*.rpm /dist/
+if [ -d "${PACKAGE_DIST_DIR}" ]; then
+  mv -f $HOME/rpmbuild/RPMS/noarch/*.rpm ${PACKAGE_DIST_DIR}/
 fi

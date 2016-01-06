@@ -37,19 +37,21 @@ class acquia_mesos::services::baragon(
     image            => "${private_docker_registry}acquia/baragon-master:${version}",
     ports            => ["${baragon_port}:${baragon_port}"],
     expose           => ["${baragon_port}"],
+    command          => "/usr/bin/java -Ddw.hostname=${baragon_host} -Ddw.server.connector.port=${baragon_port} -jar /etc/baragon/baragon-master.jar server /etc/baragon/baragon.yaml",
+    detach           => false,
+    restart_service  => true,
+    privileged       => false,
     env              => [
       "BARAGON_PORT=${baragon_port}",
       "BARAGON_HOSTNAME=${baragon_host}",
     ],
-    volumes          => ['/etc/baragon/baragon.yaml:/etc/baragon/baragon.yaml'],
-    command          => "/usr/bin/java -Ddw.hostname=${baragon_host} -Ddw.server.connector.port=${baragon_port} -jar /etc/baragon/baragon-master.jar server /etc/baragon/baragon.yaml",
-    restart          => always,
+    volumes          => [
+      '/etc/baragon/baragon.yaml:/etc/baragon/baragon.yaml'
+    ],
     extra_parameters => [
       '--restart=always',
-      '-d',
       '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="baragonservice-master"'
     ],
-    privileged       => false,
     require          => [
       File['/etc/baragon/baragon.yaml'],
       Docker::Image['acquia/baragon-master'],

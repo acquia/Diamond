@@ -14,14 +14,11 @@
 
 class acquia_mesos::master (
   $mesos_log_dir = '/var/log/mesos',
-  $mesos_lib_dir = '/var/lib/mesos',
+  $mesos_work_dir = '/var/lib/mesos',
   $api = undef,
   $watcher = undef,
-  $mesos_dns = undef,
   $baragon = undef,
 ) {
-  include acquia_mesos::scheduler
-
   if $api {
     class { 'acquia_mesos::services::api':
       version               => $api,
@@ -39,12 +36,6 @@ class acquia_mesos::master (
     }
   }
 
-  if $mesos_dns {
-    class { 'acquia_mesos::services::mesos_dns':
-      version => $mesos_dns,
-    }
-  }
-
   if $baragon {
     class { 'acquia_mesos::services::baragon':
       version      => $baragon,
@@ -56,7 +47,7 @@ class acquia_mesos::master (
   class {'::mesos::master':
     enable         => true,
     cluster        => $mesos_cluster_name,
-    work_dir       => $mesos_lib_dir,
+    work_dir       => $mesos_work_dir,
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {

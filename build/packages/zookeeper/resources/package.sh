@@ -2,18 +2,19 @@
 
 set -e
 
-NAME="zookeeper"
-VERSION="3.4.7"
-EXHIBITOR_VERSION="1.5.6"
-EXHIBITOR_BRANCH="v1.5.6"
+: ${ZOOKEEPER_VERSION:=3.4.7}
+: ${EXHIBITOR_VERSION:=1.5.6}
+: ${EXHIBITOR_BRANCH:=v1.5.6}
+: ${PACKAGE_DIST_DIR:=/dist}
 
+NAME="zookeeper"
 ARCH=$(uname -m)
 
 BASEDIR=/tmp
 
 # Download and build the current stable Zookeeper version from Apache dist
 mkdir -p ${BASEDIR}/zookeeper
-curl -sSL http://www.apache.org/dist/zookeeper/zookeeper-${VERSION}/zookeeper-${VERSION}.tar.gz | tar -xz --strip 1 -C ${BASEDIR}/zookeeper
+curl -sSL http://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz | tar -xz --strip 1 -C ${BASEDIR}/zookeeper
 cd ${BASEDIR}/zookeeper
 
 BUILDDIR=${BASEDIR}/build
@@ -29,9 +30,9 @@ fpm --force -t rpm -s dir \
   --vendor "Acquia, Inc." \
   --provides "${NAME}" \
   -n "${NAME}" \
-  -v ${VERSION} \
+  -v ${ZOOKEEPER_VERSION} \
   -m "engineering@acquia.com" \
-  --description "Acquia zookeeper ${VERSION} built on $(date +"%Y%m%d%H%M%S")" \
+  --description "Acquia zookeeper ${ZOOKEEPER_VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   .
 
 mkdir -p ${BASEDIR}/zookeeper/build/
@@ -60,7 +61,6 @@ fpm --force -t rpm -s dir \
   --description "Acquia zookeeper-exhibitor ${EXHIBITOR_VERSION} built on $(date +"%Y%m%d%H%M%S")" \
   .
 
-# If we're in a VM, let's copy the deb file over
-if [ -d "/dist/" ]; then
-  mv -f ${BASEDIR}/zookeeper/build/${NAME}*.rpm ${BASEDIR}/exhibitor/dist/${NAME}*.rpm /dist/
+if [ -d "${PACKAGE_DIST_DIR}" ]; then
+  mv -f ${BASEDIR}/zookeeper/build/${NAME}*.rpm ${BASEDIR}/exhibitor/dist/${NAME}*.rpm ${PACKAGE_DIST_DIR}/
 fi

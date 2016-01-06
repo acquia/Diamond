@@ -1,13 +1,15 @@
 #!/bin/bash
 set -ex
 
-BASEDIR=/dist
+: ${PACKAGE_DIST_DIR:=/dist/packages}
+
+BASEDIR=/dist/
 GPG_HOMEDIR=${BASEDIR}/.gnupg
 
 # Setup the repo structure and copy all packages into it
 REPO_PATH=${BASEDIR}/repo/main/centos/7
 mkdir -p ${REPO_PATH}/x86_64/
-cp -a ${BASEDIR}/*.rpm ${REPO_PATH}/x86_64/
+cp -a ${PACKAGE_DIST_DIR}/*.rpm ${REPO_PATH}/x86_64/
 
 # If a GPG_HOMEDIR is included with the dist then sign all rpms before creating the repo.
 # ~/.rpmmacros is setup to use GPG_HOMEDIR as its default %_gpg_path

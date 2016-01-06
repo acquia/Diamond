@@ -42,17 +42,16 @@ class acquia_mesos::services::api(
 
   docker::run { 'grid-api':
     image            => "${private_docker_registry}acquia/grid-api:${version}",
-    env              => concat($default_env, $baragon_env, $api_docker_env),
     ports            => ["${api_port}:${api_port}"],
     expose           => ["${api_port}"],
-    restart          => always,
+    detach           => false,
+    restart_service  => true,
+    privileged       => false,
+    env              => concat($default_env, $baragon_env, $api_docker_env),
     extra_parameters => [
       '--restart=always',
-      '-d',
-      '--net=host',
       '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="grid-api"'
     ],
-    privileged       => false,
     require          => [
       Docker::Image['acquia/grid-api'],
     ],

@@ -57,9 +57,11 @@ end
 # Defaults
 basedir=File.expand_path(File.dirname(__FILE__))
 $nemesis_puppet_root=File.join(basedir, '..')
-$distdir=File.join($nemesis_puppet_root, 'dist', 'packages')
+$distdir=File.join($nemesis_puppet_root, 'dist')
 
+$default_container = 'centos:7'
 $volumes_container_name = 'nemesis-puppet-volumes'
+
 
 # Initialized the dist folder and a volume container for other container builds
 # to mount and use via the --volumes-from
@@ -68,21 +70,22 @@ $volumes_container_name = 'nemesis-puppet-volumes'
 def init_volumes_container
   FileUtils.mkdir_p($distdir)
 
-  unless system("docker ps -a --filter='name=#{$volumes_container_name}' | grep '#{$volumes_container_name}'")
-    system("docker pull centos:7")
-    system("docker create -v #{$nemesis_puppet_root}:/nemesis-puppet:ro -v #{$distdir}:/dist --name #{$volumes_container_name} centos:7 /bin/true")
+  unless system("docker ps -a --filter='name=#{$volumes_container_name}' | grep '#{$volumes_container_name}' 1>/dev/null")
+    puts "Downloading the latest version of #{$default_container}"
+    system("docker pull #{$default_container}")
+    puts "Creating volumes container: #{$volumes_container_name}"
+    system("docker create -v #{$nemesis_puppet_root}:/nemesis-puppet:ro -v #{$distdir}:/dist --name #{$volumes_container_name} #{$default_container} /bin/true")
   end
 end
 
 # Run the given container and when finished remove it
-def run_container_build(name, tag, package_build_dir)
+def run_container_build(name, tag, package_build_dir, global_env_vars)
   env_file = File.join(package_build_dir, 'env.conf')
+  global_env_vars = global_env_vars.map { |k, v| " -e '#{k}=#{v}'" }
 
   flags = []
-  flags << " -e 'GITHUB_OAUTH_TOKEN=#{ENV['GITHUB_OAUTH_TOKEN']}'" if ENV['GITHUB_OAUTH_TOKEN']
+  flags.concat(global_env_vars) if global_env_vars
   flags << " --env-file #{env_file}" if File.exist?(env_file)
-  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS_PUPPET/}.map { |k, v| " -e '#{k}=#{v}'" }
-  flags.concat(global_env_flags) if global_env_flags
 
   # Run the container
   puts "Running build container: #{name}:#{tag}"
@@ -98,6 +101,12 @@ end
 # Run through all builds in a list and execute their script process.
 def build(build_dir, basedir, list, config, options)
   puts "Starting build for: #{build_dir}" unless options[:list]
+  env_vars = {
+    'PACKAGE_DIST_DIR' => '/dist/packages'
+  }
+  env_vars['GITHUB_OAUTH_TOKEN'] = ENV['GITHUB_OAUTH_TOKEN'] if ENV['GITHUB_OAUTH_TOKEN']
+  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS/}.each { |k, v| env_vars[k] = v }
+
   list.uniq.each do |package_config_file|
     name = File.dirname(package_config_file)
     package_build_dir = File.join(basedir, name)
@@ -123,14 +132,14 @@ def build(build_dir, basedir, list, config, options)
           # building that package and second a package.sh script with is the command entrypoint for the container.
           # This pattern allows for packages to be recreated and developed easier, but requires a two part build/run
           # for the resulting package to be created.
-          run_container_build(name, tag, package_build_dir) if build_dir == 'packages'
+          if build_dir == 'packages'
+            FileUtils.mkdir_p(File.join($distdir, 'packages'))
+            run_container_build(name, tag, package_build_dir, env_vars)
+          end
         when 'build.sh'
-          system("/bin/bash build.sh")
+          system(env_vars, "/bin/bash build.sh")
         when 'Makefile'
-          system("make")
-        when 'Rakefile'
-          system("bundle install")
-          system("bundle exec rake")
+          system(env_vars, "make")
         end
       end
     end

@@ -11,7 +11,7 @@ describe 'acquia_mesos::agent', :type => :class do
 
   let(:params) {
     {
-      mesos_lib_dir: '/mnt/lib/mesos',
+      :mesos_work_dir => '/mnt/lib/mesos',
     }
   }
 
@@ -28,7 +28,7 @@ describe 'acquia_mesos::agent', :type => :class do
       )
     }
 
-    context 'configures mesos options' do
+    context 'configures mesos agent properties' do
       let(:ec2_hostname) { 'test' }
 
       let(:facts) {
@@ -39,15 +39,15 @@ describe 'acquia_mesos::agent', :type => :class do
       }
 
       it {
-        should contain_mesos__property('containerizers').with_value('docker,mesos')
-        should contain_mesos__property('docker_sandbox_directory').with_value('/mnt/mesos/sandbox')
-        should contain_mesos__property('enforce_container_disk_quota').with_value(true)
-        should contain_mesos__property('executor_registration_timeout').with_value('5mins')
-        should contain_mesos__property('hostname').with_value('12.34.56.78')
-        should contain_mesos__property('perf_events').with_value(/cycles,instructions,task-clock/)
-        should contain_mesos__property('registration_backoff_factor').with_value('10secs')
-        should contain_mesos__property('slave_subsystems').with_value('memory,cpuacct')
-        should contain_mesos__property('strict').with_value(false)
+        should contain_mesos__property('slave_containerizers').with_value('docker,mesos')
+        should contain_mesos__property('slave_docker_sandbox_directory').with_value('/mnt/mesos/sandbox')
+        should contain_mesos__property('slave_enforce_container_disk_quota').with_value(true)
+        should contain_mesos__property('slave_executor_registration_timeout').with_value('5mins')
+        should contain_mesos__property('slave_hostname').with_value('12.34.56.78')
+        should contain_mesos__property('slave_perf_events').with_value(/cycles,instructions,task-clock/)
+        should contain_mesos__property('slave_registration_backoff_factor').with_value('10secs')
+        should contain_mesos__property('slave_slave_subsystems').with_value('memory,cpuacct')
+        should contain_mesos__property('slave_strict').with_value(false)
       }
     end
 
@@ -66,18 +66,18 @@ describe 'acquia_mesos::agent', :type => :class do
       }
 
       it {
-        should contain_mesos__property('cpus').with_value(cpu)
-        should contain_mesos__property('mem').with_value(memory)
-        should contain_mesos__property('disk').with_value(disk_space)
-        should contain_mesos__property('ports').with_value('[31000-32000]')
-        should contain_mesos__property('ephemeral_ports').with_value('[32768-57344]')
+        should contain_mesos__property('resources_cpus').with_value(cpu)
+        should contain_mesos__property('resources_mem').with_value(memory)
+        should contain_mesos__property('resources_disk').with_value(disk_space)
+        should contain_mesos__property('resources_ports').with_value('[31000-32000]')
+        should contain_mesos__property('resources_ephemeral_ports').with_value('[32768-57344]')
       }
     end
 
     context 'configures mesos attributes' do
       it {
-        should contain_mesos__property('host')
-        should contain_mesos__property('rack')
+        should contain_mesos__property('attributes_host')
+        should contain_mesos__property('attributes_rack')
       }
     end
   end
