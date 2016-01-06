@@ -28,7 +28,7 @@ def aws_creds
 end
 
 def docker_aws_creds
-  "-e AWS_ACCESS_KEY_ID='#{aws_creds.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.secret_access_key}'"
+  "-e AWS_ACCESS_KEY_ID='#{aws_creds.credentials.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.credentials.secret_access_key}'"
 end
 
 class RepoManager < Thor
