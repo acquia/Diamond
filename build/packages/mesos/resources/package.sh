@@ -8,18 +8,20 @@
 #   http://open.mesosphere.com/downloads/mesos/
 #
 
+: ${MESOS_VERSION:=0.23.0}
+: ${MESOS_RPM_BUILD:=1.0.centos701406}
+: ${PACKAGE_DIST_DIR:=/dist}
+
 BASE_URL="http://downloads.mesosphere.io/master/centos"
 OS_REL="7"
 ARCH="x86_64"
-MESOS_VERSION="0.23.0"
-RPM_BUILD="1.0.centos701406"
 
-RPM_NAME="mesos-${MESOS_VERSION}-${RPM_BUILD}.${ARCH}.rpm"
+RPM_NAME="mesos-${MESOS_VERSION}-${MESOS_RPM_BUILD}.${ARCH}.rpm"
 BASEDIR=/tmp
 
 cd ${BASEDIR}
 /usr/bin/curl -sSL -OJ ${BASE_URL}/${OS_REL}/${RPM_NAME}
 
-if [ -d "/dist/" ]; then
-  mv -f ${BASEDIR}/${RPM_NAME} /dist/
+if [ -d "${PACKAGE_DIST_DIR}" ]; then
+  mv -f ${BASEDIR}/${RPM_NAME} ${PACKAGE_DIST_DIR}/
 fi

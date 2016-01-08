@@ -5,6 +5,7 @@ set -ex
 : ${AURORA_GIT_TAG:=acquia-0.10.0}
 : ${AURORA_PACKAGING_GIT_REPO:=jfarrell}
 : ${AURORA_PACKAGING_GIT_TAG:=0.10.x}
+: ${PACKAGE_DIST_DIR:=/dist}
 
 BASEDIR=/tmp
 
@@ -30,6 +31,6 @@ yum clean all
 yum-builddep -y ${DIST_DIR}/rpmbuild/SRPMS/*
 make rpm
 
-if [ -d "/dist/" ]; then
-  mv -f $HOME/rpmbuild/RPMS/x86_64/*.rpm /dist/
+if [ -d "${PACKAGE_DIST_DIR}/" ]; then
+  mv -f $HOME/rpmbuild/RPMS/x86_64/*.rpm $PACKAGE_DIST_DIR/
 fi

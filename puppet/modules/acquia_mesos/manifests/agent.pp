@@ -13,22 +13,17 @@
 # limitations under the License.
 
 class acquia_mesos::agent(
-  $mesos_lib_dir = '/var/lib/mesos',
-  $mesos_dns = undef
+  $mesos_work_dir = '/var/lib/mesos',
 ) {
-  if $mesos_dns {
-    # @todo: Update resolv.conf for centos
-  }
-
   class {'::mesos::slave':
     enable         => true,
     port           => 5051,
-    work_dir       => $mesos_lib_dir,
+    work_dir       => $mesos_work_dir,
     zookeeper      => $mesos_zookeeper_connection_string,
     listen_address => $ec2_local_ipv4,
     options        => {
       'containerizers'                => 'docker,mesos',
-      'docker_sandbox_directory'      => '/mnt/mesos/sandbox',
+      'docker_sandbox_directory'      => '/mnt/mesos/sandbox', # @todo: on mesos upgrade switch to new Mesos flag sandbox_directory
       # 'egress_rate_limit_per_container' => '37500KB', # @todo: enable when compiled --with-network-isolator
       'enforce_container_disk_quota'  => true,
       # 'ephemeral_ports_per_container'   => '1024', # @todo: enable when compiled --with-network-isolator
@@ -52,4 +47,7 @@ class acquia_mesos::agent(
     },
   }
 
+  class {'::mesos::master':
+    enable         => false,
+  }
 }

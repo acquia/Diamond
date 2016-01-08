@@ -21,6 +21,7 @@ set -ex
 : ${NEMESIS_PUPPET_REPO:="acquia/nemesis-puppet"}
 : ${NEMESIS_PUPPET_BRANCH:="master"}
 : ${GITHUB_OAUTH_TOKEN:=""}
+: ${PACKAGE_DIST_DIR:=/dist}
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
@@ -31,6 +32,7 @@ docker run -i --rm \
   -e "NEMESIS_PUPPET_REPO=${NEMESIS_PUPPET_REPO}" \
   -e "NEMESIS_PUPPET_BRANCH=${NEMESIS_PUPPET_BRANCH}" \
   -e "GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN}" \
+  -e "PACKAGE_DIST_DIR=${PACKAGE_DIST_DIR}" \
   --volumes-from nemesis-puppet-volumes \
   nemesis-puppet
 

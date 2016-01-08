@@ -32,12 +32,11 @@ def docker_aws_creds
 end
 
 class RepoManager < Thor
-  class_option :nemesis_container_name, :type => :string, :default => "nemesis-puppet-volumes", :desc =>"Name of the volume that docker containers would share" 
-  
+  class_option :nemesis_container_name, :type => :string, :default => "nemesis-puppet-volumes", :desc =>"Name of the volume that docker containers would share"
   desc "create", "Initialize and create a package repository."
   def create
     check_dependencies(options[:nemesis_container_name])
-    unless system("docker run -d --volumes-from #{options[:nemesis_container_name]} acquia/rpm_repo:latest")      
+    unless system("docker run -i --rm --volumes-from #{options[:nemesis_container_name]} acquia/rpm_repo:latest")
       puts "Error: unable to create repo."
       exit 1
     end
@@ -74,7 +73,7 @@ class RepoManager < Thor
 
   no_tasks do
     def check_dependencies(container_name)
-      unless system("docker ps -a --filter='name=#{container_name}' | grep '#{container_name}'")
+      unless system("docker ps -a --filter='name=#{container_name}' | grep '#{container_name}' 1>/dev/null")
         puts "Container #{container_name} is not available. Run `build -b` to bootstrap necessary dependencies."
         exit 1
       end

@@ -1,6 +1,6 @@
 class acquia_zookeeper (
-  $version = '3.4.7-1',
-  $exhibitor_version = '1.5.6-1',
+  $version = 'present',
+  $exhibitor_version = 'present',
 ) {
   package { 'zookeeper' :
     ensure => $version,

@@ -33,4 +33,3 @@ acquia_base::admin_users::accounts:
 # Value represents number of seconds that exited container and unused image is kept
 # before being removed by docker-gc script
 acquia_base::docker_gc::grace_period: 3600
-

@@ -79,9 +79,9 @@ EOF
                   '/mnt/log/logstream:/var/log/fluent/',
                 ],
                 'ports'            => ['24224:24224'],
-                'extra_parameters' => ['--restart=always', '-d', '--net=host', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'],
+                'extra_parameters' => ['--restart=always', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'],
                 'privileged'       => false,
-                'restart'          => 'always',
+                'restart_service'  => true,
               })
         .that_requires('File[/etc/fluentd/logstream/td-agent.conf]')
     }

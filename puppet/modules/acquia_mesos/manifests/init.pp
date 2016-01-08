@@ -13,32 +13,38 @@
 # limitations under the License.
 
 class acquia_mesos (
-  $mesos_version = '0.23.0-1.0.centos701406',
-  $mesos_base_dir = '/var',
-  $mesos_dns = undef,
-  $aurora_version = '0.10.0-1.el7.centos.aurora',
+  $mesos_version = 'present',
+  $aurora_version = 'present',
+  $base_work_dir = '/var',
 ) {
-  $mesos_log_dir = "${mesos_base_dir}/log/mesos"
-  $mesos_lib_dir = "${mesos_base_dir}/lib/mesos"
+  $mesos_log_dir = "${base_work_dir}/log/mesos"
+  $mesos_work_dir = "${base_work_dir}/lib/mesos"
 
-  file {'/var/lib/mesos':
-    ensure  => 'link',
-    force   => true,
-    target  => '/mnt/lib/mesos',
-    require => File['/mnt/lib/mesos'],
-  }
-
-  ensure_resource('file', '/mnt/tmp',
+  ensure_resource('file', "${base_work_dir}/lib",
     {
       'ensure' => 'directory',
       'mode'   => '0755',
     }
   )
 
-  file {'/mnt/tmp/mesos':
+  ensure_resource('file', "${base_work_dir}/log",
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
+
+  ensure_resource('file', "${base_work_dir}/tmp",
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
+
+  file {"${base_work_dir}/tmp/mesos":
     ensure  => 'directory',
     mode    => '0755',
-    require => File['/mnt/tmp'],
+    require => File["${base_work_dir}/tmp"],
   }
 
   class { '::mesos':
@@ -53,21 +59,25 @@ class acquia_mesos (
 
   if $mesos_master {
     class { 'acquia_mesos::master':
-      mesos_log_dir => $mesos_log_dir,
-      mesos_lib_dir => $mesos_lib_dir,
-      mesos_dns     => $mesos_dns,
+      mesos_log_dir  => $mesos_log_dir,
+      mesos_work_dir => $mesos_work_dir,
     }
     contain acquia_mesos::master
   } else {
     class { 'acquia_mesos::agent':
-      mesos_lib_dir => $mesos_lib_dir,
-      mesos_dns     => $mesos_dns,
+      mesos_work_dir => $mesos_work_dir,
     }
     contain acquia_mesos::agent
 
     if $logstream_name {
       contain acquia_mesos::services::logstream
     }
+  }
+
+  file {"${base_work_dir}/lib/aurora":
+    ensure  => 'directory',
+    mode    => '0755',
+    require => File["${base_work_dir}/lib"],
   }
 
   class { 'aurora':
@@ -100,9 +110,14 @@ class acquia_mesos (
       'http_port'               => '8081',
       'zookeeper_mesos_path'    => 'mesos',
       'zookeeper_aurora_path'   => 'aurora',
-      'aurora_home'             => '/var/lib/aurora',
+      'aurora_home'             => "${base_work_dir}/lib/aurora",
       'thermos_executor_path'   => '/usr/bin/thermos_executor',
       'allowed_container_types' => ['DOCKER','MESOS'],
+    },
+    agent_options     => {
+      'auth_mechanism' => 'UNAUTHENTICATED',
+      'run_directory'  => 'latest',
+      'mesos_work_dir' => $mesos_work_dir,
     },
   }
 

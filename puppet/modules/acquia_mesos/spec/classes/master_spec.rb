@@ -15,8 +15,8 @@ describe 'acquia_mesos::master', :type => :class do
 
   let(:params) {
     {
-      mesos_lib_dir: '/mnt/lib/mesos',
-      mesos_log_dir: '/mnt/log/mesos',
+      :mesos_work_dir => '/mnt/lib/mesos',
+      :mesos_log_dir => '/mnt/log/mesos',
     }
   }
 
@@ -30,21 +30,27 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_service('mesos-slave').with_enable(false)
     }
 
-    context 'configures mesos options' do
+    context 'configures mesos master properties' do
       let(:mesos_quorum) { 5 }
 
       let(:facts) {
-        super().merge(:mesos_quorum => mesos_quorum)
+        super().merge(
+          {
+            :mesos_quorum => mesos_quorum,
+            :ec2_public_ipv4 => '12.34.56.78',
+          }
+        )
       }
 
       it {
-        should contain_mesos__property('external_log_file').with_value('/mnt/log/mesos/mesos-master.INFO')
-        should contain_mesos__property('log_auto_initialize').with_value(true)
-        should contain_mesos__property('quorum').with_value(mesos_quorum)
-        should contain_mesos__property('registry').with_value('replicated_log')
-        should contain_mesos__property('registry_store_timeout').with_value('10secs')
-        should contain_mesos__property('root_submissions').with_value(true)
-        should contain_mesos__property('slave_removal_rate_limit').with_value('100/1mins')
+        should contain_mesos__property('master_hostname').with_value('12.34.56.78')
+        should contain_mesos__property('master_external_log_file').with_value('/mnt/log/mesos/mesos-master.INFO')
+        should contain_mesos__property('master_log_auto_initialize').with_value(true)
+        should contain_mesos__property('master_quorum').with_value(mesos_quorum)
+        should contain_mesos__property('master_registry').with_value('replicated_log')
+        should contain_mesos__property('master_registry_store_timeout').with_value('10secs')
+        should contain_mesos__property('master_root_submissions').with_value(true)
+        should contain_mesos__property('master_slave_removal_rate_limit').with_value('100/1mins')
       }
     end
   end
@@ -54,8 +60,7 @@ describe 'acquia_mesos::master', :type => :class do
       {
         :api => '1.0',
         :watcher => 'latest',
-        :baragon => '0.1.5',
-        :mesos_dns => '1.0'
+        :baragon => '0.1.5'
       }
     }
 
@@ -63,7 +68,6 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_class('acquia_mesos::services::api')
       should contain_class('acquia_mesos::services::watcher')
       should contain_class('acquia_mesos::services::baragon')
-      should contain_class('acquia_mesos::services::mesos_dns')
     }
   end
 end

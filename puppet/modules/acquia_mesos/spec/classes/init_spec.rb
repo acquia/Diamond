@@ -23,25 +23,31 @@ describe 'acquia_mesos', :type => :class do
   }
 
   let(:params) {
-    { mesos_base_dir: '/mnt' }
+    {
+      :base_work_dir => '/mnt'
+    }
   }
 
   it { should compile }
 
   context 'creates all necessary directories' do
+    it { should contain_file('/mnt/lib') }
+    it { should contain_file('/mnt/log') }
     it { should contain_file('/mnt/tmp') }
-    it { should contain_file('/var/lib/mesos').with_ensure('link') }
-    it { should contain_file('/mnt/tmp/mesos').with_mode('0755') }
+
+    it { should contain_file('/mnt/tmp/mesos') }
+    it { should contain_file('/mnt/lib/aurora') }
   end
 
   context 'installs the correct version' do
     let(:version) { '0.23.0-1.0.centos701406' }
 
     let(:params) {
-      {
-        :mesos_version => version,
-        :mesos_base_dir => '/mnt',
-      }
+      super().merge(
+        {
+          :mesos_version => version,
+        }
+      )
     }
 
     it { should contain_class('mesos').with_version(version) }
@@ -71,13 +77,13 @@ describe 'acquia_mesos', :type => :class do
           'group'   => 'root',
           'ensure'  => 'present',
         }
-      ).with_content(%r{#{params[:mesos_base_dir]}\/log\/mesos\/\*\.log})
+      ).with_content(%r{#{params[:base_work_dir]}\/log\/mesos\/\*\.log})
     }
 
     it {
       should contain_logrotate__rule('mesos').with(
         {
-          'path'      => "#{params[:mesos_base_dir]}/log/mesos/*.log",
+          'path'      => "#{params[:base_work_dir]}/log/mesos/*.log",
           'rotate'    => '7',
           'size'      => '250M',
           'missingok' => true,
