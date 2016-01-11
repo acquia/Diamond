@@ -15,5 +15,5 @@
 classes:
   - roles::zookeeper
 
-acquia_zookeeper::version: '3.4.7-1'
+acquia_zookeeper::version: '3.4.6-1'
 acquia_zookeeper::exhibitor_version: '1.5.6-1'
