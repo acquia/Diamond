@@ -3,7 +3,7 @@ set -ex
 
 : ${PACKAGE_DIST_DIR:=/dist/packages}
 
-BASEDIR=/dist/
+BASEDIR=/dist
 GPG_HOMEDIR=${BASEDIR}/.gnupg
 
 # Setup the repo structure and copy all packages into it
