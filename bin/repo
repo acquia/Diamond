@@ -80,7 +80,7 @@ class RepoManager < Thor
     end
 
     def purge_repo_directory(container_name)
-       unless system("docker run -i --rm #{docker_aws_creds()} --volumes-from #{container_name} --entrypoint /bin/bash tools/aws rm -rf /dist/repo")
+       unless system("docker run -i --rm #{docker_aws_creds()} --volumes-from #{container_name} --entrypoint /usr/bin/rm tools/aws -rf /dist/repo")
         puts "Error: unable to remove existing repo directory"
         exit 1
       end
