@@ -50,7 +50,7 @@ class acquia_mesos::services::api(
     env              => concat($default_env, $baragon_env, $api_docker_env),
     extra_parameters => [
       '--restart=always',
-      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="grid-api"'
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=grid-api'
     ],
     require          => [
       Docker::Image['acquia/grid-api'],

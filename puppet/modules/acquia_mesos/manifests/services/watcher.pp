@@ -42,7 +42,7 @@ class acquia_mesos::services::watcher(
     env              => $env,
     extra_parameters => [
       '--restart=always',
-      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="grid-watcher"'
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=grid-watcher'
     ],
     require          => [
       Docker::Image['acquia/grid-watcher'],

@@ -38,6 +38,11 @@ if AwsHelper.server_type_is?('mesos')
           env << "AG_BUGSNAG_KEY=#{Facter.value('bugsnag_key')}"
         end
 
+        # Add grid-api RDS DSN if is provided
+        if Facter.value('grid_api_rds_dsn')
+          env << "AG_DATABASE_DSN=#{Facter.value('grid_api_rds_dsn')}"
+        end
+
         env
       end
     end

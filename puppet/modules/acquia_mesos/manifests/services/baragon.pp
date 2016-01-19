@@ -50,7 +50,7 @@ class acquia_mesos::services::baragon(
     ],
     extra_parameters => [
       '--restart=always',
-      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="baragonservice-master"'
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=baragonservice-master'
     ],
     require          => [
       File['/etc/baragon/baragon.yaml'],

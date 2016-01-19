@@ -55,7 +55,7 @@ class acquia_mesos::services::logstream(
       # Manually setting ulimit @see http://docs.fluentd.org/articles/before-install
       '--ulimit nofile=65536:65536',
       # Logging is set to syslog host instance to not have to deal with json and logrotation
-      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=logstream'
     ],
     require          => [
       File['/etc/fluentd/logstream/td-agent.conf'],
