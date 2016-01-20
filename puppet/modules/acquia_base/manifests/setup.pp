@@ -1,16 +1,24 @@
 class acquia_base::setup {
-  file { '/mnt/log':
-    ensure => directory,
-  }
+  ensure_resource('file', '/mnt/log',
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
 
-  file { '/mnt/lib':
-    ensure => directory,
-  }
+  ensure_resource('file', '/mnt/lib',
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
 
-  file { '/mnt/tmp':
-    ensure => directory,
-    mode   => '0755',
-  }
+  ensure_resource('file', '/mnt/tmp',
+    {
+      'ensure' => 'directory',
+      'mode'   => '0755',
+    }
+  )
 
   file { '/vol/':
     ensure => directory,
