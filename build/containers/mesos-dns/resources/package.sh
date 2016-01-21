@@ -17,9 +17,9 @@
 
 set -ex
 SRC_PATH="/usr/share/go/src/github.com/mesosphere/mesos-dns"
-MESOS_DNS_RELEASE=$1
+MESOS_DNS_VERSION=$1
 
 mkdir -p ${SRC_PATH}
-curl -sSL https://github.com/mesosphere/mesos-dns/tarball/${MESOS_DNS_RELEASE} | tar -xz --strip 1 -C ${SRC_PATH}
+curl -sSL https://github.com/mesosphere/mesos-dns/tarball/${MESOS_DNS_VERSION} | tar -xz --strip 1 -C ${SRC_PATH}
 cd ${SRC_PATH}
 CGO_ENABLED=0 godep go build -a -installsuffix cgo -o /dist/mesos-dns .

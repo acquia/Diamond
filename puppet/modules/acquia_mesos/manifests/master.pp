@@ -18,6 +18,7 @@ class acquia_mesos::master (
   $api = undef,
   $watcher = undef,
   $baragon = undef,
+  $dns = undef,
 ) {
   if $api {
     class { 'acquia_mesos::services::api':
@@ -41,6 +42,12 @@ class acquia_mesos::master (
       version      => $baragon,
       baragon_host => $ec2_local_ipv4,
       baragon_port => 6060,
+    }
+  }
+
+  if $dns {
+    class { 'acquia_mesos::services::dns::master':
+      version      => $dns,
     }
   }
 

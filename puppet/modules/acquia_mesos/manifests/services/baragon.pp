@@ -23,7 +23,7 @@ class acquia_mesos::services::baragon(
 
   file { '/etc/baragon/baragon.yaml':
     ensure  => present,
-    content => template('acquia_mesos/baragon.yaml.erb'),
+    content => template('acquia_mesos/services/baragon.yaml.erb'),
     require => File['/etc/baragon'],
   }
 

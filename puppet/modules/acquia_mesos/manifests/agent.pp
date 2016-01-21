@@ -15,6 +15,12 @@
 class acquia_mesos::agent(
   $mesos_work_dir = '/var/lib/mesos',
 ) {
+  if $logstream_name {
+    contain acquia_mesos::services::logstream
+  }
+
+  contain acquia_mesos::services::dns::agent
+
   class {'::mesos::slave':
     enable         => true,
     port           => 5051,

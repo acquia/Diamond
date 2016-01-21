@@ -29,3 +29,11 @@ mod 'deric/puppet-mesos',
 mod 'acquia/puppet-aurora',
   :git => 'https://github.com/acquia/puppet-aurora.git',
   :ref => '0.10.x'
+
+mod 'saz/puppet-dnsmasq',
+  :git => 'https://github.com/saz/puppet-dnsmasq.git',
+  :ref => 'v1.2.0'
+
+mod 'saz/puppet-resolv_conf',
+  :git => 'https://github.com/saz/puppet-resolv_conf.git',
+  :ref => 'v3.0.5'

@@ -92,6 +92,10 @@ Lint/UselessAssignment:
     - 'puppet/modules/server_hooks/files/cloudwatch_alarms.rb'
     - 'puppet/modules/server_hooks/files/nemesis_server_hooks.rb'
 
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'puppet/modules/acquia_mesos/lib/facter/dns.rb'
+
 Metrics/LineLength:
   Max: 200
   Exclude:

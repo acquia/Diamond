@@ -1,15 +1,9 @@
 ---
 :backends:
-  - eyaml
   - yaml
 :yaml:
   :datadir: "/etc/puppet/hiera/"
-:eyaml:
-  :datadir: "/etc/puppet/hiera"
-  :gpg_gnupghome: "/etc/puppet/.gnupg"
-  :gpg_always_trust: true
 :hierarchy:
   - "%{::server_type}"
   - "%{module_name}"
   - common
-

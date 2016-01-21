@@ -6,6 +6,7 @@ describe 'acquia_mesos::agent', :type => :class do
       :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
       :ec2_placement_availability_zone => 'us-east-1a',
+      :osfamily => 'redhat',
     }
   }
 
@@ -32,10 +33,11 @@ describe 'acquia_mesos::agent', :type => :class do
       let(:ec2_hostname) { 'test' }
 
       let(:facts) {
-        {
-          :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
-          :ec2_local_ipv4 => '12.34.56.78',
-        }
+        super().merge(
+          {
+            :ec2_local_ipv4 => '12.34.56.78',
+          }
+        )
       }
 
       it {
@@ -57,12 +59,14 @@ describe 'acquia_mesos::agent', :type => :class do
       let(:disk_space) { 10 }
 
       let(:facts) {
-        {
-          :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
-          :mesos_slave_processorcount => cpu,
-          :mesos_slave_memorysize_mb => memory,
-          :mesos_slave_disk_space => disk_space,
-        }
+        super().merge(
+          {
+            :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
+            :mesos_slave_processorcount => cpu,
+            :mesos_slave_memorysize_mb => memory,
+            :mesos_slave_disk_space => disk_space,
+          }
+        )
       }
 
       it {
@@ -80,5 +84,20 @@ describe 'acquia_mesos::agent', :type => :class do
         should contain_mesos__property('attributes_rack')
       }
     end
+  end
+
+  context 'includes all services' do
+    let(:facts) {
+      super().merge(
+        {
+          :logstream_name => 'TESTKINESIS-NAME',
+        }
+      )
+    }
+
+    it {
+      should contain_class('acquia_mesos::services::logstream')
+      should contain_class('acquia_mesos::services::dns::agent')
+    }
   end
 end

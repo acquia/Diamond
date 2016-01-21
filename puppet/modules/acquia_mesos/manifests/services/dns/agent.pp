@@ -12,22 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/golang:latest
-MAINTAINER Acquia Engineering <engineering@acquia.com>
+class acquia_mesos::services::dns::agent {
+  include dnsmasq
+  dnsmasq::conf { 'mesos':
+    ensure  => present,
+    prio    => '10',
+    content => template('acquia_mesos/services/dns/dnsmasq-10-mesos.erb'),
+  }
 
-ADD resources/package.sh /package.sh
-
-RUN chmod +x /package.sh \
-  # Install dependencies
-  && yum install -y \
-    ca-certificates \
-
-  # Install go dependencies
-  && go get github.com/tools/godep \
-
-  # Clean up
-  && yum clean all \
-  && rm -rf /tmp/* \
-  && rm -rf /var/tmp/*
-
-CMD ["/package.sh"]
+  class { 'resolv_conf':
+    nameservers => ['127.0.0.1', $dns_ec2_internal_domain_name],
+    searchpath  => ['mesos', $dns_ec2_internal_domain_name_servers],
+  }
+}

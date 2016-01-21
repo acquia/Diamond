@@ -60,7 +60,8 @@ describe 'acquia_mesos::master', :type => :class do
       {
         :api => '1.0',
         :watcher => 'latest',
-        :baragon => '0.1.5'
+        :baragon => '0.1.5',
+        :dns => 'v0.1.0',
       }
     }
 
@@ -68,6 +69,7 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_class('acquia_mesos::services::api')
       should contain_class('acquia_mesos::services::watcher')
       should contain_class('acquia_mesos::services::baragon')
+      should contain_class('acquia_mesos::services::dns::master')
     }
   end
 end
