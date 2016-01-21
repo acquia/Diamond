@@ -12,13 +12,19 @@ describe 'acquia_mesos::services::logstream', :type => :class do
   let(:fluentd_conf) do
     <<EOF
 <source>
-  type forward
+  @type forward
   port 24224
   bind 0.0.0.0
 </source>
 
+<source>
+  @type monitor_agent
+  bind 0.0.0.0
+  port 24220
+</source>
+
 <match grid.**>
-  type kinesis
+  @type kinesis
   stream_name TESTKINESIS-NAME
   region us-east-1
   # TODO(mhrabovcin): Figure out partition once we'll figure how what tags we can provide from outside of docker container
@@ -78,7 +84,7 @@ EOF
                   '/etc/fluentd/logstream:/etc/td-agent',
                   '/mnt/log/logstream:/var/log/fluent/',
                 ],
-                'ports'            => ['24224:24224'],
+                'ports'            => ['24224:24224', '24220:24220'],
                 'extra_parameters' => ['--restart=always', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="logstream"'],
                 'privileged'       => false,
                 'restart_service'  => true,

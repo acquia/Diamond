@@ -2,7 +2,7 @@
 
 set -ex
 
-: ${DIAMOND_VERSION:=master}
+: ${DIAMOND_VERSION:=acquia}
 : ${PACKAGE_DIST_DIR:=/dist}
 
 BASEDIR=/tmp

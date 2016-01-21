@@ -51,9 +51,11 @@ Grid has to be launched with various components in order to get logstream workin
 
 1.`acquia/fluentd` container image must be available in private registry. To build container follow general build instructions. Build script is available in this repository `build/containers/fluentd`.
 * `kinesis stream` has to be launched with `nemesis` tool using `kinesis` template. Read AWS Kinesis documentation to determine required capacity. Example: `bundle exec nemesis launch logstream -t kinesis --shard_count 2`. Stack name is used in next step when launching `mesos-masters` and `mesos-agents` stacks.
-* `mesos-masters` has to be launched with reference to `kinesis stream` running stack. `mesos-masters` stack accepts optional parameter `logstream_name` which represents name of running `kinesis` stack. Once `mesos-masters` stack is launched or updated with logstream name it can't removed without relaunching whole stack.
-* `mesos-agents` similary to `mesos-masters` has to be launched with `logstream_name` parameter. Paramter has same behavior as in `mesos-masters` stack.
-* `grid-api` must have logstream enabled when launching the api server. `grid-api` supports various parameters to configure logstream feature. It can be enabled with `--logstream` flag and configured further with `--logsteram-driver [driver-name]`, `--logstream-opts [opt1],[opt2]` and `--logstream-tag-prefix [prefix-name]`. See `grid-api` help for full documentation. Since `grid-api` is managed via puppet its automatically launched with `logstream` enabled when `logstream_name` parameter is provided to `mesos-masters`
+* `mesos-masters` has to be launched with reference to `kinesis stream` running stack. `mesos-masters` stack accepts optional parameter `logstream` which represents name of running `kinesis` stack. Once `mesos-masters` stack is launched or updated with logstream name it can't removed without relaunching whole stack.
+* `mesos-agents` similary to `mesos-masters` has to be launched with `logstream` parameter. Paramter has same behavior as in `mesos-masters` stack.
+* `grid-api` must have logstream enabled when launching the api server. `grid-api` supports various parameters to configure logstream feature. It can be enabled with `--logstream` flag and configured further with `--logsteram-driver [driver-name]`, `--logstream-opts [opt1],[opt2]` and `--logstream-tag-prefix [prefix-name]`. See `grid-api` help for full documentation. Since `grid-api` is managed via puppet its automatically launched with `logstream` enabled when `logstream` parameter is provided to `mesos-masters`
+
+Cloudwatch alarms can be turned on by specifying an email address to be alerted via the `--logsteam_alert_mail` flag. These alarms are triggered when either the write or read capacity reaches 90%.
 
 ## Creating logstream compatible container
 
