@@ -1,4 +1,4 @@
-# Copyright 2014 Acquia, Inc.
+# Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,30 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM acquia/rpm_packaging
+FROM centos:7
+MAINTAINER Acquia Engineering <engineering@acquia.com>
 
-ADD resources/package.sh $HOME/package.sh
+ENV GOROOT /usr/lib/go
+ENV GOPATH /usr/share/go
+ENV PATH ${GOROOT}/bin:${GOPATH}/bin:$PATH
 
-RUN chmod +x $HOME/package.sh \
-  # Install depdenencies
+RUN mkdir -p /usr/share/go \
+  # Install dependencies
   && yum install -y \
-    yum-utils \
-    apr-devel \
-    cyrus-sasl-devel \
+    gcc \
     git \
-    java-1.8.0-openjdk-devel \
-    krb5-devel \
-    libcurl-devel \
-    python \
-    python-devel \
-    subversion-devel \
-    wget \
-    zlib-devel \
+    make \
+
+  # Install go
+  && curl -sSL https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz | tar -C /usr/lib/ -xz \
 
   # Clean up
   && yum clean all \
   && rm -rf /tmp/* \
   && rm -rf /var/tmp/*
-
-WORKDIR $HOME
-CMD ./package.sh

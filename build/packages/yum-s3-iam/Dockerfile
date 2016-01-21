@@ -14,11 +14,6 @@
 
 FROM acquia/rpm_packaging
 
-RUN yum install -y \
-  git \
-&& yum clean all \
-&& rm -rf /tmp/*
-
 ADD resources/package.sh $HOME/package.sh
 RUN chmod +x $HOME/package.sh
 

@@ -14,25 +14,31 @@
 
 FROM acquia/rpm_packaging
 
-# Install Java
-RUN curl --retry 5 -H 'Cookie: oraclelicense=accept-securebackup-cookie' -OJ -sSL http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.rpm && \
-  rpm -ivh jdk-7u79-linux-x64.rpm && \
-  rm jdk-7u79-linux-x64.rpm && \
-  mkdir -p /usr/java/maven && \
-  curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz | tar xz --strip 1 -C /usr/java/maven && \
-  mkdir -p /usr/java/ant && \
-  curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/ant/binaries/apache-ant-1.9.6-bin.tar.gz | tar -xz --strip 1 -C /usr/java/ant \
-&& yum clean all \
-&& rm -rf /tmp/* \
-&& rm -rf /var/tmp/*
-
-ADD resources/package.sh $HOME/package.sh
-RUN chmod +x $HOME/package.sh
-
 ENV JAVA_HOME /usr/java/jdk1.7.0_79
 ENV M2_HOME /usr/java/maven
 ENV ANT_HOME /usr/java/ant
 ENV PATH $PATH:${JAVA_HOME}/bin:${M2_HOME}/bin:${ANT_HOME}/bin
+
+ADD resources/package.sh $HOME/package.sh
+
+RUN chmod +x $HOME/package.sh \
+  # Install Java
+  && curl --retry 5 -H 'Cookie: oraclelicense=accept-securebackup-cookie' -OJ -sSL http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.rpm \
+  && rpm -ivh jdk-7u79-linux-x64.rpm \
+  && rm jdk-7u79-linux-x64.rpm \
+
+  # Install Maven
+  && mkdir -p /usr/java/maven \
+  && curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz | tar xz --strip 1 -C /usr/java/maven \
+
+  # Install Ant
+  && mkdir -p /usr/java/ant \
+  && curl --retry 5 -sSL https://dist.apache.org/repos/dist/release/ant/binaries/apache-ant-1.9.6-bin.tar.gz | tar -xz --strip 1 -C /usr/java/ant \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 WORKDIR $HOME
 CMD ./package.sh

@@ -12,31 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM centos:7
+FROM acquia/golang:latest
 MAINTAINER Acquia Engineering <engineering@acquia.com>
 
-# Setup container dependencies
-RUN yum install -y \
-  gcc \
-  git \
-  make \
-&& rpm -ivh http://people.apache.org/~jfarrell/thrift/0.9.3/repo/main/centos/7/x86_64/thrift-compiler-0.9.3-1.x86_64.rpm \
-&& yum clean all \
-&& rm -rf /tmp/* \
-&& rm -rf /var/tmp/*
-
-RUN curl -sSL https://storage.googleapis.com/golang/go1.5.1.linux-amd64.tar.gz | tar -C /usr/lib/ -xz && \
-    mkdir -p /usr/share/go
-
-# Setup env and install GOM for Development
-ENV GOROOT /usr/lib/go
-ENV GOPATH /usr/share/go
-ENV PATH ${GOROOT}/bin:${GOPATH}/bin:$PATH
-
-RUN go get github.com/mattn/gom
-
 ADD resources/package.sh /package.sh
-RUN chmod +x /package.sh
+
+RUN chmod +x /package.sh \
+  # Install Thrift
+  && rpm -ivh http://people.apache.org/~jfarrell/thrift/0.9.3/repo/main/centos/7/x86_64/thrift-compiler-0.9.3-1.x86_64.rpm \
+
+  # Install go dependencies
+  && go get github.com/mattn/gom \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 WORKDIR /usr/share/go/src/github.com/acquia/grid-api
 CMD ["/package.sh"]

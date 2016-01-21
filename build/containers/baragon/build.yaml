@@ -1,5 +1,4 @@
 script: build.sh
-version: 1.0
 output:
   - acquia/baragon-master
   - acquia/baragon-agent

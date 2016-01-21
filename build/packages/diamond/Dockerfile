@@ -14,14 +14,17 @@
 
 FROM acquia/rpm_packaging
 
-RUN yum install -y \
-  git \
-  python-configobj \
-&& yum clean all \
-&& rm -rf /tmp/*
-
 ADD resources/package.sh $HOME/package.sh
-RUN chmod +x $HOME/package.sh
+
+RUN chmod +x $HOME/package.sh \
+  # Install dependencies
+  && yum install -y \
+    python-configobj \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 WORKDIR $HOME
 CMD ./package.sh

@@ -25,6 +25,7 @@ RUN yum install -y \
   flex \
   gcc \
   gcc-c++ \
+  git \
   libtool \
   libffi-devel \
   make \

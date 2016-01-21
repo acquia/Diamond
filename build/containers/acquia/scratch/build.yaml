@@ -1,4 +1,3 @@
 script: Dockerfile
-version: 1.0
-output: 
+output:
   - acquia/scratch
