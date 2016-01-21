@@ -71,4 +71,20 @@ class acquia_base::docker(
       require  => Class['::docker'],
     }
   }
+
+  logrotate::rule { 'docker':
+    path          => '/var/log/docker/*.log',
+    rotate        => 7,
+    rotate_every  => 'day',
+    size          => '250M',
+    compress      => true,
+    delaycompress => true,
+    dateext       => true,
+    missingok     => true,
+    ifempty       => false,
+    create        => true,
+    create_mode   => '0644',
+    create_owner  => 'root',
+    create_group  => 'root',
+  }
 }

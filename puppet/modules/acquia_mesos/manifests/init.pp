@@ -37,7 +37,7 @@ class acquia_mesos (
   ensure_resource('file', "${base_work_dir}/tmp",
     {
       'ensure' => 'directory',
-      'mode'   => '0755',
+      'mode'   => '1777',
     }
   )
 
@@ -68,10 +68,6 @@ class acquia_mesos (
       mesos_work_dir => $mesos_work_dir,
     }
     contain acquia_mesos::agent
-
-    if $logstream_name {
-      contain acquia_mesos::services::logstream
-    }
   }
 
   file {"${base_work_dir}/lib/aurora":

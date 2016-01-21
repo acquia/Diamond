@@ -13,7 +13,8 @@ mod 'example42/puppet-yum',
   :ref => 'v2.1.25'
 
 mod 'acquia/garethr-docker',
-  :git => 'https://github.com/acquia/garethr-docker.git'
+  :git => 'https://github.com/acquia/garethr-docker.git',
+  :ref => '4754b12f79af8786606d2b7488cf0425becfe6e4'
 
 mod 'puppet-community/puppet-unattended_upgrades',
   :git => 'https://github.com/puppet-community/puppet-unattended_upgrades.git',

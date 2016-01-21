@@ -105,4 +105,22 @@ describe 'acquia_base::docker' do
       )
     }
   end
+
+  context 'enables docker logrotate' do
+    it {
+      should contain_logrotate__rule('docker').with(
+        {
+          'path'      => '/var/log/docker/*.log',
+          'rotate'    => '7',
+          'size'      => '250M',
+          'missingok' => true,
+        }
+      )
+
+      should contain_file('/etc/logrotate.d/docker')
+        .with_owner('root')
+        .with_group('root')
+        .with_ensure('present')
+    }
+  end
 end

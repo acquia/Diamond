@@ -16,7 +16,7 @@ class acquia_base::setup {
   ensure_resource('file', '/mnt/tmp',
     {
       'ensure' => 'directory',
-      'mode'   => '0755',
+      'mode'   => '1777',
     }
   )
 
