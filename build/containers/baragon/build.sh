@@ -18,7 +18,7 @@
 # Build Baragon and its release containers
 set -ex
 
-: ${BARAGON_GIT_TAG:=master}
+: ${BARAGON_GIT_TAG:=acquia-master}
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
