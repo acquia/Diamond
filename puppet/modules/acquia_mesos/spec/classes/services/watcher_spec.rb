@@ -3,7 +3,8 @@ require 'spec_helper'
 describe 'acquia_mesos::services::watcher', :type => :class do
   let(:facts) {
     {
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 

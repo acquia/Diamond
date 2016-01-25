@@ -40,7 +40,7 @@ class acquia_mesos::services::dns::master (
     restart_service  => true,
     extra_parameters => [
       '--restart=always',
-      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag="mesos-dns"'
+      '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=mesos-dns'
     ],
     volumes          => ['/etc/mesos-dns:/etc/'],
     require          => [

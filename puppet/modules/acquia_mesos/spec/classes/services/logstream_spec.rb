@@ -5,7 +5,8 @@ describe 'acquia_mesos::services::logstream', :type => :class do
     {
       :logstream_name => 'TESTKINESIS-NAME',
       :ec2_placement_availability_zone => 'us-east-1a',
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 
@@ -85,7 +86,11 @@ EOF
                   '/mnt/log/logstream:/var/log/fluent/',
                 ],
                 'ports'            => ['24224:24224', '24220:24220'],
-                'extra_parameters' => ['--restart=always', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=logstream'],
+                'extra_parameters' => [
+                  '--restart=always',
+                  '--ulimit nofile=65536:65536',
+                  '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=logstream'
+                ],
                 'privileged'       => false,
                 'restart_service'  => true,
               })

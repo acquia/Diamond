@@ -6,7 +6,8 @@ describe 'acquia_mesos::agent', :type => :class do
       :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :aurora_zookeeper_connection_string => '10.0.0.1:2181,10.0.0.2:2181',
       :ec2_placement_availability_zone => 'us-east-1a',
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 

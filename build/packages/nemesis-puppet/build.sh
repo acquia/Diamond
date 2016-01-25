@@ -25,7 +25,7 @@ set -ex
 
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
-docker build --no-cache -t nemesis-puppet -f Dockerfile.build ${BASEDIR}
+docker build --no-cache -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
 
 docker run -i --rm \
   -e "NEMESIS_PUPPET_RELEASE=${NEMESIS_PUPPET_RELEASE}" \

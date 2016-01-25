@@ -3,13 +3,20 @@ require 'spec_helper'
 describe 'acquia_mesos::services::api', :type => :class do
   let(:facts) {
     {
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 
   it { should compile.with_all_deps }
 
   it { should contain_acquia_mesos__services__api }
+
+  describe 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
 
   context 'installs and runs the grid-api docker container' do
     it {

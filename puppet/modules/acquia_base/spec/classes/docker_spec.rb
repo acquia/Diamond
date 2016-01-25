@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'acquia_base::docker' do
   let(:facts) do |_|
     {
-      osfamily: 'RedHat',
-      operatingsystemrelease: '7',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   end
 
@@ -18,11 +18,12 @@ describe 'acquia_base::docker' do
 
   describe 'docker configuration' do
     it {
+      should contain_file('/mnt/lib/docker').with_ensure('directory')
+
+      should contain_class('docker').with_package_name('docker-engine')
       should contain_class('docker').with_root_dir('/mnt/lib/docker')
       should contain_class('docker').with_tmp_dir('/mnt/tmp')
       should contain_class('docker').with_use_upstream_package_source(true)
-
-      should contain_file('/mnt/lib/docker')
     }
   end
 

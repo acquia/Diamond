@@ -120,8 +120,8 @@ def build(build_dir, basedir, list, config, options)
     end
 
     if build_config['version']
-        env_vars["#{name.gsub("-", "_").upcase}_VERSION"] = build_config['version']
-      end
+      env_vars["#{name.gsub("-", "_").upcase}_VERSION"] = build_config['version']
+    end
 
     if options[:list]
       build_config['output'].each { |x| puts x }
