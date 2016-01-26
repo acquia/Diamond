@@ -105,7 +105,6 @@ def build(build_dir, basedir, list, config, options)
     'PACKAGE_DIST_DIR' => '/dist/packages'
   }
   global_env_flags['GITHUB_OAUTH_TOKEN'] = ENV['GITHUB_OAUTH_TOKEN'] if ENV['GITHUB_OAUTH_TOKEN']
-  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS/}.each { |k, v| global_env_flags[k] = v }
 
   list.uniq.each do |package_config_file|
     name = File.dirname(package_config_file)

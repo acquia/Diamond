@@ -58,16 +58,18 @@ class RepoManager < Thor
   def upload(stackname)
     check_dependencies(options[:nemesis_container_name])
     bucket = get_s3_bootstrap_repo_bucket(stackname)
-    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete /dist s3://#{bucket}"
+
+    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete /dist/repo s3://#{bucket}/repo"
     system(cmd)
   end
 
   desc "download STACKNAME", "Download a package repository."
   def download(stackname)
     check_dependencies(options[:nemesis_container_name])
+    bucket = get_s3_bootstrap_repo_bucket(stackname)
     purge_repo_directory(options[:nemesis_container_name])
 
-    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete /dist"
+    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete s3://#{bucket}/repo /dist/repo"
     system(cmd)
   end
 

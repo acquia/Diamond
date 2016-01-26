@@ -36,7 +36,7 @@ class acquia_mesos::services::ui(
       '--restart=always',
     ],
     require          => [
-      Docker::Image['acquia/grid-api'],
+      Docker::Image['capgemini/mesos-ui'],
     ],
   }
 }

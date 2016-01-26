@@ -19,6 +19,7 @@ class acquia_mesos::master (
   $watcher = undef,
   $baragon = undef,
   $dns = undef,
+  $ui = undef,
 ) {
   if $api {
     class { 'acquia_mesos::services::api':
@@ -48,6 +49,12 @@ class acquia_mesos::master (
   if $dns {
     class { 'acquia_mesos::services::dns::master':
       version      => $dns,
+    }
+  }
+
+  if $ui {
+    class { 'acquia_mesos::services::ui':
+      version      => $ui,
     }
   }
 

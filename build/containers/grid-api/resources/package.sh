@@ -9,6 +9,8 @@ SRC_DIR=/usr/share/go/src/github.com/acquia/grid-api
 mkdir -p ${SRC_DIR}
 git clone -b ${GRID_API_GIT_TAG} https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/acquia/grid-api.git ${SRC_DIR}
 cd ${SRC_DIR}
+git fetch --tags
+
 make
 
 if [ -d "/dist/" ]; then
