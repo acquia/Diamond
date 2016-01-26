@@ -41,7 +41,7 @@ class acquia_mesos::services::logstream(
   #                   mesos/aurora eye and its taking instance resources
   docker::run { 'logstream':
     image            => "${private_docker_registry}acquia/fluentd:${fluentd_version}",
-    ports            => ['24224:24224'],
+    ports            => ['24224:24224', '24220:24220'],
     detach           => false,
     restart_service  => true,
     privileged       => false,

@@ -135,7 +135,12 @@ enabled = True
 <% end -%>
 <% end -%>
 
-[[DockerCollector]]
+[[FluentdCollector]]
+enabled = True
+[[[collect]]]
+	kinesis = buffer_queue_length, buffer_total_queued_size, retry_count
+
+[[DockerStatsCollector]]
 enabled = True
 
 [[IPCollector]]
