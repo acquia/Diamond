@@ -90,6 +90,8 @@ EOF
                 'restart_service'  => true,
               })
         .that_requires('File[/etc/fluentd/logstream/td-agent.conf]')
+
+      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

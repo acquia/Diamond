@@ -40,6 +40,8 @@ describe 'acquia_mesos::services::baragon', :type => :class do
       should contain_docker__run('baragon-master')
         .with_privileged(false)
         .with_image('acquia/baragon-master:latest')
+
+      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

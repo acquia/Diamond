@@ -35,6 +35,8 @@ describe 'acquia_ecs', :type => :class do
 
     it { should contain_sysctl('net.ipv4.ip_local_port_range').with('value' => '32768 61000') }
 
+    it { should contain_file('/usr/local/bin/update_docker_image.sh') }
+
     it { should contain_docker__image('amazon/amazon-ecs-agent').with_image_tag('latest') }
 
     it {

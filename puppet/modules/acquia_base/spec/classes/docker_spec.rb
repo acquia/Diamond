@@ -11,6 +11,7 @@ describe 'acquia_base::docker' do
   describe 'docker puppet module' do
     it {
       should contain_class('acquia_base::docker')
+      should contain_package('docker').with_name('docker-engine')
       should contain_package('device-mapper')
     }
   end
