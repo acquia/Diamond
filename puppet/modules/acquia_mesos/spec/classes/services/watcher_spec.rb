@@ -19,6 +19,8 @@ describe 'acquia_mesos::services::watcher', :type => :class do
       should contain_docker__run('grid-watcher')
         .with_privileged(false)
         .with_image('acquia/grid-watcher:latest')
+
+      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

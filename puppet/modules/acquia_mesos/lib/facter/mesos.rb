@@ -156,4 +156,22 @@ if AwsHelper.server_type_is?('mesos')
       end
     end
   end
+
+  # Check if stack was launched with reference to grid-api RDS
+  # If yes create DSN (Data Source Name) string that allows grid-api MySQL driver
+  # to connect to DB.
+  grid_api_rds_stack_name = stack.parameter('GridApiRDSStack')
+  if grid_api_rds_stack_name
+    Facter.add(:grid_api_rds_dsn) do
+      setcode do
+        rds_stack = AwsHelper::CloudFormation.stack(grid_api_rds_stack_name)
+        rds_username = rds_stack.parameter('DBMasterUsername')
+        rds_password = rds_stack.parameter('DBMasterPassword')
+        rds_host = rds_stack.output('RDSDnsName')
+        rds_dbname = rds_stack.parameter('DBName')
+        # DSN constructed by https://github.com/go-sql-driver/mysql#examples
+        "#{rds_username}:#{rds_password}@tcp(#{rds_host}:3306)/#{rds_dbname}"
+      end
+    end
+  end
 end
