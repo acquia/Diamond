@@ -12,7 +12,7 @@ describe 'acquia_mesos::services::api', :type => :class do
 
   it { should contain_acquia_mesos__services__api }
 
-  describe 'contains docker puppet module' do
+  context 'contains docker puppet module' do
     it {
       should contain_file('/usr/local/bin/update_docker_image.sh')
     }
@@ -26,8 +26,6 @@ describe 'acquia_mesos::services::api', :type => :class do
       should contain_docker__run('grid-api')
         .with_privileged(false)
         .with_image('acquia/grid-api:latest')
-
-      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

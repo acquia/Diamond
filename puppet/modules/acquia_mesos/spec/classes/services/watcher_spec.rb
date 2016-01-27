@@ -12,6 +12,12 @@ describe 'acquia_mesos::services::watcher', :type => :class do
 
   it { should contain_acquia_mesos__services__watcher }
 
+  context 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
+
   context 'installs and runs the grid-watcher docker container' do
     it {
       should contain_docker__image('acquia/grid-watcher')
@@ -20,8 +26,6 @@ describe 'acquia_mesos::services::watcher', :type => :class do
       should contain_docker__run('grid-watcher')
         .with_privileged(false)
         .with_image('acquia/grid-watcher:latest')
-
-      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

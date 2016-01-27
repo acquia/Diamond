@@ -12,6 +12,12 @@ describe 'acquia_mesos::services::baragon', :type => :class do
 
   it { should contain_acquia_mesos__services__baragon }
 
+  context 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
+
   context 'sets up baragon configuration files' do
     let(:facts) {
       super().merge(
@@ -41,8 +47,6 @@ describe 'acquia_mesos::services::baragon', :type => :class do
       should contain_docker__run('baragon-master')
         .with_privileged(false)
         .with_image('acquia/baragon-master:latest')
-
-      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

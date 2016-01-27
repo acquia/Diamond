@@ -66,6 +66,12 @@ EOF
       .with({ 'ensure' => 'directory' })
   }
 
+  context 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
+
   describe 'runs correct fluentd container' do
     let(:facts) {
       super().merge({ :private_docker_registry => 'registry.example.com/' })
@@ -95,8 +101,6 @@ EOF
                 'restart_service'  => true,
               })
         .that_requires('File[/etc/fluentd/logstream/td-agent.conf]')
-
-      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 
