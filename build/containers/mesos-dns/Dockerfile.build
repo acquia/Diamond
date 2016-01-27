@@ -12,23 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:trusty
+FROM acquia/golang:latest
 MAINTAINER Acquia Engineering <engineering@acquia.com>
 
-ENV GOLANG_VERSION=1.5 \
-    DEBIAN_FRONTEND=noninteractive \
-    GOROOT=/usr/lib/go \
-    GOPATH=/usr/share/go
-
-ENV PATH=${GOROOT}/bin:${GOPATH}/bin:$PATH
-
-RUN apt-get update && \
-    apt-get install -y curl git ca-certificates && \
-    apt-get clean && rm -rf /var/cache/apt/* /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    curl -sSL https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/lib/ -xz && \
-    go get github.com/tools/godep
-
 ADD resources/package.sh /package.sh
-RUN chmod +x /package.sh
+
+RUN chmod +x /package.sh \
+  # Install dependencies
+  && yum install -y \
+    ca-certificates \
+
+  # Install go dependencies
+  && go get github.com/tools/godep \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 CMD ["/package.sh"]

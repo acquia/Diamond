@@ -22,7 +22,7 @@ class acquia_mesos::services::logstream(
 
   file { '/etc/fluentd/logstream/td-agent.conf':
     ensure  => present,
-    content => template('acquia_mesos/fluentd.conf.erb'),
+    content => template('acquia_mesos/services/fluentd.conf.erb'),
     require => File['/etc/fluentd/logstream'],
     notify  => Exec['fluentd-config-reload'],
   }

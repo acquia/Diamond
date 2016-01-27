@@ -32,6 +32,10 @@ acquia_base::admin_users::accounts:
   mnahar:
     key: AAAAB3NzaC1yc2EAAAADAQABAAABAQDVpJkcVB/BZI89gRubcCG45I3Cle2b4CeBNhqHN6DmjQ6z13wMAQeFMg9oGdHeuEmtoYqHysOGCrcKoYPJld/UuZAXAwpymQHWZgjZeALoGUN3QBJQAXWSgc++ZksTEjTw4G4kx+KAUJl4E7sVsgmzBK+rn25oZgAn3eBMOdv8UuHNF3KJKhsgc52F2/FpqTnJMnVYla4tOKj0GTCBA928tv/V0NXqAdEk4c+cnogKPIhthi3B5Hr3eP+bgduEA14HqN6YZJfRSSczcEBRoqLCwvFsySLiUV7eA30zviSFK82RTPizjeGA+93h2PF/J7boN1tIgj3BBnAxH/88h6nf
 
+
+# Docker configuration
+acquia_base::docker::version: '1.9.0-1.el7.centos'
+
 # Value represents number of seconds that exited container and unused image is kept
 # before being removed by docker-gc script
-acquia_base::docker_gc::grace_period: 3600
+acquia_base::docker::docker_gc::grace_period: 3600

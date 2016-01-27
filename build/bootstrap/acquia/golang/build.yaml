@@ -1,0 +1,5 @@
+script: Dockerfile
+version: 1.5.3
+tag: latest
+output:
+  - acquia/golang

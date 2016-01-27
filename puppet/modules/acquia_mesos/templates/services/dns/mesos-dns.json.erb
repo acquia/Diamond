@@ -8,7 +8,7 @@
   "ttl": 60,
   "domain": "mesos",
   "port": 53,
-  "resolvers": ["10.0.0.2"],
+  "resolvers": ['<%= @dns_ec2_internal_domain_name_servers %>', '8.8.8.8', '8.8.4.4'],
   "timeout": 5,
   "httpon": true,
   "dsnon": true,

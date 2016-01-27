@@ -101,22 +101,26 @@ end
 # Run through all builds in a list and execute their script process.
 def build(build_dir, basedir, list, config, options)
   puts "Starting build for: #{build_dir}" unless options[:list]
-  env_vars = {
+  global_env_flags = {
     'PACKAGE_DIST_DIR' => '/dist/packages'
   }
-  env_vars['GITHUB_OAUTH_TOKEN'] = ENV['GITHUB_OAUTH_TOKEN'] if ENV['GITHUB_OAUTH_TOKEN']
-  global_env_flags = ENV.select { |k, v| k =~ /^NEMESIS/}.each { |k, v| env_vars[k] = v }
+  global_env_flags['GITHUB_OAUTH_TOKEN'] = ENV['GITHUB_OAUTH_TOKEN'] if ENV['GITHUB_OAUTH_TOKEN']
 
   list.uniq.each do |package_config_file|
     name = File.dirname(package_config_file)
     package_build_dir = File.join(basedir, name)
     build_config = YAML.load_file(package_config_file)
+    env_vars = global_env_flags
+
+    next if ((config && config['skip']) || build_config['skip'] || '').include?(name)
 
     unless build_config['output']
       build_config['output'] = [name]
     end
 
-    next if ((config && config['skip']) || build_config['skip'] || '').include?(name)
+    if build_config['version']
+      env_vars["#{name.gsub("-", "_").upcase}_VERSION"] = build_config['version']
+    end
 
     if options[:list]
       build_config['output'].each { |x| puts x }
@@ -125,8 +129,13 @@ def build(build_dir, basedir, list, config, options)
       Dir.chdir(package_build_dir) do
         case build_config['script']
         when 'Dockerfile'
-          tag = 'latest'
+          tag = build_config['version'] || 'latest'
           system("docker build --no-cache -t #{name}:#{tag} .")
+
+          if build_config['tag']
+            puts "Tagging: #{name}:#{tag} => #{name}:#{build_config['tag']}"
+            system("docker tag -f #{name}:#{tag} #{name}:#{build_config['tag']}")
+          end
 
           # Package builds are split into two parts, first a Dockerfile which sets up all the dependencies for
           # building that package and second a package.sh script with is the command entrypoint for the container.

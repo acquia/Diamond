@@ -5,7 +5,8 @@ describe 'acquia_mesos::services::logstream', :type => :class do
     {
       :logstream_name => 'TESTKINESIS-NAME',
       :ec2_placement_availability_zone => 'us-east-1a',
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 
@@ -65,6 +66,12 @@ EOF
       .with({ 'ensure' => 'directory' })
   }
 
+  context 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
+
   describe 'runs correct fluentd container' do
     let(:facts) {
       super().merge({ :private_docker_registry => 'registry.example.com/' })
@@ -85,13 +92,15 @@ EOF
                   '/mnt/log/logstream:/var/log/fluent/',
                 ],
                 'ports'            => ['24224:24224', '24220:24220'],
-                'extra_parameters' => ['--restart=always', '--ulimit nofile=65536:65536', '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=logstream'],
+                'extra_parameters' => [
+                  '--restart=always',
+                  '--ulimit nofile=65536:65536',
+                  '--log-driver=syslog --log-opt syslog-facility=daemon --log-opt tag=logstream'
+                ],
                 'privileged'       => false,
                 'restart_service'  => true,
               })
         .that_requires('File[/etc/fluentd/logstream/td-agent.conf]')
-
-      should contain_file('/usr/local/bin/update_docker_image.sh')
     }
   end
 

@@ -59,12 +59,55 @@ class ContainerCommand < Thor
   end
 end
 
+class TagCommand < Thor
+  desc "update", "Update the current tag"
+  method_option :remote, :type => :string, :required, :desc => "Remote repository name."
+  method_option :push, :type => :boolean, :default => false, :desc => "Push tag to the remote repository [Default: false]"
+  method_option :dry_run, :type => :boolean, :default => false, :desc => "Dry run, does not make any modifications. [Default: false]"
+  method_option :major, :type => :boolean, :default => false, :desc => "Update major version [Default: false]"
+  method_option :minor, :type => :boolean, :default => false, :desc => "Update minor version [Default: false]"
+  method_option :patch, :type => :boolean, :default => true, :desc => "Update patch version [Default: true]"
+  def update
+    `git fetch --tags #{options[:remote]} > /dev/null`
+    ver = `git describe --tags --long`.strip
+    tag, commits_since, sha = ver.split("-")
+
+    major, minor, patch = tag.split(".")
+    if options[:major]
+      major = major.succ
+      minor = 0
+      patch = 0
+    elsif options[:minor]
+      minor = minor.succ
+      patch = 0
+    else
+      patch = patch.succ
+    end
+
+    new_tag = [major, minor, patch].join(".")
+    puts "New tag: #{new_tag}"
+
+    unless options[:dry_run]
+      `git tag #{new_tag}`
+
+      if options[:push]
+        `git push #{new_tag} #{options[:remote]}`
+      else
+        puts "To push #{new_tag}: git push #{new_tag} #{options[:remote]}"
+      end
+    end
+  end
+end
+
 class DevCommand < Thor
   desc "package SUBCOMMAND ...ARGS", "Commands to help with package management"
   subcommand "package", PackageCommand
 
   desc "container SUBCOMMAND ...ARGS", "Commands to help with container management"
   subcommand "container", ContainerCommand
+
+  desc "tag SUBCOMMAND ...ARGS", "Commands to help with tagging"
+  subcommand "tag", TagCommand
 end
 
 DevCommand.start(ARGV)

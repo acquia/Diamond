@@ -14,25 +14,28 @@
 
 FROM acquia/rpm_packaging
 
-RUN yum install -y \
-  yum-utils \
-  apr-devel \
-  cyrus-sasl-devel \
-  git \
-  java-1.8.0-openjdk-devel \
-  krb5-devel \
-  libcurl-devel \
-  python \
-  python-devel \
-  subversion-devel \
-  wget \
-  zlib-devel \
-&& yum clean all \
-&& rm -rf /tmp/* \
-&& rm -rf /var/tmp/*
-
 ADD resources/package.sh $HOME/package.sh
-run chmod +x $HOME/package.sh
+
+RUN chmod +x $HOME/package.sh \
+  # Install depdenencies
+  && yum install -y \
+    yum-utils \
+    apr-devel \
+    cyrus-sasl-devel \
+    git \
+    java-1.8.0-openjdk-devel \
+    krb5-devel \
+    libcurl-devel \
+    python \
+    python-devel \
+    subversion-devel \
+    wget \
+    zlib-devel \
+
+  # Clean up
+  && yum clean all \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 WORKDIR $HOME
 CMD ./package.sh

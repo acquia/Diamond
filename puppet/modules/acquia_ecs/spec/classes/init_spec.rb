@@ -16,6 +16,12 @@ describe 'acquia_ecs', :type => :class do
 
   it { should compile.with_all_deps }
 
+  context 'contains docker puppet module' do
+    it {
+      should contain_file('/usr/local/bin/update_docker_image.sh')
+    }
+  end
+
   context 'creates all necessary directories' do
     it { should contain_file('/var/lib/ecs') }
     it { should contain_file('/var/lib/ecs/data') }

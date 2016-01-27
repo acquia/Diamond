@@ -23,20 +23,18 @@ set -ex
 # WARNING this will fail if you run this script from a symlink
 CURDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-: ${MESOS_DNS_RELEASE:=v0.4.0}
-: ${MESOS_DNS_TAG:=acquia/mesos-dns:$MESOS_DNS_RELEASE}
-: ${MESOS_DNS_LATEST_TAG:=acquia/mesos-dns:latest}
-: ${MESOS_DNS_BUILDER_TAG:=mesos-dns-builder}
+: ${MESOS_DNS_VERSION:=v0.5.1}
 
 # Create the builder container
-docker build --no-cache -t ${MESOS_DNS_BUILDER_TAG} -f ${CURDIR}/Dockerfile.build ${CURDIR}
+docker build --no-cache -t nemesis/mesos-dns -f ${CURDIR}/Dockerfile.build ${CURDIR}
 
 # Run the build
-docker run -it --rm -v ${CURDIR}:/dist ${MESOS_DNS_BUILDER_TAG} /bin/bash package.sh ${MESOS_DNS_RELEASE}
-docker rmi -f ${MESOS_DNS_BUILDER_TAG}
+docker run -it --rm -v ${CURDIR}:/dist nemesis/mesos-dns /bin/bash package.sh ${MESOS_DNS_VERSION}
+docker rmi -f nemesis/mesos-dns
 
 # Package the build in a minimal scratch container
-docker build --no-cache -t ${MESOS_DNS_TAG} -f ${CURDIR}/Dockerfile.release ${CURDIR}
+docker build --no-cache -t acquia/mesos-dns:${MESOS_DNS_VERSION} -f ${CURDIR}/Dockerfile.release ${CURDIR}
+docker tag -f acquia/mesos-dns:${MESOS_DNS_VERSION} acquia/mesos-dns:latest
 
 # Clean up intermediate file
 rm ${CURDIR}/mesos-dns

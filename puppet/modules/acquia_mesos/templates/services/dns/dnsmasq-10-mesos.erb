@@ -1,0 +1,18 @@
+<%
+  masters = @mesos_masters_private_ips.split(',')
+-%>
+#Listen on all interfaces
+interface=*
+
+addn-hosts=/etc/hosts
+
+# Never forward addresses in the non-routed address spaces.
+bogus-priv
+
+server=8.8.8.8
+server=8.8.4.4
+
+# configure DNS resolution to mesos masters
+<% masters.each do |addr| -%>
+server=<%= addr %>
+<% end -%>

@@ -1,11 +1,18 @@
 classes:
   - roles::mesos
 
+# Common configuration
 acquia_mesos::base_work_dir: '/mnt'
 
 acquia_mesos::mesos_version: '0.23.0-1.0.centos701406'
 acquia_mesos::aurora_version: '0.10.0-1.el7.centos.aurora'
 
-acquia_mesos::master::api: 0.1.4
-acquia_mesos::master::watcher: 0.1.1
-acquia_mesos::master::baragon: latest
+# Master configuration
+acquia_mesos::master::api: 'latest'
+acquia_mesos::master::baragon: 'latest'
+acquia_mesos::master::dns: 'v0.5.1'
+acquia_mesos::master::ui: false # 'standalone-0.1.2'
+acquia_mesos::master::watcher: 'latest'
+
+# Agent configuration
+acquia_mesos::services::logstream::fluentd_version: 'latest'

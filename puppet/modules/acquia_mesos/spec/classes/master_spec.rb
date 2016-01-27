@@ -9,7 +9,8 @@ describe 'acquia_mesos::master', :type => :class do
       :mesos_masters => '127.0.0.2,127.0.0.3,127.0.0.4',
       :mesos_masters_private_ips => '127.0.0.3,127.0.0.4,127.0.0.5',
       :mesos_zookeeper_connection_string => 'zk://10.0.1.112:2181,10.0.2.54:2181,10.0.0.133:2181',
-      :osfamily => 'redhat',
+      :osfamily => 'RedHat',
+      :operatingsystemrelease => '7',
     }
   }
 
@@ -60,7 +61,9 @@ describe 'acquia_mesos::master', :type => :class do
       {
         :api => '1.0',
         :watcher => 'latest',
-        :baragon => '0.1.5'
+        :baragon => '0.1.5',
+        :dns => 'v0.1.0',
+        :ui => '1.0',
       }
     }
 
@@ -68,6 +71,8 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_class('acquia_mesos::services::api')
       should contain_class('acquia_mesos::services::watcher')
       should contain_class('acquia_mesos::services::baragon')
+      should contain_class('acquia_mesos::services::dns::master')
+      should contain_class('acquia_mesos::services::ui')
     }
   end
 end
