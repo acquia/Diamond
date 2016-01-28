@@ -22,3 +22,5 @@ jenkins::config_hash:
     value: 8080
   JENKINS_ARGS:
     value: "--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT --httpListenAddress=127.0.0.1"
+
+acquia_base::selinux::mode: 'permissive'
