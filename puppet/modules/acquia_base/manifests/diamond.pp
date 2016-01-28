@@ -1,4 +1,6 @@
-class acquia_base::diamond {
+class acquia_base::diamond(
+  $version = 'latest',
+){
   group { 'diamond':
     ensure => present,
   }
@@ -24,7 +26,7 @@ class acquia_base::diamond {
   }
 
   package { 'diamond':
-    ensure  => '4.0.338-0',
+    ensure  => "${version}",
     require => User['diamond'],
   }
 
