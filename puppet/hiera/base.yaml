@@ -32,6 +32,8 @@ acquia_base::admin_users::accounts:
   mnahar:
     key: AAAAB3NzaC1yc2EAAAADAQABAAABAQDVpJkcVB/BZI89gRubcCG45I3Cle2b4CeBNhqHN6DmjQ6z13wMAQeFMg9oGdHeuEmtoYqHysOGCrcKoYPJld/UuZAXAwpymQHWZgjZeALoGUN3QBJQAXWSgc++ZksTEjTw4G4kx+KAUJl4E7sVsgmzBK+rn25oZgAn3eBMOdv8UuHNF3KJKhsgc52F2/FpqTnJMnVYla4tOKj0GTCBA928tv/V0NXqAdEk4c+cnogKPIhthi3B5Hr3eP+bgduEA14HqN6YZJfRSSczcEBRoqLCwvFsySLiUV7eA30zviSFK82RTPizjeGA+93h2PF/J7boN1tIgj3BBnAxH/88h6nf
 
+# Diamond configuration
+acquia_base::diamond::version: '4.0.341-0'
 
 # Docker configuration
 acquia_base::docker::version: '1.9.0-1.el7.centos'

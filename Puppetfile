@@ -53,3 +53,11 @@ mod 'puppetlabs/vcsrepo', '= 1.3.1'
 
 mod 'jfryman/puppet-selinux',
   :git => 'https://github.com/jfryman/puppet-selinux.git'
+
+mod 'saz/puppet-dnsmasq',
+  :git => 'https://github.com/saz/puppet-dnsmasq.git',
+  :ref => 'v1.2.0'
+
+mod 'saz/puppet-resolv_conf',
+  :git => 'https://github.com/saz/puppet-resolv_conf.git',
+  :ref => 'v3.0.5'
