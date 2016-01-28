@@ -61,7 +61,7 @@ end
 
 class TagCommand < Thor
   desc "update", "Update the current tag"
-  method_option :remote, :type => :string, :required, :desc => "Remote repository name."
+  method_option :remote, :type => :string, :required => true, :desc => "Remote repository name."
   method_option :push, :type => :boolean, :default => false, :desc => "Push tag to the remote repository [Default: false]"
   method_option :dry_run, :type => :boolean, :default => false, :desc => "Dry run, does not make any modifications. [Default: false]"
   method_option :major, :type => :boolean, :default => false, :desc => "Update major version [Default: false]"
