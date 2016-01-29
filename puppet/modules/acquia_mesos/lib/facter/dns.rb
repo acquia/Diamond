@@ -16,48 +16,26 @@
 #
 require 'facter'
 require 'aws_helper'
-require 'time'
-
-def parse_leases_file(file = '/var/lib/dhclient/dhclient.leases')
-  return {} unless File.exist?(file)
-  leases = []
-  l = {}
-  File.open(file).each_line { |line|
-    case line
-    when /^lease \{/
-      l = {}
-    when /fixed-address (.*);/
-      l[:ip] = $1
-    when /interface (.*);/
-      l[:interface] = $1
-    when /option domain-name (.*);/
-      l[:domain_name] = $1
-    when /option domain-name-servers (.*);/
-      puts $1
-      l[:domain_name_servers] = $1
-    when /renew \d+ (.+);/
-      l[:renew] = Time.parse $1
-    when /^\}/
-      leases << l.clone
-    end
-  }
-  leases.sort_by { |lease| lease[:renew] }.last
-end
 
 if AwsHelper.server_type_is?('mesos')
   stack = AwsHelper.stack
   unless stack.nil?
-    current_lease = parse_leases_file
-
     Facter.add(:dns_ec2_internal_domain_name) do
       setcode do
-        current_lease[:domain_name] || 'ec2.internal'
+        'ec2.internal'
       end
     end
 
     Facter.add(:dns_ec2_internal_domain_name_servers) do
       setcode do
-        current_lease[:domain_name_servers]
+        mac_addr = Facter.value('ec2_mac')
+        cidr_full = Facter.value("ec2_network_interfaces_macs_#{mac_addr}_vpc_ipv4_cidr_block")
+        cidr_ip = cidr_full.split('/').first
+        cidr_base = cidr_ip.rpartition('.').first
+        last_octet = cidr_ip.rpartition('.').last
+        dns_octet = last_octet.to_i + 2
+        dns_ip = [cidr_base, dns_octet].join('.')
+        dns_ip
       end
     end
 
