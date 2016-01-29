@@ -14,3 +14,5 @@
 ---
 classes:
   - roles::ecs
+
+acquia_base::selinux::mode: 'permissive'

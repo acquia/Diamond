@@ -16,3 +16,5 @@ acquia_mesos::master::watcher: 'latest'
 
 # Agent configuration
 acquia_mesos::services::logstream::fluentd_version: 'latest'
+
+acquia_base::selinux::mode: 'permissive'
