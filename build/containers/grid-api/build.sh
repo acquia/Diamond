@@ -21,8 +21,10 @@ set -ex
 
 : ${GRID_API_GIT_TAG:=master}
 
-# Attempt to read the Github OAuth token from the global .gitconfig
-GITHUB_OAUTH_TOKEN=$(git config --global github.token) || true
+if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
+    # Attempt to read the Github OAuth token from the global .gitconfig
+    GITHUB_OAUTH_TOKEN=$(git config --global github.token) || true
+fi
 
 if [ -z "$GITHUB_OAUTH_TOKEN" ]; then
  echo "Error: GITHUB_OAUTH_TOKEN environment variable not set"
