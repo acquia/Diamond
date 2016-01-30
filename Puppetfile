@@ -14,7 +14,7 @@ mod 'example42/puppet-yum',
 
 mod 'acquia/garethr-docker',
   :git => 'https://github.com/acquia/garethr-docker.git',
-  :ref => '4754b12f79af8786606d2b7488cf0425becfe6e4'
+  :ref => '068f3f54bdfb92da047f55e55c5185b361241fbc'
 
 mod 'puppet-community/puppet-unattended_upgrades',
   :git => 'https://github.com/puppet-community/puppet-unattended_upgrades.git',

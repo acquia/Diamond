@@ -16,7 +16,7 @@ mod 'puppetlabs/stdlib', '>= 4.5.1'
 
 mod 'acquia/garethr-docker',
   :git => 'https://github.com/acquia/garethr-docker.git',
-  :ref => '4754b12f79af8786606d2b7488cf0425becfe6e4'
+  :ref => '068f3f54bdfb92da047f55e55c5185b361241fbc'
 
 mod 'puppet-sysctl',
   :git => 'https://github.com/thias/puppet-sysctl'

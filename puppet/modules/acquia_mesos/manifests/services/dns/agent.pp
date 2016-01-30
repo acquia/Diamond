@@ -14,6 +14,7 @@
 
 class acquia_mesos::services::dns::agent {
   include dnsmasq
+
   dnsmasq::conf { 'mesos':
     ensure  => present,
     prio    => '10',
