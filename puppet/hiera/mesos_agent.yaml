@@ -1,0 +1,5 @@
+classes:
+  - roles::mesos
+
+# Agent configuration
+acquia_mesos::services::logstream::fluentd_version: 'latest'
