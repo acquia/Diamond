@@ -15,18 +15,13 @@ class acquia_base::instance_store (
   # Only configure LVM if this is a known server type that uses instance store
   # volumes and they're configured to be present
   if $::needs_blockdevices_mounted and $::aws_block_devices {
-    if $::ec2_instance_type != 'c3.large' and $::ec2_instance_type != 'c3.xlarge' {
-      $base_logical_volume = {
-        'instance-pool' => {
-          'mountpath' => $mount_path,
-          'fs_type'   => 'xfs',
-          'size'      => undef,
-          'options'   => 'defaults',
-        },
-      }
-    }
-    else {
-      $base_logical_volume = {}
+    $base_logical_volume = {
+      'instance-pool' => {
+        'mountpath' => $mount_path,
+        'fs_type'   => 'xfs',
+        'size'      => undef,
+        'options'   => 'defaults',
+      },
     }
 
     $logical_volumes = merge($base_logical_volume,

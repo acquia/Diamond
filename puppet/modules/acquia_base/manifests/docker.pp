@@ -44,7 +44,4 @@ class acquia_base::docker(
     create_owner  => 'root',
     create_group  => 'root',
   }
-
-  # Ensure all Docker registries are configured before any images or run resources are applied
-  Docker::Registry <| |> -> Docker::Image <| |> -> Docker::Run <| |>
 }

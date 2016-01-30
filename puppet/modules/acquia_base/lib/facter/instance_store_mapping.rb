@@ -13,14 +13,6 @@ instance_store_mapping = [
   'r3.xlarge',
 ]
 
-# Some instance types already have their instance storage volumes mounted
-# That list should go here so that we can avoid trying to format/mount existing
-# volumes
-xvdb_instance_store = [
-  'c3.large',
-  'c3.xlarge',
-]
-
 # These instance types have SSD instance storage with TRIM support
 # This list tells us which instances need to have a cron job to run fstrim
 trim_support_mapping = [
@@ -50,10 +42,8 @@ end
 
 Facter.add(:aws_block_devices) do
   setcode do
-    instance_type = Facter.value('ec2_instance_type')
     devices = Facter.value('blockdevices').split(',')
-    extras = devices.reject { |dev| %w(xvda).include? dev }
-    extras.delete 'xvdb' if xvdb_instance_store.include?(instance_type)
+    extras = devices.reject { |dev| %w(xvda).include?(dev) }
     extras.map! { |dev| "/dev/#{dev}" }
     extras.size > 0 ? extras : []
   end
