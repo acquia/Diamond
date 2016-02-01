@@ -17,7 +17,7 @@
 require 'facter'
 require 'aws_helper'
 
-if AwsHelper.server_type_is?('mesos')
+if AwsHelper.server_type_is?('mesos_master') || AwsHelper.server_type_is?('mesos_agent')
   stack = AwsHelper.stack
   unless stack.nil?
     Facter.add(:dns_ec2_internal_domain_name) do

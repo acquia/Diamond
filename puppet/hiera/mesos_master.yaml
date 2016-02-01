@@ -1,0 +1,9 @@
+classes:
+  - roles::mesos
+
+# Master configuration
+acquia_mesos::master::api: 'latest'
+acquia_mesos::master::baragon: 'latest'
+acquia_mesos::master::dns: 'v0.5.1'
+acquia_mesos::master::ui: false # 'standalone-0.1.2'
+acquia_mesos::master::watcher: 'latest'

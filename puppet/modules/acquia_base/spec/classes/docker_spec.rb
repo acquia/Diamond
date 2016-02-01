@@ -29,7 +29,7 @@ describe 'acquia_base::docker' do
       }
     end
 
-    describe 'docker-storage-setup configuration' do
+    describe 'docker-storage configuration' do
       let(:facts) {
         super().merge(
           {
@@ -38,18 +38,8 @@ describe 'acquia_base::docker' do
         )
       }
       it {
-        should contain_package('docker-storage-setup')
-
         should contain_class('docker')
-          .with_storage_driver('devicemapper')
-          .with_dm_fs('xfs')
-          .with_dm_thinpooldev('/dev/mapper/docker--data-docker--pool')
-          .with_dm_blocksize('512K')
-          .with_storage_devs('/dev/xvdb /dev/xvdc')
-          .with_storage_vg('docker-data')
-          .with_storage_data_size('90%FREE')
-          .with_storage_min_data_size('2g')
-          .with_storage_chunk_size('512K')
+          .with_storage_driver('overlay')
       }
     end
   end

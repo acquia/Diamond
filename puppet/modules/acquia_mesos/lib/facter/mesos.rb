@@ -66,7 +66,7 @@ module NemesisHelper
   end
 end
 
-if AwsHelper.server_type_is?('mesos')
+if AwsHelper.server_type_is?('mesos_master') || AwsHelper.server_type_is?('mesos_agent')
   stack = AwsHelper.stack
   unless stack.nil?
     # Return the name of the mesos cluster
@@ -79,7 +79,7 @@ if AwsHelper.server_type_is?('mesos')
     # Fact to check and see if this node is a Mesos master or not
     Facter.add(:mesos_master) do
       setcode do
-        AwsHelper.instance.tag('master') == 'true'
+        AwsHelper.server_type_is?('mesos_master')
       end
     end
 
