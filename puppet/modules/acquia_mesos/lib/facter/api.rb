@@ -15,7 +15,7 @@
 require 'facter'
 require 'aws_helper'
 
-if AwsHelper.server_type_is?('mesos')
+if AwsHelper.server_type_is?('mesos_master')
   stack = AwsHelper.stack
   unless stack.nil?
     Facter.add(:api_docker_env) do
