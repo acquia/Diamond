@@ -81,7 +81,6 @@ EOF
         .with({
                 'image'     => 'registry.example.com/acquia/fluentd',
                 'image_tag' => 'latest',
-                'force'     => true,
               })
 
       should contain_docker__run('logstream')

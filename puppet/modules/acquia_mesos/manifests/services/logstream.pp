@@ -32,9 +32,9 @@ class acquia_mesos::services::logstream(
   }
 
   docker::image { 'acquia/fluentd':
+    ensure    => 'latest',
     image     => "${private_docker_registry}acquia/fluentd",
     image_tag => "${fluentd_version}",
-    force     => true,
   }
 
   # TODO(mhrabovcin): Do we need some cgroups limits on this container in terms of resource usage? This is running out of

@@ -16,6 +16,7 @@ class acquia_mesos::master (
   $base_work_dir  = '/var',
   $mesos_log_dir  = '/var/log/mesos',
   $mesos_work_dir = '/var/lib/mesos',
+  $java_version   = 'java-1.8.0-openjdk-devel',
   $api            = undef,
   $watcher        = undef,
   $baragon        = undef,
@@ -84,8 +85,14 @@ class acquia_mesos::master (
     enable         => false,
   }
 
+  package { 'java':
+    ensure => 'installed',
+    name   => $java_version,
+  }
+
   class { 'acquia_mesos::aurora::scheduler':
     version                => $acquia_mesos::aurora_version,
+
     # Scheduler Options
     cluster_name           => "${mesos_cluster_name}",
     quorum_size            => "${mesos_quorum}",
@@ -109,6 +116,8 @@ class acquia_mesos::master (
 
     # Executor Options
     mesos_work_dir         => $mesos_work_dir,
-  }
 
+    # Puppet Options
+    require                => Package['java'],
+  }
 }

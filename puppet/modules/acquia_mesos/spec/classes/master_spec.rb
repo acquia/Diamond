@@ -39,6 +39,12 @@ describe 'acquia_mesos::master', :type => :class do
       should contain_file('/mnt/lib/aurora/scheduler/db')
     }
 
+    context 'installs all dependencies for the aurora scheduler' do
+      it {
+        should contain_package('java')
+      }
+    end
+
     context 'configures mesos master properties' do
       let(:mesos_quorum) { 5 }
 

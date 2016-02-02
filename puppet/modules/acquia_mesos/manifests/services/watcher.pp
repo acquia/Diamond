@@ -29,9 +29,9 @@ class acquia_mesos::services::watcher(
   ]
 
   docker::image { 'acquia/grid-watcher':
+    ensure    => 'latest',
     image     => "${private_docker_registry}acquia/grid-watcher",
     image_tag => "${version}",
-    force     => true,
   }
 
   docker::run { 'grid-watcher':

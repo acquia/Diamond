@@ -16,7 +16,7 @@ mod 'puppetlabs/stdlib', '>= 4.5.1'
 
 mod 'acquia/garethr-docker',
   :git => 'https://github.com/acquia/garethr-docker.git',
-  :ref => '9686595978a1ace8dd98745a6e8389706bfe2724'
+  :ref => '6bc6defe35f42c81c5adc44189ce0eead6d20094'
 
 mod 'rodjek/logrotate',
   :git => 'https://github.com/rodjek/puppet-logrotate.git',

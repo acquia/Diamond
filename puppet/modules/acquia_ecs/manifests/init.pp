@@ -37,12 +37,12 @@ class acquia_ecs {
   }
 
   docker::image { 'amazon/amazon-ecs-agent':
+    ensure    => 'latest',
     image_tag => 'latest',
   }
 
   docker::run { 'ecs-agent':
     image            => 'amazon/amazon-ecs-agent:latest',
-    use_name         => true,
     volumes          => [
       '/var/run/docker.sock:/var/run/docker.sock',
       '/var/log/ecs:/log',
@@ -51,8 +51,8 @@ class acquia_ecs {
     env_file         => '/etc/ecs/ecs.config',
     ports            => ['51678:51678'],
     expose           => ['51678'],
-    restart          => always,
-    extra_parameters => ['--restart=always', '-d'],
+    restart_service  => true,
+    extra_parameters => ['--restart=always'],
     privileged       => true,
     require          => [
       File['/etc/ecs/ecs.config'],
