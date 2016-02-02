@@ -53,7 +53,11 @@ class acquia_mesos::agent(
     },
   }
 
-  class {'::mesos::master':
+  class { '::mesos::master':
     enable         => false,
+  }
+
+  class { 'acquia_mesos::aurora::executor':
+    version => $acquia_mesos::aurora_version,
   }
 }

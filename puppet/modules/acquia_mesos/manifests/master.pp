@@ -13,13 +13,14 @@
 # limitations under the License.
 
 class acquia_mesos::master (
-  $mesos_log_dir = '/var/log/mesos',
+  $base_work_dir  = '/var',
+  $mesos_log_dir  = '/var/log/mesos',
   $mesos_work_dir = '/var/lib/mesos',
-  $api = undef,
-  $watcher = undef,
-  $baragon = undef,
-  $dns = undef,
-  $ui = undef,
+  $api            = undef,
+  $watcher        = undef,
+  $baragon        = undef,
+  $dns            = undef,
+  $ui             = undef,
 ) {
   if $api {
     class { 'acquia_mesos::services::api':
@@ -82,4 +83,32 @@ class acquia_mesos::master (
   class {'::mesos::slave':
     enable         => false,
   }
+
+  class { 'acquia_mesos::aurora::scheduler':
+    version                => $acquia_mesos::aurora_version,
+    # Scheduler Options
+    cluster_name           => "${mesos_cluster_name}",
+    quorum_size            => "${mesos_quorum}",
+    zookeeper              => "${aurora_zookeeper_connection_string}",
+    thermos_executor_flags => [
+                                '--announcer-enable',
+                                "--announcer-ensemble ${aurora_zookeeper_connection_string}",
+                                '--announcer-serverset-path /aurora/services',
+                                '--log_to_std',
+                                '--preserve_env',
+                              ],
+    extra_scheduler_args   => [
+                                  '-allow_docker_parameters=true',
+                              ],
+    libprocess_ip          => "${ec2_local_ipv4}",
+    java_opts              => [
+                                '-server',
+                                "-Djava.library.path='/usr/lib;/usr/lib64'",
+                              ],
+    aurora_home            => "${base_work_dir}/lib/aurora",
+
+    # Executor Options
+    mesos_work_dir         => $mesos_work_dir,
+  }
+
 }
