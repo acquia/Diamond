@@ -29,7 +29,7 @@ $bin_dir = File.join(nemesis_puppet_root, 'bin')
 class PackageCommand < Thor
   desc "update PACKAGE REPO", "Build and upload a package to a bootstrap repository stack"
   def update(package, repo)
-    Dir.glob(File.join("#{$dist_root}", "**", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
+    Dir.glob(File.join("#{$dist_root}", "packages", "#{package}*.rpm")).each { |x| FileUtils.rm_f(x) }
 
     commands = [
      "#{$bin_dir}/repo delete #{repo}",

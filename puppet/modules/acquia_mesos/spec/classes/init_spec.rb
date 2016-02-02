@@ -37,7 +37,6 @@ describe 'acquia_mesos', :type => :class do
     it { should contain_file('/mnt/tmp') }
 
     it { should contain_file('/mnt/tmp/mesos') }
-    it { should contain_file('/mnt/lib/aurora') }
   end
 
   context 'installs the correct version' do

@@ -16,6 +16,7 @@ describe 'acquia_mesos::master', :type => :class do
 
   let(:params) {
     {
+      :base_work_dir => '/mnt',
       :mesos_work_dir => '/mnt/lib/mesos',
       :mesos_log_dir => '/mnt/log/mesos',
     }
@@ -29,6 +30,13 @@ describe 'acquia_mesos::master', :type => :class do
     it {
       should contain_service('mesos-master').with_enable(true)
       should contain_service('mesos-slave').with_enable(false)
+    }
+
+    it {
+      should contain_class('acquia_mesos::aurora::scheduler')
+      should contain_file('/mnt/lib/aurora')
+      should contain_file('/mnt/lib/aurora/scheduler')
+      should contain_file('/mnt/lib/aurora/scheduler/db')
     }
 
     context 'configures mesos master properties' do

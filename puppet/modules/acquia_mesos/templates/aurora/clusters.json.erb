@@ -1,0 +1,12 @@
+<%
+  servers = @zookeeper.split(',').map{|i| i.split(':').first}
+  servers = servers.join(',')
+-%>
+[{
+  "name": "<%= @cluster_name %>",
+  "zk": "<%= servers %>",
+  "auth_mechanism": "<%= @auth_mechanism %>",
+  "scheduler_zk_path": "<%= @zookeeper_aurora_path %>",
+  "slave_run_directory": "<%= @executor_run_directory %>",
+  "slave_root": "<%= @mesos_work_dir %>"
+}]

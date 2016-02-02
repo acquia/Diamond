@@ -59,6 +59,7 @@ class acquia_mesos (
 
   if $mesos_master {
     class { 'acquia_mesos::master':
+      base_work_dir  => $base_work_dir,
       mesos_log_dir  => $mesos_log_dir,
       mesos_work_dir => $mesos_work_dir,
     }
@@ -68,53 +69,6 @@ class acquia_mesos (
       mesos_work_dir => $mesos_work_dir,
     }
     contain acquia_mesos::agent
-  }
-
-  file {"${base_work_dir}/lib/aurora":
-    ensure  => 'directory',
-    mode    => '0755',
-    require => File["${base_work_dir}/lib"],
-  }
-
-  class { 'aurora':
-    version           => $aurora_version,
-    configure_repo    => false,
-    master            => $mesos_master,
-    scheduler_options => {
-      'cluster_name'            => "${mesos_cluster_name}",
-      'quorum_size'             => "${mesos_quorum}",
-      'zookeeper'               => "${aurora_zookeeper_connection_string}",
-      'thermos_executor_flags'  => [
-        '--announcer-enable',
-        "--announcer-ensemble ${aurora_zookeeper_connection_string}",
-        '--announcer-serverset-path /aurora/services',
-        '--log_to_std',
-        '--preserve_env',
-      ],
-      'extra_scheduler_args'    => [
-        '-allow_docker_parameters=true',
-      ],
-      # @todo: fix puppet-aurora params to use defaults for scheduler options. copied over for now.
-      'log_level'               => 'INFO',
-      'libmesos_log_verbosity'  => 0,
-      'libprocess_port'         => '8083',
-      'libprocess_ip'           => "${ec2_local_ipv4}",
-      'java_opts'               => [
-                                      '-server',
-                                      "-Djava.library.path='/usr/lib;/usr/lib64'",
-                                    ],
-      'http_port'               => '8081',
-      'zookeeper_mesos_path'    => 'mesos',
-      'zookeeper_aurora_path'   => 'aurora',
-      'aurora_home'             => "${base_work_dir}/lib/aurora",
-      'thermos_executor_path'   => '/usr/bin/thermos_executor',
-      'allowed_container_types' => ['DOCKER','MESOS'],
-    },
-    agent_options     => {
-      'auth_mechanism' => 'UNAUTHENTICATED',
-      'run_directory'  => 'latest',
-      'mesos_work_dir' => $mesos_work_dir,
-    },
   }
 
   logrotate::rule { 'mesos':
