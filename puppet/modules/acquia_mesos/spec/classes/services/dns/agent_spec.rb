@@ -18,6 +18,8 @@ describe 'acquia_mesos::services::dns::agent', :type => :class do
 
   context 'configures dnsmasq' do
     it {
+      should contain_class('dnsmasq')
+
       should contain_package('dnsmasq')
 
       should contain_service('dnsmasq')

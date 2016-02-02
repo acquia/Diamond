@@ -13,7 +13,9 @@
 # limitations under the License.
 
 class acquia_mesos::services::dns::agent {
-  include dnsmasq
+  class { 'dnsmasq':
+    exported => false,
+  }
 
   dnsmasq::conf { 'mesos':
     ensure  => present,
@@ -22,7 +24,11 @@ class acquia_mesos::services::dns::agent {
   }
 
   class { 'resolv_conf':
-    nameservers => ['127.0.0.1', $dns_ec2_internal_domain_name],
-    searchpath  => ['mesos', $dns_ec2_internal_domain_name_servers],
+    nameservers => ['127.0.0.1', $dns_ec2_internal_domain_name_servers],
+    searchpath  => ['mesos', $dns_ec2_internal_domain_name ],
+    require     => [
+      Dnsmasq::Conf['mesos'],
+      Class['dnsmasq'],
+    ],
   }
 }

@@ -40,9 +40,9 @@ mod 'puppet-sysctl',
 mod 'jfryman/puppet-selinux',
   :git => 'https://github.com/jfryman/puppet-selinux.git'
 
-mod 'saz/puppet-dnsmasq',
-  :git => 'https://github.com/saz/puppet-dnsmasq.git',
-  :ref => 'v1.2.0'
+mod 'jfarrell/puppet-dnsmasq',
+  :git => 'https://github.com/jfarrell/puppet-dnsmasq.git',
+  :ref => '93958140cd293a5938aa020d7c383f92bfb86076'
 
 mod 'saz/puppet-resolv_conf',
   :git => 'https://github.com/saz/puppet-resolv_conf.git',

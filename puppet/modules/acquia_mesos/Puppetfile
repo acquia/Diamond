@@ -26,9 +26,9 @@ mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos.git',
   :ref => 'v0.6.4'
 
-mod 'saz/puppet-dnsmasq',
-  :git => 'https://github.com/saz/puppet-dnsmasq.git',
-  :ref => 'v1.2.0'
+mod 'jfarrell/puppet-dnsmasq',
+  :git => 'https://github.com/jfarrell/puppet-dnsmasq.git',
+  :ref => '93958140cd293a5938aa020d7c383f92bfb86076'
 
 mod 'saz/puppet-resolv_conf',
   :git => 'https://github.com/saz/puppet-resolv_conf.git',
