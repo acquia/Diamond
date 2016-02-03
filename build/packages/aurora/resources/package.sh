@@ -20,7 +20,7 @@ mkdir -p ${BASEDIR}/apache-aurora-${AURORA_VERSION}
 curl -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" -sSL https://api.github.com/repos/acquia/aurora/tarball/${AURORA_GIT_TAG} | tar -xz --strip 1 -C ${BASEDIR}/apache-aurora-${AURORA_VERSION}
 
 export TOPDIR=${BASEDIR}/apache-aurora-${AURORA_VERSION}
-export DIST_DIR=$HOME
+export DIST_DIR=${BASEDIR}
 export AURORA_VERSION=${AURORA_VERSION}
 
 cd ${BASEDIR} && tar -czf /src.tar.gz apache-aurora-${AURORA_VERSION}
@@ -32,5 +32,5 @@ yum-builddep -y ${DIST_DIR}/rpmbuild/SRPMS/*
 make rpm
 
 if [ -d "${PACKAGE_DIST_DIR}/" ]; then
-  mv -f $HOME/rpmbuild/RPMS/x86_64/*.rpm $PACKAGE_DIST_DIR/
+  mv -f ${DIST_DIR}/rpmbuild/RPMS/x86_64/*.rpm ${PACKAGE_DIST_DIR}/
 fi
