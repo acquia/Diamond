@@ -16,12 +16,14 @@ class acquia_mesos::services::watcher(
   $version = 'latest',
   $watcher_host = '0.0.0.0',
   $watcher_port = 6677,
+  $watcher_leadership_host = '0.0.0.0',
   $baragon_host = '0.0.0.0',
   $baragon_port = 6060,
 ){
   $env = [
     "ALB_HOST=${watcher_host}",
     "ALB_PORT=${watcher_port}",
+    "ALB_LEADERSHIP_HOST=${watcher_leadership_host}",
     "ALB_ZK_SERVERS=${aurora_zookeeper_connection_string}",
     "ALB_BARAGON_API=http://${baragon_host}:${baragon_port}/baragon/v2"
   ]
