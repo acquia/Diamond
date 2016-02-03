@@ -32,10 +32,10 @@ class acquia_mesos::master (
 
   if $watcher {
     class { 'acquia_mesos::services::watcher':
-      version      => $watcher,
-      watcher_host => $ec2_local_ipv4,
-      baragon_host => $ec2_local_ipv4,
-      baragon_port => 6060,
+      version                 => $watcher,
+      watcher_leadership_host => $ec2_local_ipv4,
+      baragon_host            => $ec2_local_ipv4,
+      baragon_port            => 6060,
     }
   }
 
