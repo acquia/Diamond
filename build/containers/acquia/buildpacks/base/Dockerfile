@@ -1,4 +1,4 @@
-# Copyright 2015 Acquia, Inc.
+# Copyright 2016 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,33 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-FROM acquia/buildpacks/base:latest
+FROM centos:7
 MAINTAINER Acquia Engineering <engineering@acquia.com>
 
-COPY resources/nginx.repo /etc/yum.repos.d/nginx.repo
+RUN yum install -y epel-release \
+  # Install Aurora dependencies
+  && yum install -y \
+    apr-devel \
+    apr-util-devel \
+    cyrus-sasl-devel \
+    cyrus-sasl-md5 \
+    libcurl-devel \
+    openssl-devel \
+    python \
+    python-devel \
+    subversion-devel \
 
-RUN yum install -y \
-    java-1.8.0-openjdk-headless \
-    nginx-1.9.9-1.el7.ngx \
-    python-setuptools \
-
-  # Setup supervisor
-  && easy_install supervisor \
-
-  # Clean up
+  # Cleanup
   && yum clean all \
   && rm -rf /tmp/* \
   && rm -rf /var/tmp/*
-
-# Setup env
-ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0
-ENV PATH ${PATH}:${JAVA_HOME}/bin
-
-# Setup Baragon and its config
-COPY resources/baragon/etc /etc
-COPY resources/baragon/baragon-start-agent.sh /etc/baragon/start.sh
-COPY baragon-agent.jar /etc/baragon/baragon-agent.jar
-
-CMD ['/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf']
