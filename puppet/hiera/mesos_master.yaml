@@ -7,3 +7,5 @@ acquia_mesos::master::baragon: 'latest'
 acquia_mesos::master::dns: 'v0.5.1'
 acquia_mesos::master::ui: false # 'standalone-0.1.2'
 acquia_mesos::master::watcher: 'latest'
+
+acquia_mesos::master::java_version: 'jdk1.8.0_72'

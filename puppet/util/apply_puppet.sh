@@ -4,8 +4,7 @@
 #
 
 # Check to see if nemesis-puppet package needs to be updated
-yum clean expire-cache
-yum clean all
+yum clean all expire-cache
 
 # Export all necessary environment variables
 export RUBYLIB=/etc/puppet/lib:$RUBYLIB

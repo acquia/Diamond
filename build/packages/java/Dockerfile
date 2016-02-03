@@ -1,4 +1,4 @@
-# Copyright 2014 Acquia, Inc.
+# Copyright 2015 Acquia, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-classes:
-  - roles::zookeeper
 
-acquia_zookeeper::version: '3.4.6-1'
-acquia_zookeeper::exhibitor_version: '1.5.6-1'
+FROM acquia/rpm_packaging
 
-acquia_zookeeper::java_version: 'jdk1.8.0_72'
+ADD resources/package.sh $HOME/package.sh
+RUN chmod +x $HOME/package.sh
+
+WORKDIR $HOME
+CMD ./package.sh

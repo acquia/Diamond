@@ -35,9 +35,9 @@ class acquia_mesos::services::api(
   }
 
   docker::image { 'acquia/grid-api':
+    ensure    => 'latest',
     image     => "${private_docker_registry}acquia/grid-api",
     image_tag => "${version}",
-    force     => true,
   }
 
   docker::run { 'grid-api':

@@ -17,9 +17,9 @@ class acquia_mesos::services::ui(
   $port = 5000,
 ){
   docker::image { 'capgemini/mesos-ui':
+    ensure    => 'latest',
     image     => 'capgemini/mesos-ui',
     image_tag => "${version}",
-    force     => true,
   }
 
   docker::run { 'mesos-ui':

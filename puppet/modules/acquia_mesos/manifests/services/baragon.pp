@@ -28,9 +28,9 @@ class acquia_mesos::services::baragon(
   }
 
   docker::image { 'acquia/baragon-master':
+    ensure    => 'latest',
     image     => "${private_docker_registry}acquia/baragon-master",
     image_tag => "${version}",
-    force     => true,
   }
 
   docker::run { 'baragon-master':

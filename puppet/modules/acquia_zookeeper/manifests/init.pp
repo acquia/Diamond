@@ -1,10 +1,17 @@
 class acquia_zookeeper (
   $version = 'present',
   $exhibitor_version = 'present',
+  $java_version   = 'java-1.8.0-openjdk-devel',
 ) {
+  package { 'java':
+    ensure => 'installed',
+    name   => $java_version,
+  }
+
   package { 'zookeeper' :
-    ensure => $version,
-    notify => Exec['refresh-zookeeper'],
+    ensure  => $version,
+    notify  => Exec['refresh-zookeeper'],
+    require => Package['java'],
   }
 
   package { 'zookeeper-exhibitor' :

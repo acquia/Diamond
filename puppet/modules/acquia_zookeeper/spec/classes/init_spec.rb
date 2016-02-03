@@ -12,6 +12,12 @@ describe 'acquia_zookeeper', :type => :class do
     it { should compile.with_all_deps }
   end
 
+  context 'installs all dependencies for zookeeper' do
+    it {
+      should contain_package('java')
+    }
+  end
+
   context 'creates all necessary files and directories' do
     let(:zk_config_location) { 'some-bucket' }
     let(:zk_s3_prefix) { 'some-prefix' }
