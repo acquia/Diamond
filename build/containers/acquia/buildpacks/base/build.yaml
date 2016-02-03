@@ -1,0 +1,4 @@
+script: Dockerfile
+tag: latest
+output:
+  - acquia/buildpacks/base
