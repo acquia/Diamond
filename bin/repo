@@ -28,7 +28,14 @@ def aws_creds
 end
 
 def docker_aws_creds
-  "-e AWS_ACCESS_KEY_ID='#{aws_creds.credentials.access_key_id}' -e AWS_SECRET_ACCESS_KEY='#{aws_creds.credentials.secret_access_key}'"
+  creds = {
+    'AWS_ACCESS_KEY_ID'    => aws_creds.credentials.access_key_id,
+    'AWS_SECRET_ACCESS_KEY' => aws_creds.credentials.secret_access_key
+  }
+   
+  creds['AWS_SESSION_TOKEN'] = aws_creds.credentials.session_token if aws_creds.credentials.session_token
+   
+  creds.map{ |k,v| "-e #{k}='#{v}'" }.join(' ')
 end
 
 class RepoManager < Thor
@@ -58,7 +65,6 @@ class RepoManager < Thor
   def upload(stackname)
     check_dependencies(options[:nemesis_container_name])
     bucket = get_s3_bootstrap_repo_bucket(stackname)
-
     cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete /dist/repo s3://#{bucket}/repo"
     system(cmd)
   end
