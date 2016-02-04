@@ -18,10 +18,14 @@ class acquia_mesos::services::api(
   $remote_scheduler_port = 8081,
   $api_port = 2114,
   $baragon_version = undef,
+  $watcher_host = '0.0.0.0',
+  $watcher_port = 6677,
 ){
   $default_env = [
     "AG_REMOTE_SCHEDULER_HOST=${remote_scheduler_host}",
     "AG_REMOTE_SCHEDULER_PORT=${remote_scheduler_port}",
+    "AG_WATCHER_HOST=${watcher_host}",
+    "AG_WATCHER_PORT=${watcher_port}",
   ]
 
   if $baragon_version {

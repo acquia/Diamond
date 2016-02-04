@@ -76,6 +76,8 @@ describe 'acquia_mesos::services::api', :type => :class do
       {
         :remote_scheduler_host => '10.0.0.1',
         :remote_scheduler_port => 8081,
+        :watcher_host => '10.0.0.1',
+        :watcher_port => 6677,
       }
     }
 
@@ -84,6 +86,8 @@ describe 'acquia_mesos::services::api', :type => :class do
         .with_env([
           'AG_REMOTE_SCHEDULER_HOST=10.0.0.1',
           'AG_REMOTE_SCHEDULER_PORT=8081',
+          'AG_WATCHER_HOST=10.0.0.1',
+          'AG_WATCHER_PORT=6677',
           'AG_LOGSTREAM=1',
           'AG_LOGSTREAM_DRIVER=fluentd',
           'AG_LOGSTREAM_DRIVER_OPTS=fluentd-address=0.0.0.0:24224',
@@ -107,6 +111,8 @@ describe 'acquia_mesos::services::api', :type => :class do
       {
         :remote_scheduler_host => '10.0.0.1',
         :remote_scheduler_port => 8081,
+        :watcher_host => '10.0.0.1',
+        :watcher_port => 6677,
         :baragon_version => 'latest'
       }
     }
@@ -116,6 +122,8 @@ describe 'acquia_mesos::services::api', :type => :class do
         .with_env([
           'AG_REMOTE_SCHEDULER_HOST=10.0.0.1',
           'AG_REMOTE_SCHEDULER_PORT=8081',
+          'AG_WATCHER_HOST=10.0.0.1',
+          'AG_WATCHER_PORT=6677',
           'AG_LOADBALANCERS=1',
           'AG_LOADBALANCER_ZK_SERVERS=10.0.0.1:2181,10.0.0.2:2181',
           'AG_LOADBALANCER_SOURCE=registry.example.com/acquia/baragon-agent:latest',
