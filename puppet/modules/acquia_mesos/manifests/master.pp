@@ -28,6 +28,7 @@ class acquia_mesos::master (
       version               => $api,
       remote_scheduler_host => $ec2_public_ipv4,
       baragon_version       => $baragon,
+      watcher_host          => $ec2_local_ipv4,
     }
   }
 
