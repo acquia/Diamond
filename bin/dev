@@ -99,12 +99,35 @@ class TagCommand < Thor
   end
 end
 
-class DevCommand < Thor
-  desc "package SUBCOMMAND ...ARGS", "Commands to help with package management"
-  subcommand "package", PackageCommand
+class DockerCommand < Thor
+  desc "lint DIR", "Find all Dockerfile* file in the specified path and run lint on them"
+  def lint(dir=Dir.pwd)
+    `docker pull redcoolbeans/dockerlint:latest`
+    if $?.exitstatus != 0
+      puts 'Error: unable to pull dockerlint container redcoolbeans/dockerlint:latest'
+      exit 1
+    end
 
+    Dir.glob("#{dir}/**/Dockerfile*") do |dkr_file|
+      stdout, stderr, status = Open3.capture3("docker run -i --rm -v #{dkr_file}:/Dockerfile redcoolbeans/dockerlint")
+      unless status.exitstatus == 0
+        puts "Error: Dockerfile linting failed for - #{dkr_file}"
+        puts "", stderr
+        exit 1
+      end
+    end
+  end
+end
+
+class DevCommand < Thor
   desc "container SUBCOMMAND ...ARGS", "Commands to help with container management"
   subcommand "container", ContainerCommand
+
+  desc "docker SUBCOMMAND ...ARGS", "Commands to help with docker"
+  subcommand "docker", DockerCommand
+
+  desc "package SUBCOMMAND ...ARGS", "Commands to help with package management"
+  subcommand "package", PackageCommand
 
   desc "tag SUBCOMMAND ...ARGS", "Commands to help with tagging"
   subcommand "tag", TagCommand
