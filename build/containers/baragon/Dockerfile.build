@@ -25,10 +25,14 @@ RUN yum install -y epel-release \
     make \
     python-devel \
     python-setuptools \
+    git \
 
   # Download maven
   && mkdir -p /usr/lib/maven \
   && curl -sSL http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz | tar -xz -C /usr/lib/maven \
+
+  # Allow root to run npm commands which is not allowed by default. In container we use root user.
+  && echo "unsafe-perm = true" > /root/.npmrc
 
   # Clean up
   && yum clean all \
