@@ -47,6 +47,8 @@ set -o errexit
 
 GRACE_PERIOD_SECONDS=${GRACE_PERIOD_SECONDS:=3600}
 STATE_DIR=${STATE_DIR:=/var/lib/docker-gc}
+FORCE_CONTAINER_REMOVAL=${FORCE_CONTAINER_REMOVAL:=0}
+FORCE_IMAGE_REMOVAL=${FORCE_IMAGE_REMOVAL:=0}
 DOCKER=${DOCKER:=docker}
 PID_DIR=${PID_DIR:=/var/run}
 LOG_TO_SYSLOG=${LOG_TO_SYSLOG:=0}
@@ -177,7 +179,7 @@ function image_log() {
 
     while IFS='' read -r imageid
     do
-        log "$prefix $imageid $(docker inspect -f {{.Tags}} $imageid)"
+        log "$prefix $imageid $(docker inspect -f {{.RepoTags}} $imageid)"
     done < "$filename"
 }
 
@@ -226,11 +228,8 @@ cat containers.reap.tmp | sort | uniq | grep -v -f $EXCLUDE_CONTAINER_IDS_FILE >
 comm -23 containers.all containers.reap > containers.keep
 
 # List images used by containers that we keep.
-# This may be both image id's and repo/name:tag, so normalize to image id's only
 cat containers.keep |
-xargs -n 1 $DOCKER inspect -f '{{.Config.Image}}' 2>/dev/null |
-sort | uniq |
-xargs -n 1 $DOCKER inspect -f '{{.Id}}' 2>/dev/null |
+xargs -n 1 $DOCKER inspect -f '{{.Image}}' 2>/dev/null |
 sort | uniq > images.used
 
 # List images to reap; images that existed last run and are not in use.
@@ -248,10 +247,22 @@ do
 done
 comm -23 images.reap.tmp images.used | grep -v -f $EXCLUDE_IDS_FILE > images.reap || true
 
+# Use -f flag on docker rm command; forces removal of images that are in Dead
+# status or give errors when removing.
+FORCE_CONTAINER_FLAG=""
+if [[ $FORCE_CONTAINER_REMOVAL -gt 0 ]]; then
+    FORCE_CONTAINER_FLAG="-f"
+fi
 # Reap containers.
 container_log "Container removed" containers.reap
-xargs -n 1 $DOCKER rm --volumes=true < containers.reap &>/dev/null || true
+xargs -n 1 $DOCKER rm $FORCE_CONTAINER_FLAG --volumes=true < containers.reap &>/dev/null || true
+
+# Use -f flag on docker rmi command; forces removal of images that have multiple tags
+FORCE_IMAGE_FLAG=""
+if [[ $FORCE_IMAGE_REMOVAL -gt 0 ]]; then
+    FORCE_IMAGE_FLAG="-f"
+fi
 
 # Reap images.
 image_log "Removing image" images.reap
-xargs -n 1 $DOCKER rmi < images.reap &>/dev/null || true
+xargs -n 1 $DOCKER rmi $FORCE_IMAGE_FLAG < images.reap &>/dev/null || true
