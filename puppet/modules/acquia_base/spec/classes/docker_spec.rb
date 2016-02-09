@@ -39,7 +39,10 @@ describe 'acquia_base::docker' do
       }
       it {
         should contain_class('docker')
-          .with_storage_driver('overlay')
+          .with_storage_driver('devicemapper')
+
+        should contain_package('docker-storage-setup')
+        should contain_service('docker-storage-setup')
       }
     end
   end
