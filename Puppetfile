@@ -2,7 +2,7 @@ forge "https://forgeapi.puppetlabs.com"
 
 mod 'acquia/garethr-docker',
   :git => 'https://github.com/acquia/garethr-docker.git',
-  :ref => '6bc6defe35f42c81c5adc44189ce0eead6d20094'
+  :ref => '044a7820ab9714f1e8ad342840e76223dac50546'
 
 mod 'deric/puppet-mesos',
   :git => 'https://github.com/deric/puppet-mesos.git',

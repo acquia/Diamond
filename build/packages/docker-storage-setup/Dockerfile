@@ -1,3 +1,5 @@
+# Copyright 2015 Acquia, Inc.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-forge 'https://forgeapi.puppetlabs.com'
+FROM acquia/rpm_packaging
 
-mod 'puppetlabs/stdlib', '>= 4.5.1'
-mod 'puppetlabs/apt', '>= 2.1.1'
+ADD resources/package.sh $HOME/package.sh
+RUN chmod +x $HOME/package.sh
 
-mod 'acquia/garethr-docker',
-  :git => 'https://github.com/acquia/garethr-docker.git',
-  :ref => '044a7820ab9714f1e8ad342840e76223dac50546'
+WORKDIR $HOME
+CMD ./package.sh

@@ -9,13 +9,32 @@ class acquia_base::docker(
   }
 
   class { '::docker':
-    package_name                => 'docker-engine',
-    version                     => "${version}",
-    use_upstream_package_source => true,
-    root_dir                    => '/mnt/lib/docker',
-    tmp_dir                     => '/mnt/tmp',
-    storage_driver              => 'overlay',
-    require                     => [
+    package_name                            => 'docker-engine',
+    version                                 => "${version}",
+    use_upstream_package_source             => true,
+    root_dir                                => '/mnt/lib/docker',
+    tmp_dir                                 => '/mnt/tmp',
+
+    # Docker devicemapper setup
+    storage_driver                          => 'devicemapper',
+    dm_fs                                   => 'xfs',
+    dm_thinpooldev                          => '/dev/mapper/docker--data-docker--pool',
+    dm_blocksize                            => '512K',
+    dm_use_deferred_removal                 => true,
+
+    # Docker Storage Setup
+    manage_storage_setup                    => true,
+    storage_setup_devs                      => join($aws_block_devices, ' '),
+    storage_setup_vg                        => 'docker-data',
+    storage_setup_data_size                 => '90%FREE',
+    storage_setup_min_data_size             => '2g',
+    storage_setup_chunk_size                => '512K',
+    storage_setup_growpart                  => false,
+    storage_setup_auto_extend_pool          => 'yes',
+    storage_setup_pool_autoextend_threshold => '60',
+    storage_setup_pool_autoextend_percent   => '20',
+
+    require                                 => [
       File['/mnt/lib/docker'],
     ],
   }

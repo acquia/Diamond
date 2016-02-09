@@ -43,7 +43,7 @@ describe 'acquia_base::diamond' do
     let(:facts) {
       super().merge(
         {
-          :server_type => 'mesos',
+          :cluster_type => 'mesos',
           :mesos_master => true
         }
       )
