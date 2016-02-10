@@ -8,6 +8,7 @@ class acquia_base::selinux (
   # this is necessray because otherwise dhclient can't 
   # read originally unlabelled interface conf files
   exec { 'dhclient-script-context-fix':
-    command => '/usr/sbin/restorecon /etc/sysconfig/network-scripts/*'
+    command => '/usr/sbin/restorecon /etc/sysconfig/network-scripts/*',
+    unless  => '/usr/sbin/matchpathcon -V /etc/sysconfig/network-scripts/*'
   }
 }
