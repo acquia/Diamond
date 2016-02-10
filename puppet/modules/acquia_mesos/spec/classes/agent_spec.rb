@@ -25,6 +25,9 @@ describe 'acquia_mesos::agent', :type => :class do
     }
 
     it {
+      should contain_file('/etc/sysconfig/mesos-agent')
+      should contain_file('/etc/systemd/system/multi-user.target.wants/mesos-slave.service')
+      should contain_exec('systemctl-daemon-reload')
       should contain_service('mesos-slave').with(
         :enable => true
       )

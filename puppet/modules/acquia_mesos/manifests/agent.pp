@@ -21,6 +21,30 @@ class acquia_mesos::agent(
 
   contain acquia_mesos::services::dns::agent
 
+  file { '/etc/sysconfig/mesos-agent':
+    ensure  => present,
+    content => template('acquia_mesos/mesos/etc/sysconfig/mesos-agent.erb'),
+    notify  => Class['::mesos::slave'],
+  }
+
+  file { '/etc/systemd/system/multi-user.target.wants/mesos-slave.service':
+    ensure  => present,
+    content => template('acquia_mesos/mesos/etc/systemd/mesos-agent.service.erb'),
+    require => [
+      File['/etc/sysconfig/mesos-agent'],
+    ],
+    notify  => [
+      Exec['systemctl-daemon-reload'],
+      Class['::mesos::slave'],
+    ]
+  }
+
+  exec { 'systemctl-daemon-reload':
+    command => '/usr/bin/systemctl daemon-reload',
+    notify  => Class['::mesos::slave'],
+    unless  => '/usr/bin/systemctl status mesos-slave.service',
+  }
+
   class {'::mesos::slave':
     enable         => true,
     port           => 5051,
@@ -51,6 +75,9 @@ class acquia_mesos::agent(
       'host' => $ec2_local_ipv4,
       'rack' => $ec2_placement_availability_zone,
     },
+    require        => [
+      File['/etc/systemd/system/multi-user.target.wants/mesos-slave.service'],
+    ],
   }
 
   class { '::mesos::master':
@@ -59,5 +86,6 @@ class acquia_mesos::agent(
 
   class { 'acquia_mesos::aurora::executor':
     version => $acquia_mesos::aurora_version,
+    require => Class['::mesos::slave'],
   }
 }
