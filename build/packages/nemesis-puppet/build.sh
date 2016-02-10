@@ -20,10 +20,10 @@ set -ex
 : ${NEMESIS_PUPPET_RELEASE:=""}
 : ${NEMESIS_PUPPET_REPO:="acquia/nemesis-puppet"}
 : ${NEMESIS_PUPPET_BRANCH:="master"}
-: ${NEMESIS_PUPPET_SOURCE_DIR="/nemesis-puppet"}
+: ${NEMESIS_PUPPET_SOURCE_DIR:="/nemesis-puppet"}
 : ${GITHUB_OAUTH_TOKEN:=""}
-: ${DISTDIR="/dist"}
-: ${MOUNT_VOLUME_NAME="nemesis-puppet-volumes"}
+: ${DISTDIR:="/dist"}
+: ${MOUNT_VOLUME_NAME:="nemesis-puppet-volumes"}
 
 
 PACKAGE_DIST=${DISTDIR}/packages

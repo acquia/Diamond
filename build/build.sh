@@ -60,7 +60,7 @@ $nemesis_puppet_root=File.join(basedir, '..')
 $distdir=File.join($nemesis_puppet_root, 'dist')
 
 $default_container = 'centos:7'
-$volumes_container_name = 'nemesis-puppet-volumes'
+$volumes_container_name = ENV['MOUNT_VOLUME_NAME'] || 'nemesis-puppet-volumes'
 
 
 # Initialized the dist folder and a volume container for other container builds
@@ -101,11 +101,11 @@ end
 # Run through all builds in a list and execute their script process.
 def build(build_dir, basedir, list, config, options)
   puts "Starting build for: #{build_dir}" unless options[:list]
-  package_dist_dir = '/dist'
+
+  package_dist_dir = '/dist/packages'
   if options[:jenkins] == true
-    package_dist_dir=$distdir
-    puts "JENKINS"
-    puts package_dist_dir
+    packages = File.join($distdir, "packages")
+    package_dist_dir=File.expand_path(packages)
   end
   global_env_flags = {
     'PACKAGE_DIST_DIR' => "#{package_dist_dir}"
@@ -127,7 +127,6 @@ def build(build_dir, basedir, list, config, options)
     if build_config['version']
       env_vars["#{name.gsub("-", "_").upcase}_VERSION"] = build_config['version']
     end
-
     if options[:list]
       build_config['output'].each { |x| puts x }
     else
