@@ -101,8 +101,14 @@ end
 # Run through all builds in a list and execute their script process.
 def build(build_dir, basedir, list, config, options)
   puts "Starting build for: #{build_dir}" unless options[:list]
+  package_dist_dir = '/dist'
+  if options[:jenkins] == true
+    package_dist_dir=$distdir
+    puts "JENKINS"
+    puts package_dist_dir
+  end
   global_env_flags = {
-    'PACKAGE_DIST_DIR' => '/dist/packages'
+    'PACKAGE_DIST_DIR' => "#{package_dist_dir}"
   }
   global_env_flags['GITHUB_OAUTH_TOKEN'] = ENV['GITHUB_OAUTH_TOKEN'] if ENV['GITHUB_OAUTH_TOKEN']
 
@@ -164,6 +170,7 @@ OptionParser.new do |opts|
   opts.on('-p', 'Build Packages') { build_list=['packages'] }
   opts.on('-d', '--dist DIR', String) { |v| $distdir = v }
   opts.on('-l', '--list') { options[:list] = true }
+  opts.on('-j', '--jenkins') { options[:jenkins] = true }
 end.parse!
 
 build_list = ['bootstrap', 'containers', 'packages'] if build_list.empty?

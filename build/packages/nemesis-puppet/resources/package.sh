@@ -14,7 +14,7 @@ options = {
   :repo => ENV['NEMESIS_PUPPET_REPO']  || 'acquia/nemesis-puppet',
   :branch => ENV['NEMESIS_PUPPET_BRANCH'] || 'master',
   :github_oauth_token => ENV['GITHUB_OAUTH_TOKEN'],
-  :basedir => '/nemesis-puppet',
+  :basedir => ENV['NEMESIS_PUPPET_SOURCE_DIR'] || '/nemesis-puppet',
   :distdir => ENV['PACKAGE_DIST_DIR'] || '/dist',
 }
 
