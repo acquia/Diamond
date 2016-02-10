@@ -1,0 +1,18 @@
+[Unit]
+Description=Mesos Agent
+After=network.target docker.service
+Wants=network.target
+Requires=docker.service
+
+[Service]
+EnvironmentFile=/etc/sysconfig/mesos-agent
+ExecStart=/usr/bin/mesos-init-wrapper slave
+KillMode=process
+Restart=always
+RestartSec=20
+LimitNOFILE=16384
+CPUAccounting=true
+MemoryAccounting=true
+
+[Install]
+WantedBy=multi-user.target
