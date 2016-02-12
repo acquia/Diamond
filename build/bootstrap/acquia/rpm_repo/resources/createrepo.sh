@@ -1,9 +1,10 @@
 #!/bin/bash
 set -ex
 
-: ${PACKAGE_DIST_DIR:=/dist/packages}
+: ${DISTDIR:=/dist}
 
-BASEDIR=/dist
+PACKAGE_DIST_DIR=${DISTDIR}/packages
+BASEDIR=${DISTDIR}
 GPG_HOMEDIR=${BASEDIR}/.gnupg
 
 # Setup the repo structure and copy all packages into it

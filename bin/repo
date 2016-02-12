@@ -39,11 +39,12 @@ def docker_aws_creds
 end
 
 class RepoManager < Thor
-  class_option :nemesis_container_name, :type => :string, :default => "nemesis-puppet-volumes", :desc =>"Name of the volume that docker containers would share"
+  class_option :nemesis_container_name, :aliases => '-c', :type => :string, :default => "nemesis-puppet-volumes", :desc =>"Name of the volume that docker containers would share"
+  class_option :nemesis_dist_dir, :aliases => '-d', :type => :string, :default => "/dist", :desc =>"Path of Dist"
   desc "create", "Initialize and create a package repository."
   def create
     check_dependencies(options[:nemesis_container_name])
-    unless system("docker run -i --rm --volumes-from #{options[:nemesis_container_name]} acquia/rpm_repo:latest")
+    unless system("docker run -i --rm -e 'DISTDIR=#{options[:nemesis_dist_dir]}' --volumes-from #{options[:nemesis_container_name]} acquia/rpm_repo:latest")
       puts "Error: unable to create repo."
       exit 1
     end
@@ -65,7 +66,7 @@ class RepoManager < Thor
   def upload(stackname)
     check_dependencies(options[:nemesis_container_name])
     bucket = get_s3_bootstrap_repo_bucket(stackname)
-    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete /dist/repo s3://#{bucket}/repo"
+    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete #{options[:nemesis_dist_dir]}/repo s3://#{bucket}/repo"
     system(cmd)
   end
 
@@ -75,7 +76,7 @@ class RepoManager < Thor
     bucket = get_s3_bootstrap_repo_bucket(stackname)
     purge_repo_directory(options[:nemesis_container_name])
 
-    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete s3://#{bucket}/repo /dist/repo"
+    cmd = "docker run -i --rm #{docker_aws_creds()} --volumes-from #{options[:nemesis_container_name]} tools/aws s3 sync --delete s3://#{bucket}/repo #{options[:nemesis_dist_dir]}/repo"
     system(cmd)
   end
 
@@ -88,7 +89,7 @@ class RepoManager < Thor
     end
 
     def purge_repo_directory(container_name)
-       unless system("docker run -i --rm #{docker_aws_creds()} --volumes-from #{container_name} --entrypoint /usr/bin/rm tools/aws -rf /dist/repo")
+       unless system("docker run -i --rm #{docker_aws_creds()} --volumes-from #{container_name} --entrypoint /usr/bin/rm tools/aws -rf #{options[:nemesis_dist_dir]}/repo")
         puts "Error: unable to remove existing repo directory"
         exit 1
       end

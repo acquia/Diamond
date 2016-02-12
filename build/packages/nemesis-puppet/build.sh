@@ -20,20 +20,26 @@ set -ex
 : ${NEMESIS_PUPPET_RELEASE:=""}
 : ${NEMESIS_PUPPET_REPO:="acquia/nemesis-puppet"}
 : ${NEMESIS_PUPPET_BRANCH:="master"}
+: ${NEMESIS_PUPPET_SOURCE_DIR:="/nemesis-puppet"}
 : ${GITHUB_OAUTH_TOKEN:=""}
-: ${PACKAGE_DIST_DIR:=/dist}
+: ${DISTDIR:="/dist"}
+: ${MOUNT_VOLUME_NAME:="nemesis-puppet-volumes"}
 
+
+PACKAGE_DIST=${DISTDIR}/packages
 BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 docker build --no-cache -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
 
 docker run -i --rm \
+  -e "DISTDIR=${DISTDIR}" \
   -e "NEMESIS_PUPPET_RELEASE=${NEMESIS_PUPPET_RELEASE}" \
   -e "NEMESIS_PUPPET_REPO=${NEMESIS_PUPPET_REPO}" \
   -e "NEMESIS_PUPPET_BRANCH=${NEMESIS_PUPPET_BRANCH}" \
+  -e "NEMESIS_PUPPET_SOURCE_DIR=${NEMESIS_PUPPET_SOURCE_DIR}" \
   -e "GITHUB_OAUTH_TOKEN=${GITHUB_OAUTH_TOKEN}" \
-  -e "PACKAGE_DIST_DIR=${PACKAGE_DIST_DIR}" \
-  --volumes-from nemesis-puppet-volumes \
+  -e "PACKAGE_DIST_DIR=${PACKAGE_DIST}" \
+  --volumes-from ${MOUNT_VOLUME_NAME} \
   nemesis-puppet
 
 docker rmi -f nemesis-puppet
