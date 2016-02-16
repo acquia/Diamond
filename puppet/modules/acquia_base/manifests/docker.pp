@@ -8,6 +8,11 @@ class acquia_base::docker(
     require => [ File['/mnt/lib'], ],
   }
 
+  # Workaround for https://github.com/projectatomic/docker-storage-setup/pull/102
+  file { '/etc/systemd/system/docker-storage-setup.service':
+    content => template('acquia_base/docker-storage-setup.service.erb'),
+  }
+
   class { '::docker':
     package_name                            => 'docker-engine',
     version                                 => "${version}",
@@ -36,6 +41,7 @@ class acquia_base::docker(
 
     require                                 => [
       File['/mnt/lib/docker'],
+      File['/etc/systemd/system/docker-storage-setup.service'],
     ],
   }
 

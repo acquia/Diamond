@@ -43,6 +43,7 @@ describe 'acquia_base::docker' do
 
         should contain_package('docker-storage-setup')
         should contain_service('docker-storage-setup')
+        should contain_file('/etc/systemd/system/docker-storage-setup.service')
       }
     end
   end
