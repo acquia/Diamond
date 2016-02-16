@@ -2,8 +2,8 @@
 
 set -ex
 
-: ${DOCKER_STORAGE_SETUP_REPO:=jfarrell}
-: ${DOCKER_STORAGE_SETUP_VERSION:=acquia-master}
+: ${DOCKER_STORAGE_SETUP_REPO:=projectatomic}
+: ${DOCKER_STORAGE_SETUP_VERSION:=master}
 : ${PACKAGE_DIST_DIR:=/dist}
 
 BASEDIR=/tmp
