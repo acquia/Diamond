@@ -1,16 +1,12 @@
 class acquia_base::docker(
   $version = 'latest',
 ) {
+  include acquia_base::docker::docker_storage_setup
   include acquia_base::docker::docker_gc
 
   file { '/mnt/lib/docker':
     ensure  => directory,
     require => [ File['/mnt/lib'], ],
-  }
-
-  # Workaround for https://github.com/projectatomic/docker-storage-setup/pull/102
-  file { '/etc/systemd/system/docker-storage-setup.service':
-    content => template('acquia_base/docker-storage-setup.service.erb'),
   }
 
   class { '::docker':

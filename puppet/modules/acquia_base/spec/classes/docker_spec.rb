@@ -42,8 +42,10 @@ describe 'acquia_base::docker' do
           .with_storage_driver('devicemapper')
 
         should contain_package('docker-storage-setup')
-        should contain_service('docker-storage-setup')
         should contain_file('/etc/systemd/system/docker-storage-setup.service')
+        should contain_service('docker-storage-setup')
+
+        should contain_class('acquia_base::docker::docker_storage_setup')
       }
     end
   end
