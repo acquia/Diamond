@@ -40,8 +40,8 @@ Kinesis stream gets `JSON` message serialized in `data` field with random genera
 
 ```json
 {
-  "data:"{\"container_name\":\"/mesos-20151118-102904-3271688202-5050-7886-S0.651d6d6d-1ebd-438e-b70e-f9955b98f6fb\",\"source\":\"stdout\",\"log\":\"MESSAGE\",\"container_id\":\"1d26ace2fa27c63bc77c6de4bdf611046a7b350a7b7c2e33eafac6b3cda5fe76\",\"time\":\"2015-12-04T13:39:27Z\",\"tag\":\"grid.devel/www-data/redis-test:devel/www-data/redis-test\"}",
-  "partition_key:"667e482c-d048-4dd4-b636-1d8246eed98f"
+  "data":"{\"container_name\":\"/mesos-20151118-102904-3271688202-5050-7886-S0.651d6d6d-1ebd-438e-b70e-f9955b98f6fb\",\"source\":\"stdout\",\"log\":\"MESSAGE\",\"container_id\":\"1d26ace2fa27c63bc77c6de4bdf611046a7b350a7b7c2e33eafac6b3cda5fe76\",\"time\":\"2015-12-04T13:39:27Z\",\"tag\":\"grid.devel/www-data/redis-test:devel/www-data/redis-test\"}",
+  "partition_key":"667e482c-d048-4dd4-b636-1d8246eed98f"
 }
 ```
 
