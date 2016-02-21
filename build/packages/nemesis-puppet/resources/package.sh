@@ -15,13 +15,13 @@ options = {
   :branch => ENV['NEMESIS_PUPPET_BRANCH'] || 'master',
   :github_oauth_token => ENV['GITHUB_OAUTH_TOKEN'],
   :basedir => ENV['NEMESIS_PUPPET_SOURCE_DIR'] || '/nemesis-puppet',
-  :distdir => ENV['DISTDIR'] || '/dist',
+  :package_distdir => ENV['PACKAGE_DIST_DIR'] || '/dist/packages',
 }
 
 OptionParser.new do |opt|
   opt.on('--[no-]release', 'Perform release build') { |o| options[:release] = o }
   opt.on('--dir PATH', 'Base directory containing nemesis-puppet checkout') { |o| options[:basedir] = o }
-  opt.on('--dist PATH', 'Dist directory to place build packages') { |o| options[:distdir] = o }
+  opt.on('--dist PATH', 'Dist directory to place build packages') { |o| options[:package_distdir] = o }
 
   opt.on('-r', '--repo URL', 'Git repository URL') { |o| options[:repo] = o }
   opt.on('-b', '--branch BRANCH_NAME', 'Git repository branch') { |o| options[:branch] = o }
@@ -172,7 +172,7 @@ def package_version(build_time, release = false)
 end
 
 basedir = Pathname.new(options[:basedir])
-distdir = Pathname.new(options[:distdir])
+package_distdir = Pathname.new(options[:package_distdir])
 builddir = Pathname.new('/tmp/nemesis-puppet')
 
 if File.exist?(builddir)
@@ -210,5 +210,5 @@ end
 Dir.chdir(builddir) do
   build_time = DateTime.now
   version = package_version(build_time, options[:release])
-  build(builddir, distdir, version, build_time)
+  build(builddir, package_distdir, version, build_time)
 end
