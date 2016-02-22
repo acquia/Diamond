@@ -9,3 +9,8 @@ acquia_mesos::master::ui: false # 'standalone-0.1.2'
 acquia_mesos::master::watcher: 'latest'
 
 acquia_mesos::master::java_version: 'jdk1.8.0_72'
+
+# Note: AWS ELB names are limited to 32 characters. The prefix `ga`, short for grid-api, must
+# be kept in sync with IAM configuration so that grid-api has permission to manage ELBs.
+# @see https://github.com/acquia/nemesis/blob/master/lib/nemesis/templates/mesos_master.rb
+acquia_mesos::services::api::loadbalancer_elb_prefix: 'ga'

@@ -20,7 +20,9 @@ if AwsHelper.server_type_is?('mesos_master')
   unless stack.nil?
     Facter.add(:api_docker_env) do
       setcode do
-        env = []
+        env = [
+          "AWS_REGION=#{AwsHelper.region}"
+        ]
 
         # Add logstream env options to grid-api so it can launch containers with correctly routed logs
         if Facter.value('logstream_name')
@@ -41,6 +43,14 @@ if AwsHelper.server_type_is?('mesos_master')
         # Add grid-api RDS DSN if is provided
         if Facter.value('grid_api_rds_dsn')
           env << "AG_DATABASE_DSN=#{Facter.value('grid_api_rds_dsn')}"
+        end
+
+        # Configure properties required to provision ELBs
+        if stack.resource('MesosAgentELBSecurityGroup')
+          env << "AG_LOADBALANCER_ELB_SECURITY_GROUP=#{stack.resource('MesosAgentELBSecurityGroup').physical_resource_id}"
+        end
+        if stack.parameter('Subnets')
+          env << "AG_LOADBALANCER_ELB_SUBNETS=#{stack.parameter('Subnets')}"
         end
 
         env
