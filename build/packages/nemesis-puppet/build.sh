@@ -32,7 +32,6 @@ BASEDIR=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 docker build --no-cache -t nemesis-puppet -f Dockerfile.release ${BASEDIR}
 
 docker run -i --rm \
-  -e "DISTDIR=${DISTDIR}" \
   -e "NEMESIS_PUPPET_RELEASE=${NEMESIS_PUPPET_RELEASE}" \
   -e "NEMESIS_PUPPET_REPO=${NEMESIS_PUPPET_REPO}" \
   -e "NEMESIS_PUPPET_BRANCH=${NEMESIS_PUPPET_BRANCH}" \
