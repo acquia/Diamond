@@ -13,5 +13,6 @@ class acquia_base {
   Class['acquia_base::repos'] ->
   Class['acquia_base::packages'] ->
   Class['acquia_base::setup'] ->
-  Class['acquia_base::docker']
+  Class['acquia_base::docker'] ->
+  Class['acquia_base::diamond']
 }

@@ -1,5 +1,10 @@
 [Unit]
 Description=Docker Storage Setup
+<% @aws_block_devices.each do |device|
+     block_device = device.gsub(%r{^/dev/}, '')
+-%>
+After=device-setup-<%= block_device %>.service
+<% end -%>
 Before=docker.service
 
 [Service]

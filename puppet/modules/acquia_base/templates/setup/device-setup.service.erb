@@ -1,0 +1,12 @@
+[Unit]
+Description=Repartition ephemeral drive
+After=dev-<%= @block_device %>.device
+Before=docker-storage-setup.service
+Requires=dev-<%= @block_device %>.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=-/bin/umount /dev/<%= @block_device %>
+ExecStart=/sbin/parted /dev/<%= @block_device %> rm 1
+ExecStartPost=-/bin/sed -i -e "\|^/dev/<%= @block_device %>|d" /etc/fstab
