@@ -20,6 +20,7 @@ class acquia_mesos::services::api(
   $baragon_version = undef,
   $watcher_host = '0.0.0.0',
   $watcher_port = 6677,
+  $loadbalancer_elb_prefix = 'ga',
 ){
   $default_env = [
     "AG_REMOTE_SCHEDULER_HOST=${remote_scheduler_host}",
@@ -31,6 +32,7 @@ class acquia_mesos::services::api(
   if $baragon_version {
     $baragon_env = [
       'AG_LOADBALANCERS=1',
+      "AG_LOADBALANCER_ELB_PREFIX=${loadbalancer_elb_prefix}",
       "AG_LOADBALANCER_ZK_SERVERS=${aurora_zookeeper_connection_string}",
       "AG_LOADBALANCER_SOURCE=${private_docker_registry}acquia/baragon-agent:${baragon_version}"
     ]

@@ -113,7 +113,8 @@ describe 'acquia_mesos::services::api', :type => :class do
         :remote_scheduler_port => 8081,
         :watcher_host => '10.0.0.1',
         :watcher_port => 6677,
-        :baragon_version => 'latest'
+        :baragon_version => 'latest',
+        :loadbalancer_elb_prefix => 'ga-test'
       }
     }
 
@@ -125,6 +126,7 @@ describe 'acquia_mesos::services::api', :type => :class do
           'AG_WATCHER_HOST=10.0.0.1',
           'AG_WATCHER_PORT=6677',
           'AG_LOADBALANCERS=1',
+          'AG_LOADBALANCER_ELB_PREFIX=ga-test',
           'AG_LOADBALANCER_ZK_SERVERS=10.0.0.1:2181,10.0.0.2:2181',
           'AG_LOADBALANCER_SOURCE=registry.example.com/acquia/baragon-agent:latest',
         ])
