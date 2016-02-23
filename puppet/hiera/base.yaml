@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+classes:
+  - roles::base
+
 acquia_base::admin_users::accounts:
   akenney:
     key: AAAAB3NzaC1yc2EAAAADAQABAAABAQCXPuGsCAQL6hP01/FEbvueBPXxJSa0xVHLUJL9Ahg7GddaIxWnQZxUKGxq6g3JRFGH2M29Z0s2JoZimOPsiPJNXxzc5V9joNI76/hGKHRo/4EnhZPShn9WJc5t2U9GrCPFhaQfmOUeKpNexbCwuXDjDgJc0nRiIglZxZ2AhleDG64iKuXPTJDUB7E4/JBsKxGiG5i/d21wl2J9AzCq/6EDt49L/Bpe+XokM+icdo3fXrC6AdLgpp2xPNb0WiE4jcq5cvPC7IXb2eK2o+hFlv4ohd3PBTqGTL+E+T3RryzxbBXak/05j4QyspWmZmo1/caNRDCxvnnO7/eB6AKUGhET
